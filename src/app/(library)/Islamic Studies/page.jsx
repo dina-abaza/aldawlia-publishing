@@ -5,7 +5,7 @@ const AlhekmaInstitutePage = () => {
         <div className="bg-white text-right font-sans leading-relaxed text-gray-800" dir="rtl">
 
             {/* 1. Header & Official Identity - الهوية الرسمية مع اللوجو */}
-            <section className="bg-gradient-to-l from-sky-900 to-sky-800 py-8 px-8 text-white border-b-[6px] border-[#C5A059]">
+            <section className="bg-gradient-to-l from-sky-900 to-sky-800 py-8 px-8 text-white border-b-[6px] border-amber-600">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-6">
 
                     {/* مكان اللوجو المستخرج من الفايل */}
@@ -13,13 +13,13 @@ const AlhekmaInstitutePage = () => {
                         <img
                             src="/logo-institute.png"
                             alt="لوجو معهد الحكمة"
-                            className="w-24 h-24 md:w-32 md:h-32 object-contain bg-white p-2 rounded-2xl shadow-lg border-2 border-[#C5A059]"
+                            className="w-24 h-24 md:w-32 md:h-32 object-contain bg-white p-2 rounded-2xl shadow-lg border-2 border-amber-600"
                         />
                     </div>
 
                     <div className="text-right flex-grow">
                         <h1 className="text-3xl md:text-4xl font-black mb-1">معهد الحكمة الدولي للدراسات الاستراتيجية</h1>
-                        <p className="text-lg md:text-xl text-[#C5A059] font-bold tracking-widest mb-3">International Wisdom Institute (IWI)</p>
+                        <p className="text-lg md:text-xl text-amber-600 font-bold tracking-widest mb-3">International Wisdom Institute (IWI)</p>
 
                         <div className="bg-white/10 inline-block px-4 py-2 rounded-lg backdrop-blur-sm border border-white/20">
                             <p className="text-xl font-bold italic">"حكمة الرؤية.. قوة التحليل"</p>
@@ -38,7 +38,7 @@ const AlhekmaInstitutePage = () => {
 
                 {/* 2. The Core Idea - الفكرة الأساسية */}
                 <section className="mb-10">
-                    <h3 className="text-2xl font-bold text-sky-900 mb-4 border-r-8 border-[#C5A059] pr-4">أولًا: الفكرة الأساسية للمعهد (The Core Idea)</h3>
+                    <h3 className="text-2xl font-bold text-sky-900 mb-4 border-r-8 border-amber-600 pr-4">أولًا: الفكرة الأساسية للمعهد (The Core Idea)</h3>
                     <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
                         <p className="text-lg leading-relaxed mb-6">
                             يقوم المعهد على دراسة التحولات العالمية في السياسة والاستراتيجية والجغرافيا السياسية، مع التركيز على فهم توازنات القوة الدولية وصياغة رؤى فكرية تساعد على قراءة المستقبل.
@@ -67,10 +67,10 @@ const AlhekmaInstitutePage = () => {
                     </div>
                     <div className="space-y-4">
                         <div className="p-5 bg-sky-900 text-white rounded-xl">
-                            <h4 className="font-bold text-[#C5A059] mb-2">3️⃣ الرسالة (Mission)</h4>
+                            <h4 className="font-bold text-amber-600 mb-2">3️⃣ الرسالة (Mission)</h4>
                             <p className="text-sm">تقديم دراسات وتحليلات استراتيجية عالية المستوى حول القضايا الدولية والجيوسياسية، وتعزيز ثقافة التفكير الاستراتيجي والحكمة السياسية.</p>
                         </div>
-                        <div className="p-5 bg-[#C5A059]/10 rounded-xl border border-[#C5A059]">
+                        <div className="p-5 bg-amber-600/10 rounded-xl border border-amber-600">
                             <h4 className="font-bold text-sky-900 mb-2">6️⃣ القيم الأساسية (Core Values)</h4>
                             <p className="text-xs font-bold text-sky-800 tracking-wide">الاستقلال الفكري | الموضوعية العلمية | التفكير الاستراتيجي | الحكمة في التحليل | الانفتاح على الحوار العالمي</p>
                         </div>
@@ -99,7 +99,7 @@ const AlhekmaInstitutePage = () => {
 
                 {/* 5. Research Departments - الأقسام البحثية كاملة */}
                 <section className="mb-10 py-8 bg-sky-50 rounded-3xl px-6">
-                    <h3 className="text-2xl font-black text-sky-900 mb-8 text-center underline decoration-[#C5A059] underline-offset-8">الأقسام البحثية للمعهد</h3>
+                    <h3 className="text-2xl font-black text-sky-900 mb-8 text-center underline decoration-amber-600 underline-offset-8">الأقسام البحثية للمعهد</h3>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                         {/* Dept 1 */}
@@ -143,8 +143,8 @@ const AlhekmaInstitutePage = () => {
                                 { name: "الدراسات المستقبلية", text: "بناء السيناريوهات، استشراف التحولات، ودراسة مستقبل القوة." },
                                 { name: "الفكر والحكمة السياسية", text: "فلسفة القوة، الفكر الاستراتيجي، والحكمة السياسية." }
                             ].map((dept, i) => (
-                                <div key={i} className="bg-sky-900 text-white p-4 rounded-xl border-r-4 border-[#C5A059]">
-                                    <h6 className="font-bold text-xs mb-1 text-[#C5A059] underline">{dept.name}</h6>
+                                <div key={i} className="bg-sky-900 text-white p-4 rounded-xl border-r-4 border-amber-600">
+                                    <h6 className="font-bold text-xs mb-1 text-amber-600 underline">{dept.name}</h6>
                                     <p className="text-[10px] opacity-80 leading-tight">{dept.text}</p>
                                 </div>
                             ))}
@@ -154,7 +154,7 @@ const AlhekmaInstitutePage = () => {
 
                 {/* 6. Strategic Specialized Units - الوحدات المتخصصة */}
                 <section className="mb-10">
-                    <h4 className="text-xl font-bold text-sky-900 mb-6 border-r-4 border-[#C5A059] pr-3">الوحدات الاستراتيجية المتخصصة</h4>
+                    <h4 className="text-xl font-bold text-sky-900 mb-6 border-r-4 border-amber-600 pr-3">الوحدات الاستراتيجية المتخصصة</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         <div className="p-4 border border-gray-200 rounded-xl">
                             <h5 className="font-bold text-sky-800 mb-1 text-sm underline">1️⃣ وحدة تحليل الأزمات الدولية</h5>
@@ -181,7 +181,7 @@ const AlhekmaInstitutePage = () => {
 
                 {/* 7. Future Institutional Structure - الهيكل المؤسسي الحقيقي */}
                 <section className="mb-10 bg-gray-900 text-white p-8 rounded-[2rem]">
-                    <h4 className="text-xl font-bold text-[#C5A059] mb-6 text-center">المرحلة القادمة: الهيبة والهيكل المؤسسي</h4>
+                    <h4 className="text-xl font-bold text-amber-600 mb-6 text-center">المرحلة القادمة: الهيبة والهيكل المؤسسي</h4>
                     <div className="flex flex-wrap justify-center gap-3">
                         {[
                             "مجلس الأمناء", "المجلس العلمي", "المدير التنفيذي", "المجلس الاستشاري الدولي",
@@ -193,7 +193,7 @@ const AlhekmaInstitutePage = () => {
                             </span>
                         ))}
                     </div>
-                    <p className="mt-8 text-center text-sm font-black italic text-[#C5A059]">"حكمة الرؤية.. قوة التحليل"</p>
+                    <p className="mt-8 text-center text-sm font-black italic text-amber-600">"حكمة الرؤية.. قوة التحليل"</p>
                 </section>
 
                 {/* 8. Activities & Domains - الأنشطة ومجالات البحث */}
@@ -223,7 +223,7 @@ const AlhekmaInstitutePage = () => {
             </main>
 
             {/* Footer Branding */}
-            <footer className="bg-sky-900 text-white py-10 px-8 text-center border-t-8 border-[#C5A059]">
+            <footer className="bg-sky-900 text-white py-10 px-8 text-center border-t-8 border-amber-600">
                 <h5 className="text-xl font-black mb-1">INTERNATIONAL WISDOM INSTITUTE (IWI)</h5>
                 <p className="text-xs opacity-60 italic mb-4 tracking-widest">Strategic & Geopolitical Studies</p>
                 <div className="text-[10px] opacity-40 uppercase">

@@ -18,7 +18,7 @@ const NavBottom = () => {
       {/* الرئيسية */}
       <div 
         onClick={() => router.push('/')}
-        className={`flex flex-col items-center cursor-pointer ${pathname === '/' ? 'text-[#C5A059]' : 'text-gray-400'}`}
+        className={`flex flex-col items-center cursor-pointer ${pathname === '/' ? 'text-amber-600' : 'text-gray-400'}`}
       >
         <Home size={24} strokeWidth={pathname === '/' ? 2.5 : 2} />
         <span className={`text-[10px] mt-1 ${pathname === '/' ? 'font-bold' : ''}`}>الرئيسية</span>
@@ -27,7 +27,7 @@ const NavBottom = () => {
       {/* تواصل معنا - مضافة بجانب الرئيسية */}
       <div 
         onClick={() => router.push('/contact')}
-        className={`flex flex-col items-center cursor-pointer ${pathname === '/contact' ? 'text-[#C5A059]' : 'text-gray-400'}`}
+        className={`flex flex-col items-center cursor-pointer ${pathname === '/contact' ? 'text-amber-600' : 'text-gray-400'}`}
       >
         <Phone size={24} strokeWidth={pathname === '/contact' ? 2.5 : 2} />
         <span className={`text-[10px] mt-1 ${pathname === '/contact' ? 'font-bold' : ''}`}>تواصل معنا</span>
@@ -39,17 +39,17 @@ const NavBottom = () => {
         className="relative -mt-10 flex flex-col items-center cursor-pointer"
       >
         <div className="bg-white p-2 rounded-full shadow-lg border border-gray-50">
-          <div className={`p-3 rounded-full ${pathname === '/cart' ? 'bg-[#C5A059] text-white' : 'bg-gray-100 text-gray-400'}`}>
+          <div className={`p-3 rounded-full ${pathname === '/cart' ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-400'}`}>
             <ShoppingCart size={28} />
           </div>
           {/* عداد المنتجات */}
           {cartItemsCount > 0 && (
-            <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-[#C5A059] text-white text-[10px] font-bold flex items-center justify-center shadow">
+            <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-amber-600 text-white text-[10px] font-bold flex items-center justify-center shadow">
               {cartItemsCount}
             </span>
           )}
         </div>
-        <span className={`text-[10px] mt-1 ${pathname === '/cart' ? 'text-[#C5A059] font-bold' : 'text-gray-400'}`}>
+        <span className={`text-[10px] mt-1 ${pathname === '/cart' ? 'text-amber-600 font-bold' : 'text-gray-400'}`}>
           السلة
         </span>
       </div>
@@ -57,7 +57,7 @@ const NavBottom = () => {
       {/* عن الموقع - بدلاً من العروض */}
       <div 
         onClick={() => router.push('/about')}
-        className={`flex flex-col items-center cursor-pointer ${pathname === '/about' ? 'text-[#C5A059]' : 'text-gray-400'}`}
+        className={`flex flex-col items-center cursor-pointer ${pathname === '/about' ? 'text-amber-600' : 'text-gray-400'}`}
       >
         <Info size={24} strokeWidth={pathname === '/about' ? 2.5 : 2} />
         <span className={`text-[10px] mt-1 ${pathname === '/about' ? 'font-bold' : ''}`}>عن الموقع</span>
@@ -67,7 +67,7 @@ const NavBottom = () => {
       {isAuthenticated ? (
         <div 
           onClick={logout}
-          className="flex flex-col items-center cursor-pointer text-gray-400 hover:text-[#C5A059]"
+          className="flex flex-col items-center cursor-pointer text-gray-400 hover:text-amber-600"
         >
           <User size={24} />
           <span className="text-[10px] mt-1 font-bold">تسجيل خروج</span>
@@ -75,7 +75,7 @@ const NavBottom = () => {
       ) : (
         <div 
           onClick={() => router.push('/register')}
-          className={`flex flex-col items-center cursor-pointer ${pathname === '/register' ? 'text-[#C5A059]' : 'text-gray-400'}`}
+          className={`flex flex-col items-center cursor-pointer ${pathname === '/register' ? 'text-amber-600' : 'text-gray-400'}`}
         >
           <User size={24} />
           <span className={`text-[10px] mt-1 ${pathname === '/register' ? 'font-bold' : ''}`}>إنشاء حساب</span>

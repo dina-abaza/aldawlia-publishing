@@ -13,6 +13,9 @@ export default function AdminProductTypesPage() {
     const [editId, setEditId] = useState(null);
     const [form, setForm] = useState({ name: "", description: "" });
 
+    // جلب التوكن من الـ localStorage (تأكدي من المسمى عندك)
+    const getAuthToken = () => localStorage.getItem("token");
+
     const fetchTypes = async () => {
         setLoading(true);
         try {
@@ -34,18 +37,38 @@ export default function AdminProductTypesPage() {
         if (!form.name.trim()) return toast.warn("اسم النوع مطلوب");
 
         setSubmitting(true);
+        const token = getAuthToken();
+
         try {
+            // التعديل الجوهري: إرسال JSON Object بدلاً من FormData
+            // وإضافة الـ Authorization Header يدوياً لضمان الصلاحية
+            const config = {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const payload = {
+                name: form.name.trim(),
+                description: form.description.trim()
+            };
+
             if (editId) {
-                await api.patch(`/product-types/${editId}`, form);
+                await api.patch(`/product-types/${editId}`, payload, config);
                 toast.success("تم التحديث بنجاح");
             } else {
-                await api.post(`/product-types`, form);
+                await api.post(`/product-types`, payload, config);
                 toast.success("تمت إضافة النوع بنجاح");
             }
+
             await fetchTypes();
             resetForm();
         } catch (err) {
-            toast.error(err.response?.data?.message || "فشل حفظ النوع");
+            // معالجة الخطأ بناءً على رد السيرفر
+            const errorMsg = err.response?.data?.message || "فشل حفظ النوع (تأكد من صلاحياتك)";
+            toast.error(errorMsg);
+            console.error("Error details:", err.response?.data);
         } finally {
             setSubmitting(false);
         }
@@ -58,12 +81,16 @@ export default function AdminProductTypesPage() {
 
     const deleteItem = async (id) => {
         if (!confirm("هل أنت متأكد من الحذف؟")) return;
+        const token = getAuthToken();
+
         try {
-            await api.delete(`/product-types/${id}`);
+            await api.delete(`/product-types/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             toast.info("تم الحذف بنجاح");
             await fetchTypes();
         } catch (err) {
-            toast.error("فشل الحذف");
+            toast.error("فشل الحذف - قد لا تملك صلاحية Admin");
         }
     };
 
@@ -87,26 +114,41 @@ export default function AdminProductTypesPage() {
                 </div>
                 <div>
                     <h2 className="text-2xl font-black text-gray-900 dark:text-white">إدارة أنواع الإصدارات</h2>
-                    <p className="text-gray-500 text-xs font-medium">تصنيف فرعي لطبيعة الملف (مثال: بحث، كتاب مقرر، مقال...)</p>
+                    <p className="text-gray-500 text-xs font-medium">حسب الوثيقة: إضافة وتعديل أنواع المنتجات (Admin Only)</p>
                 </div>
             </div>
 
-            {/* Form */}
+            {/* Form Section */}
             <div className="bg-white rounded-[2.5rem] shadow-xl p-5 md:p-10 border border-gray-100 dark:border-gray-700 dark:bg-gray-800">
                 <form onSubmit={submitForm} className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-1.5 md:col-span-2">
-                        <label className="text-sm font-bold text-gray-700 dark:text-gray-300">اسم النوع</label>
-                        <input className="w-full p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-2xl outline-none focus:ring-2 focus:ring-purple-500 text-sm font-bold" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="بحث استراتيجي..." required />
+                        <label className="text-sm font-bold text-gray-700 dark:text-gray-300">اسم النوع (name)</label>
+                        <input
+                            className="w-full p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-2xl outline-none focus:ring-2 focus:ring-purple-500 text-sm font-bold"
+                            value={form.name}
+                            onChange={(e) => setForm({ ...form, name: e.target.value })}
+                            placeholder="مثال: كتاب، بحث، مقال..."
+                            required
+                        />
                     </div>
 
                     <div className="space-y-1.5 md:col-span-2">
-                        <label className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2"><AlignRight size={16} /> وصف تعريفي</label>
-                        <textarea className="w-full p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-2xl font-medium text-sm outline-none focus:ring-2 focus:ring-purple-500 min-h-[100px]" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="يُستخدم للأبحاث المخصصة القصيرة..." />
+                        <label className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2"><AlignRight size={16} /> وصف تعريفي (description)</label>
+                        <textarea
+                            className="w-full p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-2xl font-medium text-sm outline-none focus:ring-2 focus:ring-purple-500 min-h-[100px]"
+                            value={form.description}
+                            onChange={(e) => setForm({ ...form, description: e.target.value })}
+                            placeholder="اختياري: اشرح ماهية هذا النوع..."
+                        />
                     </div>
 
                     <div className="md:col-span-2 flex gap-4 mt-4">
-                        <button type="submit" disabled={submitting} className="flex-1 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-black text-lg shadow-xl shadow-purple-200 dark:shadow-none transition-all active:scale-[0.98]">
-                            {submitting ? "جاري المعالجة..." : (editId ? "حفظ التعديلات" : "إضافة النوع")}
+                        <button
+                            type="submit"
+                            disabled={submitting}
+                            className="flex-1 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl font-black text-lg shadow-xl shadow-purple-200 dark:shadow-none transition-all active:scale-[0.98] disabled:opacity-50"
+                        >
+                            {submitting ? "جاري الحفظ..." : (editId ? "تحديث النوع" : "إضافة النوع الجديد")}
                         </button>
                         {editId && (
                             <button type="button" onClick={resetForm} className="px-8 bg-red-100 text-red-600 hover:bg-red-200 rounded-2xl font-bold transition-all">
@@ -117,28 +159,26 @@ export default function AdminProductTypesPage() {
                 </form>
             </div>
 
-            {/* List */}
+            {/* List Table */}
             <div className="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700 dark:bg-gray-800">
                 <table className="w-full text-right table-auto">
                     <thead className="bg-gray-50 dark:bg-gray-700/50 text-gray-400 text-xs uppercase tracking-wider border-b border-gray-100 dark:border-gray-700">
                         <tr>
-                            <th className="p-5 font-bold">اسم النوع</th>
+                            <th className="p-5 font-bold">الاسم</th>
                             <th className="p-5 font-bold">الوصف</th>
                             <th className="p-5 font-bold text-center">التحكم</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
                         {loading ? (
-                            <tr><td colSpan="3" className="p-10 text-center font-black text-purple-600 animate-pulse">جاري جلب البيانات...</td></tr>
+                            <tr><td colSpan="3" className="p-10 text-center font-black text-purple-600 animate-pulse">جاري التحميل...</td></tr>
                         ) : items.length === 0 ? (
-                            <tr><td colSpan="3" className="p-10 text-center font-medium text-gray-500">لا توجد أنواع مضافة بعد</td></tr>
+                            <tr><td colSpan="3" className="p-10 text-center font-medium text-gray-500">لا توجد أنواع مضافة حالياً</td></tr>
                         ) : items.map((item) => (
                             <tr key={item._id} className="hover:bg-purple-50/50 dark:hover:bg-purple-900/10 transition-colors">
-                                <td className="p-5 font-bold text-gray-800 dark:text-gray-200 text-sm">
-                                    {item.name}
-                                </td>
+                                <td className="p-5 font-bold text-gray-800 dark:text-gray-200 text-sm">{item.name}</td>
                                 <td className="p-5 text-sm text-gray-500">
-                                    {item.description ? (item.description.length > 50 ? item.description.substring(0, 50) + "..." : item.description) : "لا يوجد"}
+                                    {item.description || <span className="text-gray-300 italic">بدون وصف</span>}
                                 </td>
                                 <td className="p-5">
                                     <div className="flex justify-center gap-3">

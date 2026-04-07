@@ -34,20 +34,20 @@ export default function LoginPage() {
             <input
               type="email"
               placeholder="البريد الإلكتروني"
-              className="w-full rounded-2xl px-5 py-4 text-gray-700 bg-gray-100 placeholder-gray-400 shadow-inner outline-none focus:ring-2 focus:ring-[#C5A059]"
+              className="w-full rounded-2xl px-5 py-4 text-gray-700 bg-gray-100 placeholder-gray-400 shadow-inner outline-none focus:ring-2 focus:ring-amber-600"
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               required
             />
             <input
               type="password"
               placeholder="كلمة المرور"
-              className="w-full rounded-2xl px-5 py-4 text-gray-700 bg-gray-100 placeholder-gray-400 shadow-inner outline-none focus:ring-2 focus:ring-[#C5A059]"
+              className="w-full rounded-2xl px-5 py-4 text-gray-700 bg-gray-100 placeholder-gray-400 shadow-inner outline-none focus:ring-2 focus:ring-amber-600"
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               required
             />
             <button 
               disabled={loading}
-              className={`w-full mt-6 text-white font-bold py-4 rounded-2xl shadow-lg transition-all ${loading ? 'bg-gray-400' : 'bg-[#C5A059] hover:bg-sky-900 active:scale-95'}`}
+              className={`w-full mt-6 text-white font-bold py-4 rounded-2xl shadow-lg transition-all ${loading ? 'bg-gray-400' : 'bg-amber-600 hover:bg-sky-900 active:scale-95'}`}
             >
               {loading ? "جاري الدخول..." : "دخول"}
             </button>
@@ -57,7 +57,7 @@ export default function LoginPage() {
 
         <p className="text-sm text-center mt-6 text-gray-500">
           معندكش حساب؟{" "}
-          <Link href="/register" className="text-sky-900 font-bold hover:text-[#C5A059] hover:underline">
+          <Link href="/register" className="text-sky-900 font-bold hover:text-amber-600 hover:underline">
             إنشاء حساب
           </Link>
         </p>

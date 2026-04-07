@@ -10,7 +10,7 @@ export default function CompactOfficialAboutPage() {
                 style={{
                     backgroundColor: '#0c4a6e',
                     backgroundImage: 'linear-gradient(to left, #0c4a6e, #075985)',
-                    borderColor: '#C5A059'
+                    borderColor: '#d97706'
                 }}
             >
                 <div className="max-w-7xl mx-auto flex flex-col items-center text-center gap-6">
@@ -24,7 +24,7 @@ export default function CompactOfficialAboutPage() {
                     </div>
 
                     <div className="max-w-4xl mt-6 text-base md:text-lg leading-relaxed text-gray-100 flex flex-col gap-2">
-                        <p className="font-bold text-[#C5A059] text-xl mb-2">حيث تتحول الأفكار إلى كتب، والكتب إلى رحلات ملهمة للعقول والقلوب.</p>
+                        <p className="font-bold text-amber-600 text-xl mb-2">حيث تتحول الأفكار إلى كتب، والكتب إلى رحلات ملهمة للعقول والقلوب.</p>
                         <p>نؤلف، ننشر، نوزع – لنصل برسالتك إلى كل قارئ في كل مكان.</p>
                         <p>✨ من الإبداع الأدبي إلى الدراسات العلمية والاستراتيجية، نحن رُواد في صناعة المعرفة.</p>
                         <p>📖 معنا، كتابك ليس مجرد صفحات، بل نافذة تضيء العقول.</p>
@@ -39,13 +39,13 @@ export default function CompactOfficialAboutPage() {
 
                 {/* 2. Who We Are - من نحن */}
                 <section className="mb-14">
-                    <h3 className="text-3xl font-bold text-sky-900 mb-8 border-r-8 border-[#C5A059] pr-4">من نحن (Who We Are)</h3>
+                    <h3 className="text-3xl font-bold text-sky-900 mb-8 border-r-8 border-amber-600 pr-4">من نحن (Who We Are)</h3>
                     <div className="bg-gray-50 p-8 rounded-3xl border border-gray-200 shadow-sm flex flex-col gap-6">
                         <p className="text-lg md:text-xl leading-relaxed text-gray-800">
-                            تأسست <span className="font-bold text-sky-800">الدار الدولية للنشر والتوزيع عام 1987</span> بولاية نيوجيرسي، وتعتبر من أوائل الدور العربية والإسلامية في الولايات المتحدة الأمريكية ولها حوالي ما يقرب من <span className="font-bold text-[#C5A059]">200 كتاب</span> في جميع مجالات النشر سواء الإسلامية أو الأدبية أو السياسية أو مقارنة الأديان وكذلك كتب الأطفال باللغة العربية والإنجليزية والإسبانية.
+                            تأسست <span className="font-bold text-sky-800">الدار الدولية للنشر والتوزيع عام 1987</span> بولاية نيوجيرسي، وتعتبر من أوائل الدور العربية والإسلامية في الولايات المتحدة الأمريكية ولها حوالي ما يقرب من <span className="font-bold text-amber-600">200 كتاب</span> في جميع مجالات النشر سواء الإسلامية أو الأدبية أو السياسية أو مقارنة الأديان وكذلك كتب الأطفال باللغة العربية والإنجليزية والإسبانية.
                         </p>
                         <p className="text-lg md:text-xl leading-relaxed text-gray-800">
-                            ومن أشهر إصداراتها <span className="font-bold text-sky-900 underline decoration-[#C5A059] decoration-2 underline-offset-4">الدليل التجاري الإسلامي</span> الذي يصدر في شرق الولايات المتحدة منذ عام 1990 وحتى 2025.
+                            ومن أشهر إصداراتها <span className="font-bold text-sky-900 underline decoration-amber-600 decoration-2 underline-offset-4">الدليل التجاري الإسلامي</span> الذي يصدر في شرق الولايات المتحدة منذ عام 1990 وحتى 2025.
                         </p>
 
                         <div className="mt-4 pt-6 flex flex-wrap gap-6 text-base font-bold border-t-2 border-gray-200">
@@ -61,8 +61,8 @@ export default function CompactOfficialAboutPage() {
                 <section className="mb-14">
                     <div className="text-center mb-10">
                         <h3 className="text-4xl font-black text-sky-900 mb-3">المؤسسة الأم: الدار الدولية للتوزيع</h3>
-                        <p className="text-lg md:text-xl text-[#C5A059] font-bold tracking-widest">International House for Publishing & Strategic Studies</p>
-                        <div className="w-24 h-1 bg-[#C5A059] mx-auto mt-6 rounded-full"></div>
+                        <p className="text-lg md:text-xl text-amber-600 font-bold tracking-widest">International House for Publishing & Strategic Studies</p>
+                        <div className="w-24 h-1 bg-amber-600 mx-auto mt-6 rounded-full"></div>
                     </div>
 
                     <div className="grid lg:grid-cols-3 gap-8">
@@ -81,10 +81,10 @@ export default function CompactOfficialAboutPage() {
                         </div>
 
                         {/* قطاع الحكمة (المعهد) */}
-                        <div className="bg-sky-900 border text-center border-sky-800 p-8 rounded-3xl shadow-lg hover:shadow-xl transition-shadow flex flex-col justify-center items-center border-b-8 border-b-[#C5A059]">
-                            <div className="bg-white text-sky-900 w-14 h-14 flex items-center justify-center rounded-full text-2xl font-black mb-6 shadow-md border-2 border-[#C5A059]">3</div>
+                        <div className="bg-sky-900 border text-center border-sky-800 p-8 rounded-3xl shadow-lg hover:shadow-xl transition-shadow flex flex-col justify-center items-center border-b-8 border-b-amber-600">
+                            <div className="bg-white text-sky-900 w-14 h-14 flex items-center justify-center rounded-full text-2xl font-black mb-6 shadow-md border-2 border-amber-600">3</div>
                             <h5 className="font-bold text-white text-2xl mb-2 leading-relaxed">معهد الحكمة للدراسات السياسية والاستراتيجية (IWI)</h5>
-                            <p className="font-bold text-[#C5A059] italic mb-4 text-lg">"قلب المؤسسة الفكري"</p>
+                            <p className="font-bold text-amber-600 italic mb-4 text-lg">"قلب المؤسسة الفكري"</p>
                             <p className="text-base text-gray-200 leading-relaxed">الجغرافيا السياسية، النظام الدولي، الصراعات، الأمن الاستراتيجي، اقتصاد سياسي ومستقبل النظام العالمي.</p>
                         </div>
                     </div>
@@ -92,7 +92,7 @@ export default function CompactOfficialAboutPage() {
 
                 {/* 4. Research Units (Additional) - وحدات إضافية */}
                 <section className="mb-14 p-8 bg-sky-50 rounded-[2rem] border border-sky-100 shadow-sm">
-                    <h4 className="text-2xl font-bold text-sky-900 mb-8 border-r-4 border-[#C5A059] pr-4">وحدات استراتيجية إضافية</h4>
+                    <h4 className="text-2xl font-bold text-sky-900 mb-8 border-r-4 border-amber-600 pr-4">وحدات استراتيجية إضافية</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-lg font-bold">
                         {["وحدة الدراسات الجيوسياسية", "وحدة الدراسات المستقبلية", "وحدة تحليل الصراعات", "وحدة الأمن الاستراتيجي"].map((unit, i) => (
                             <div key={i} className="bg-white p-5 rounded-xl flex items-center justify-center text-center shadow-sm border border-gray-100 hover:border-sky-300 transition-colors text-sky-900">
@@ -105,14 +105,14 @@ export default function CompactOfficialAboutPage() {
                 {/* 5. Philosophy & Vision - الرسالة والرؤية والقيم */}
                 <section className="mb-14 grid lg:grid-cols-2 gap-8">
                     <div className="space-y-8">
-                        <div className="p-8 bg-white border border-gray-200 rounded-3xl shadow-sm hover:shadow-md border-r-8 border-r-[#C5A059] h-full">
+                        <div className="p-8 bg-white border border-gray-200 rounded-3xl shadow-sm hover:shadow-md border-r-8 border-r-amber-600 h-full">
                             <h4 className="font-bold text-sky-900 text-2xl mb-4">الرسالة والرؤية</h4>
                             <p className="text-xl leading-relaxed text-gray-700">إنتاج معرفة استراتيجية رصينة لتصبح الدار منصة فكرية دولية رائدة تربط القلوب بالعقول، وتنشر العلم بلا قيود.</p>
                         </div>
                     </div>
                     <div className="space-y-8">
                         <div className="p-8 bg-sky-900 text-white rounded-3xl shadow-lg border-2 border-sky-800 h-full">
-                            <h4 className="font-bold text-[#C5A059] text-2xl mb-4">القيم الفكرية</h4>
+                            <h4 className="font-bold text-amber-600 text-2xl mb-4">القيم الفكرية</h4>
                             <p className="text-xl leading-relaxed mb-4">حكمة استراتيجية | استقلال فكري | عمق تحليلي | معرفة متعددة التخصصات</p>
                             <p className="text-base text-gray-300 italic">نجمع بين الأصالة والحداثة في إيصال صوت الحكمة.</p>
                         </div>
@@ -136,7 +136,7 @@ export default function CompactOfficialAboutPage() {
                                     ))}
                                 </div>
                             </div>
-                            <div className="hidden md:flex flex-shrink-0 bg-sky-900 border-4 border-[#C5A059] text-white rounded-full w-32 h-32 items-center justify-center shadow-lg font-black text-3xl">
+                            <div className="hidden md:flex flex-shrink-0 bg-sky-900 border-4 border-amber-600 text-white rounded-full w-32 h-32 items-center justify-center shadow-lg font-black text-3xl">
                                 IWI
                             </div>
                         </div>
@@ -145,7 +145,7 @@ export default function CompactOfficialAboutPage() {
 
                 {/* 7. Goals - الأهداف */}
                 <section className="mb-10">
-                    <h4 className="text-3xl font-bold text-sky-900 mb-8 border-r-4 border-[#C5A059] pr-4">الأهداف الاستراتيجية المشتركة</h4>
+                    <h4 className="text-3xl font-bold text-sky-900 mb-8 border-r-4 border-amber-600 pr-4">الأهداف الاستراتيجية المشتركة</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-lg">
                         {[
                             "الارتقاء بصناعة النشر عالمياً.",
@@ -169,7 +169,7 @@ export default function CompactOfficialAboutPage() {
             <footer className="bg-gray-900 text-white rounded-t-[3rem] py-16 px-8 text-center mt-12 shadow-2xl relative overflow-hidden">
                 <div className="max-w-5xl mx-auto relative z-10 flex flex-col items-center gap-6">
 
-                    <p className="text-2xl md:text-3xl font-black italic text-[#C5A059] tracking-wider text-center max-w-3xl leading-relaxed">
+                    <p className="text-2xl md:text-3xl font-black italic text-amber-600 tracking-wider text-center max-w-3xl leading-relaxed">
                         "الحكمة في فهم القوة... والبصيرة في استشراف المستقبل"
                     </p>
 

@@ -11,6 +11,7 @@ export const useFavoritesStore = create((set, get) => ({
     set({ loading: true });
     try {
       const res = await api.get("/favorites");
+      console.log("DEBUG: Favorites Data from API ->", res.data.data);
       set({ favorites: res.data.data || res.data || [] });
     } catch (err) {
       console.error("خطأ في جلب المفضلة:", err.response?.data || err.message);
@@ -22,6 +23,7 @@ export const useFavoritesStore = create((set, get) => ({
 
   // إضافة كتاب للمفضلة
   addToFavorites: async (fileId) => {
+    console.log("DEBUG: Adding book to favorites with ID:", fileId);
     try {
       const res = await api.post("/favorites/add", { fileId });
       // Update the local state
@@ -50,9 +52,9 @@ export const useFavoritesStore = create((set, get) => ({
   isFavorite: (fileId) => {
     const { favorites } = get();
     // Assuming favorites objects could have productId or fileId or _id
-    return favorites.some(item => 
-      item.fileId === fileId || 
-      item.productId?._id === fileId || 
+    return favorites.some(item =>
+      item.fileId === fileId ||
+      item.productId?._id === fileId ||
       item._id === fileId
     );
   }

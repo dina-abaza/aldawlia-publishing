@@ -19,13 +19,11 @@ const Navbar = () => {
     if (isAuthenticated) fetchFavorites();
   }, [isAuthenticated, fetchFavorites]);
 
-  // 🔹 تصحيح: لو cart.items هي المصفوفة، نستخدم طولها أو نجمع الكميات
   const cartItemsCount = cart?.items?.length || cart?.length || 0;
 
   const [keyword, setKeyword] = useState("");
   const [suggestions, setSuggestions] = useState([]);
 
-  // 🔹 Autocomplete
   useEffect(() => {
     if (!keyword.trim()) {
       setSuggestions([]);
@@ -57,11 +55,10 @@ const Navbar = () => {
 
         {/* جهة اليمين */}
         <div className="flex items-center gap-2 md:gap-4">
-          {/* حالة المستخدم المسجل */}
           {isAuthenticated && (
             <div className="flex items-center gap-4">
               <div className="hidden lg:flex items-center gap-4 border-l ml-4 pl-4 border-gray-300">
-                <Link href="/about" className="text-gray-700 font-bold hover:text-[#C5A059] flex items-center gap-1 transition-colors">
+                <Link href="/about" className="text-gray-700 font-bold hover:text-amber-600 flex items-center gap-1 transition-colors">
                   <Info size={18} />
                   <span className="text-sm">عن الموقع</span>
                 </Link>
@@ -69,7 +66,7 @@ const Navbar = () => {
                   href="https://wa.me/12017059422?text=مرحبًا%20،%20أود%20التواصل%20معكم"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-700 font-bold hover:text-[#C5A059] flex items-center gap-1 transition-colors"
+                  className="text-gray-700 font-bold hover:text-amber-600 flex items-center gap-1 transition-colors"
                 >
                   <Phone size={18} />
                   <span className="text-sm">تواصل معنا</span>
@@ -79,19 +76,18 @@ const Navbar = () => {
               <div className="flex items-center gap-3">
                 <button
                   onClick={logout}
-                  className="hidden md:block bg-sky-900 text-white px-4 py-2 rounded-xl font-bold hover:bg-[#C5A059] transition-all"
+                  className="hidden md:block bg-sky-900 text-white px-4 py-2 rounded-xl font-bold hover:bg-amber-600 transition-all"
                 >
                   تسجيل خروج
                 </button>
-                <span className="font-bold text-sm md:text-base whitespace-nowrap">مرحبا، {user?.username || user?.name}</span>
+                <span className="font-bold text-sm md:text-base whitespace-nowrap">مرحبا، {user?.name}</span>
               </div>
             </div>
           )}
 
-          {/* حالة الزائر */}
           {!isAuthenticated && (
             <div className="hidden md:flex items-center gap-3">
-              <Link href="/about" className="px-3 py-2 text-gray-700 font-bold hover:text-[#C5A059] flex items-center gap-1 transition-colors">
+              <Link href="/about" className="px-3 py-2 text-gray-700 font-bold hover:text-amber-600 flex items-center gap-1 transition-colors">
                 <Info size={18} />
                 <span>عن الموقع</span>
               </Link>
@@ -99,7 +95,7 @@ const Navbar = () => {
                 href="https://wa.me/12017059422?text=مرحبًا%20،%20أود%20التواصل%20معكم"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-700 font-bold hover:text-[#C5A059] flex items-center gap-1 transition-colors"
+                className="text-gray-700 font-bold hover:text-amber-600 flex items-center gap-1 transition-colors"
               >
                 <Phone size={18} />
                 <span className="text-sm">تواصل معنا</span>
@@ -108,29 +104,28 @@ const Navbar = () => {
               <Link href="/login" className="px-4 py-2 rounded-xl text-gray-700 font-bold hover:bg-gray-200 transition-all">
                 تسجيل دخول
               </Link>
-              <Link href="/register" className="bg-sky-900 text-white px-5 py-2 rounded-xl font-bold shadow-md hover:bg-sky-900 transition-all">
+              <Link href="/register" className="bg-sky-900 text-white px-5 py-2 rounded-xl font-bold shadow-md hover:bg-amber-600 transition-all">
                 إنشاء حساب
               </Link>
             </div>
           )}
 
-          {/* أيقونات السلة والمفضلة */}
           <div className="hidden md:flex gap-4 border-r pr-4 border-gray-300">
             <Link href="/favorites" className="relative flex flex-col items-center group hover:scale-105 transition-all duration-300">
-              <Heart size={22} className="group-hover:text-[#C5A059] transition-colors text-sky-900" />
-              <span className="text-xs font-bold group-hover:text-[#C5A059] transition-colors text-sky-900">المفضلة</span>
+              <Heart size={22} className="group-hover:text-amber-600 transition-colors text-sky-900" />
+              <span className="text-xs font-bold group-hover:text-amber-600 transition-colors text-sky-900">المفضلة</span>
               {favorites?.length > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#C5A059] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+                <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
                   {favorites.length}
                 </span>
               )}
             </Link>
 
             <Link href="/cart" className="relative flex flex-col items-center group hover:scale-105 transition-all duration-300">
-              <ShoppingCart size={22} className="group-hover:text-[#C5A059] transition-colors text-sky-900" />
-              <span className="text-xs font-bold group-hover:text-[#C5A059] transition-colors text-sky-900">السلة</span>
+              <ShoppingCart size={22} className="group-hover:text-amber-600 transition-colors text-sky-900" />
+              <span className="text-xs font-bold group-hover:text-amber-600 transition-colors text-sky-900">السلة</span>
               {cartItemsCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#C5A059] text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+                <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
                   {cartItemsCount}
                 </span>
               )}
@@ -180,13 +175,13 @@ const Navbar = () => {
 
           <Link
             href="/"
-            className="flex-shrink-0 flex items-end justify-center h-full pt-12"
+            className="flex-shrink-0 flex items-end justify-center h-full"
           >
             <Image
-              src="/logo.png"
+              src="/logohome.png"
               alt="Logo"
-              width={100}
-              height={100}
+              width={90}
+              height={90}
               priority
               className="object-contain"
             />

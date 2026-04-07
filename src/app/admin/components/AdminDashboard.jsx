@@ -6,9 +6,9 @@ import { PackageSearch, Users, DollarSign, Activity, LayoutDashboard, History } 
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState({
-        totalRevenueCents: 0,
+        totalRevenue: 0,
         totalUsers: 0,
-        totalBooks: 0,
+        totalFiles: 0,
         recentSales: []
     });
     const [loading, setLoading] = useState(true);
@@ -24,9 +24,9 @@ export default function AdminDashboard() {
             console.log("Raw dashboard data from API:", data.data);
             const d = data.data || {};
             setStats({
-                totalRevenueCents: d.totalRevenueCents || 0,
+                totalRevenueCents: d.totalRevenue || 0, // تغيير d.totalRevenueCents إلى d.totalRevenue
                 totalUsers: d.totalUsers || 0,
-                totalBooks: d.totalBooks || 0,
+                totalBooks: d.totalFiles || 0,      // تغيير d.totalBooks إلى d.totalFiles
                 recentSales: d.recentSales || []
             });
         } catch (err) {

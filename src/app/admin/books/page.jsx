@@ -63,13 +63,16 @@ export default function AdminProductsPage() {
     const submitProduct = async (e) => {
         e.preventDefault();
 
+        console.log("DEBUG: Form State:", form);
+        console.log("DEBUG: Files:", { bookFile, coverFile });
+
         // 1. Validation
         if (!form.title.trim()) return toast.warn("عنوان الكتاب مطلوب");
         if (!form.price) return toast.warn("السعر مطلوب");
         if (!form.category) return toast.warn("تحديد المجال مطلوب");
         if (!form.productType) return toast.warn("تحديد النوع مطلوب");
-        if (!editProductId && (!bookFile || !coverFile)) {
-            return toast.warn("يجب رفع ملف الكتاب وصورة الغلاف عند الإضافة");
+        if (!editProductId && !bookFile) {
+            return toast.warn("يجب رفع ملف الكتاب (PDF/EPUB) عند الإضافة");
         }
 
         setSubmitting(true);
@@ -77,34 +80,56 @@ export default function AdminProductsPage() {
         formData.append("title", form.title);
         // التحويل لسنتات (الـ backend يتوقع Cents لـ stripe)
         formData.append("price", Math.round(parseFloat(form.price) * 100));
-        if (form.discountPrice) {
+
+        if (form.discountPrice && form.discountPrice.toString().trim() !== "") {
             formData.append("discountPrice", Math.round(parseFloat(form.discountPrice) * 100));
         }
-        formData.append("isOnSale", form.isOnSale);
+
+        // إرسال القيم كما يتوقعها الباك اند (true/false كـ strings)
+        formData.append("isOnSale", form.isOnSale ? "true" : "false");
+
         formData.append("category", form.category);
         formData.append("productType", form.productType);
         formData.append("description", form.description || "");
 
-        if (bookFile) formData.append("file", bookFile);
-        if (coverFile) formData.append("cover", coverFile);
+        console.log("DEBUG: Sending FormData to API. ID:", editProductId || "NEW");
+
+        // 🔹 تصحيح: في حالة التعديل، لا نرسل الملفات إلا إذا تم اختيار ملفات جديدة
+        if (bookFile) {
+            formData.append("file", bookFile);
+        }
+        if (coverFile) {
+            formData.append("cover", coverFile);
+        }
 
         try {
             if (editProductId) {
                 // PATCH لتحديث البيانات الجزئية للملف
-                await api.patch(`/files/${editProductId}`, formData, {
+                const res = await api.patch(`/files/${editProductId}`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
+                console.log("DEBUG: PATCH Response:", res.data);
+
+                // 🔹 تحديث المنتج يدوياً في القائمة لضمان التحديث الفوري للواجهة
+                const updatedProduct = res.data.data;
+                setProducts(prev => prev.map(p => (p.id || p._id) === editProductId ? { ...p, ...updatedProduct } : p));
+
                 toast.success("تم التحديث بنجاح");
             } else {
                 // POST للإضافة
-                await api.post(`/files/upload`, formData, {
+                const res = await api.post(`/files/upload`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 });
+                console.log("DEBUG: POST Response:", res.data);
                 toast.success("تمت إضافة الكتاب بنجاح");
+                await fetchProducts(1); // 🔹 إعادة جلب الصفحة الأولى لظهور الكتاب الجديد
             }
-            await fetchProducts(page);
             resetForm();
         } catch (err) {
+            console.error("DEBUG: Submit Error Details:", err.response?.data);
+            if (err.response?.data?.errors) {
+                console.table(err.response.data.errors); // عرض الأخطاء بشكل جدول واضح
+            }
             toast.error(err.response?.data?.message || "فشل رفع الكتاب، تأكد من البيانات والملفات");
         } finally {
             setSubmitting(false);
@@ -124,16 +149,28 @@ export default function AdminProductsPage() {
     const deleteProduct = async (id) => {
         if (!confirm("هل أنت متأكد من الحذف؟ سيتم حذف الكتاب وملف الـ PDF نهائياً")) return;
         try {
+            console.log("DEBUG: Attempting to delete product with ID:", id);
             await api.delete(`/files/${id}`);
-            setProducts(prev => prev.filter(p => p._id !== id));
-            toast.info("تم الحذف بنجاح");
+            // 🔹 تحديث القائمة بحذف أي كتاب يطابق هذا المعرف سواء كان id أو _id
+            setProducts(prev => prev.filter(item => (item._id !== id && item.id !== id)));
+            toast.success("تم الحذف بنجاح");
         } catch (err) {
-            toast.error("فشل الحذف");
+            console.error("Delete Error:", err);
+            const errorMessage = err.response?.data?.message || "فشل الحذف - قد لا تملك صلاحيات كافية";
+            toast.error(errorMessage);
+
+            if (err.response?.status === 403) {
+                console.warn("المسار /files/:id مرفوض (403). تأكد من رتبة الحساب admin.");
+            }
         }
     };
 
     const editProduct = (product) => {
-        setEditProductId(product._id);
+        // 🔹 تصحيح: التحقق من المعرف سواء كان _id أو id كما يرتجع من السيرفر
+        const productId = product.id || product._id;
+        console.log("DEBUG: Setting editProductId to:", productId);
+        setEditProductId(productId);
+
         setForm({
             title: product.title || "",
             price: product.price ? (product.price / 100).toString() : "",
@@ -144,6 +181,12 @@ export default function AdminProductsPage() {
             description: product.description || "",
         });
         window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    const getImageUrl = (path) => {
+        if (!path) return "";
+        if (path.startsWith('http')) return path;
+        return `https://e-library-api-production.up.railway.app${path}`;
     };
 
     return (
@@ -222,6 +265,7 @@ export default function AdminProductsPage() {
                             <label className="text-sm font-bold text-gray-700 flex flex-col items-center gap-2 text-center">
                                 <FileText size={30} className="text-gray-400 group-hover:text-blue-500" />
                                 <span>ملف الكتاب (PDF/EPUB)</span>
+                                {editProductId && !bookFile && <span className="text-green-600 text-[10px] font-bold">(يوجد ملف حالياً - ارفعه فقط إذا أردت التغيير)</span>}
                                 <span className="text-xs font-normal text-gray-400">يفضل ألا يقل حجمه عن 1MB لضمان الدقة</span>
                             </label>
                             <input type="file" onChange={(e) => setBookFile(e.target.files[0])} accept=".pdf,.epub" className="w-full text-sm font-medium mt-2 file:bg-blue-50 file:border-0 file:rounded-xl file:px-4 file:py-2 file:text-blue-600 hover:file:bg-blue-100" />
@@ -231,6 +275,7 @@ export default function AdminProductsPage() {
                             <label className="text-sm font-bold text-gray-700 flex flex-col items-center gap-2 text-center">
                                 <ImageIcon size={30} className="text-gray-400 group-hover:text-blue-500" />
                                 <span>صورة الغلاف (Cover)</span>
+                                {editProductId && !coverFile && <span className="text-green-600 text-[10px] font-bold">(يوجد غلاف حالياً - ارفع فقط للتغيير)</span>}
                                 <span className="text-xs font-normal text-gray-400">JPG, PNG (موصى به: جودة عالية للعرض)</span>
                             </label>
                             <input type="file" onChange={(e) => setCoverFile(e.target.files[0])} accept="image/*" className="w-full text-sm font-medium mt-2 file:bg-blue-50 file:border-0 file:rounded-xl file:px-4 file:py-2 file:text-blue-600 hover:file:bg-blue-100" />
@@ -261,7 +306,6 @@ export default function AdminProductsPage() {
                                 <th className="p-5 font-bold">عنوان الكتاب</th>
                                 <th className="p-5 font-bold">المجال / النوع</th>
                                 <th className="p-5 font-bold">السعر</th>
-                                <th className="p-5 font-bold text-center">التوفر</th>
                                 <th className="p-5 text-center font-bold">التحكم</th>
                             </tr>
                         </thead>
@@ -269,10 +313,15 @@ export default function AdminProductsPage() {
                             {loading ? (
                                 <tr><td colSpan="6" className="p-20 text-center font-black text-blue-600 animate-pulse">جاري جلب البيانات...</td></tr>
                             ) : products.map((p) => (
-                                <tr key={p._id} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group">
+                                <tr key={p.id || p._id} className="hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors group">
                                     <td className="p-5">
                                         <div className="relative w-12 h-16 overflow-hidden border border-gray-200 dark:border-gray-600 shadow-sm rounded-md">
-                                            <img src={p.cover || p.coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="" />
+                                            <img
+                                                src={getImageUrl(p.cover || p.coverUrl)}
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                alt=""
+                                                onError={(e) => { e.target.src = "https://placehold.co/400x600?text=No+Cover"; }}
+                                            />
                                         </div>
                                     </td>
                                     <td className="p-5">
@@ -298,13 +347,10 @@ export default function AdminProductsPage() {
                                             <span>{(p.price / 100).toLocaleString()} <span className="text-[10px]">ج.م</span></span>
                                         )}
                                     </td>
-                                    <td className="p-5 text-center">
-                                        {p.fileUrl ? <a href={p.fileUrl} target="_blank" rel="noopener noreferrer" className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold">ملف جاهز</a> : <span className="text-xs bg-red-100 text-red-700 px-3 py-1 rounded-full font-bold">مفقود</span>}
-                                    </td>
                                     <td className="p-5">
                                         <div className="flex justify-center gap-3 flex-wrap">
                                             <button onClick={() => editProduct(p)} className="p-2.5 bg-white dark:bg-gray-700 text-yellow-500 rounded-xl shadow-sm border border-gray-100 dark:border-gray-600 hover:bg-yellow-500 hover:text-white transition-all transform hover:-translate-y-1"><Edit size={16} /></button>
-                                            <button onClick={() => deleteProduct(p._id)} className="p-2.5 bg-white dark:bg-gray-700 text-red-500 rounded-xl shadow-sm border border-gray-100 dark:border-gray-600 hover:bg-red-500 hover:text-white transition-all transform hover:-translate-y-1"><Trash2 size={16} /></button>
+                                            <button onClick={() => deleteProduct(p.id || p._id)} className="p-2.5 bg-white dark:bg-gray-800 text-red-500 rounded-xl shadow-sm border border-gray-100 dark:border-gray-600 hover:bg-red-500 hover:text-white transition-all transform hover:-translate-y-1"><Trash2 size={16} /></button>
                                         </div>
                                     </td>
                                 </tr>

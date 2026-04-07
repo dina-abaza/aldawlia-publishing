@@ -57,7 +57,7 @@ export default function BannerCarousel() {
                 animate={{ opacity: i === index ? 1 : 0, y: i === index ? 0 : 20 }}
                 transition={{ duration: 1, ease: "easeInOut" }}
               >
-                <span className="inline-block text-xs md:text-sm uppercase tracking-widest text-white mb-4 bg-amber-500/20 backdrop-blur-sm px-4 py-1 rounded-full">{slide.brand}</span>
+                <span className="inline-block text-xs md:text-sm uppercase tracking-widest text-white mb-4 bg-amber-600/2 backdrop-blur-sm px-4 py-1 rounded-full">{slide.brand}</span>
                 <h2 className="text-[clamp(2rem,5vw,4rem)] font-bold text-white mb-4 leading-tight">{slide.title}</h2>
                 <p className="text-[clamp(1rem,2vw,1.25rem)] text-gray-100 max-w-2xl">{slide.subtitle}</p>
               </motion.div>

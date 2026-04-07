@@ -1,7 +1,7 @@
-
 import CategoryGrid from "./components/categoriesgrid";
 import BannerCarousel from "./components/BannerCarousel";
 import OffersCarouselLoader from "./components/OffersCarouselLoader";
+import QuickAccessLinks from "./components/QuickAccessLinks";
 
 export default function Home() {
   return (
@@ -13,6 +13,9 @@ export default function Home() {
         <CategoryGrid />
       </div>
       <OffersCarouselLoader />
+      
+      {/* 🔹 روابط الوصول السريع للأكثر طلباً وتفضيلاً */}
+      <QuickAccessLinks />
     </main>
   );
 }

@@ -13,7 +13,7 @@ export const useAuthStore = create((set) => ({
   login: async (email, password) => {
     try {
       const res = await api.post("/auth/login", { email, password });
-      const { token, user } = res.data;
+      const { token, user } = res.data.data;
       console.log("User object:", user);
       localStorage.setItem('jwtToken', token);
       set({ user, isAuthenticated: true, loading: false });

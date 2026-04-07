@@ -15,6 +15,7 @@ export default function AdminOrdersPage() {
         setLoading(true);
         try {
             const res = await api.get('/payments?status=succeeded');
+            // تأكدنا من الـ Console أن البيانات موجودة داخل res.data.data
             setOrders(res.data.data || []);
         } catch (err) {
             toast.error("فشل جلب أحدث الطلبات والمدفوعات");
@@ -27,10 +28,12 @@ export default function AdminOrdersPage() {
         fetchOrders();
     }, []);
 
-    const filteredOrders = orders.filter(o => 
-        o.user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        o.file?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        o.stripePaymentIntentId?.toLowerCase().includes(searchTerm.toLowerCase())
+    // تحديث الفلتر ليتناسب مع أسماء الحقول الجديدة (book و transactionId)
+    const filteredOrders = orders.filter(o =>
+        o.user?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        o.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        o.book?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        o.transactionId?.toString().includes(searchTerm)
     );
 
     return (
@@ -50,9 +53,9 @@ export default function AdminOrdersPage() {
                 </div>
 
                 <div className="relative w-full md:w-72">
-                    <input 
-                        type="text" 
-                        placeholder="ابحث بالبريد، اسم الكتاب أو رقم العملية..." 
+                    <input
+                        type="text"
+                        placeholder="ابحث بالبريد، اسم الكتاب أو رقم العملية..."
                         className="w-full p-3 pr-10 bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-orange-500 text-sm font-medium dark:bg-gray-700/50 dark:border-gray-600 dark:text-white"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -72,7 +75,7 @@ export default function AdminOrdersPage() {
                         <Activity className="text-orange-500 w-8 h-8" />
                     </div>
                 </div>
-                
+
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl border border-gray-100 dark:border-gray-700 flex items-center justify-between shadow-sm">
                     <div>
                         <p className="text-gray-500 font-bold mb-1">إجمالي المبالغ المنفذة</p>
@@ -94,7 +97,7 @@ export default function AdminOrdersPage() {
                             <tr>
                                 <th className="p-5 font-bold">العميل</th>
                                 <th className="p-5 font-bold">الكتاب المُشترى</th>
-                                <th className="p-5 font-bold">رقم عملية Payment (Stripe)</th>
+                                <th className="p-5 font-bold">رقم العملية (ID)</th>
                                 <th className="p-5 font-bold text-center">المبلغ</th>
                                 <th className="p-5 font-bold text-center">التاريخ</th>
                                 <th className="p-5 font-bold text-center">الحالة</th>
@@ -112,23 +115,26 @@ export default function AdminOrdersPage() {
                                         <p className="text-xs text-gray-500 mt-1">{order.user?.email || "غير متوفر"}</p>
                                     </td>
                                     <td className="p-5">
-                                        <span className="font-bold text-gray-800 dark:text-gray-200 text-sm line-clamp-1 max-w-[200px]" title={order.file?.title}>
-                                            {order.file?.title || "كتاب محذوف"}
+                                        <span className="font-bold text-gray-800 dark:text-gray-200 text-sm line-clamp-1 max-w-[200px]" title={order.book?.title}>
+                                            {/* التغيير هنا: من file إلى book */}
+                                            {order.book?.title || "كتاب غير محدد أو محذوف"}
                                         </span>
                                     </td>
                                     <td className="p-5 text-xs text-gray-400 font-mono tracking-wider">
-                                        {order.stripePaymentIntentId || "—"}
+                                        {/* التغيير هنا: استخدام transactionId بدلاً من stripePaymentIntentId */}
+                                        {order.transactionId || "—"}
+                                        <span className="block text-[10px] text-gray-400 mt-1 opacity-60 uppercase">المزود: {order.provider}</span>
                                     </td>
                                     <td className="p-5 text-center font-black text-orange-600">
-                                        {(order.amount / 100).toLocaleString()} ج.م
+                                        {(order.amount / 100).toLocaleString()} {order.currency === 'egp' ? 'ج.م' : order.currency}
                                     </td>
-                                    <td className="p-5 text-center text-sm text-gray-500 font-semibold dir-ltr">
+                                    <td className="p-5 text-center text-sm text-gray-500 font-semibold">
                                         {new Date(order.createdAt).toLocaleString('en-GB', { hour12: false })}
                                     </td>
                                     <td className="p-5 text-center">
                                         <span className="bg-green-100 text-green-700 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 mx-auto max-w-max">
                                             <CheckCircle size={14} />
-                                            مكتمل
+                                            {order.status === 'succeeded' ? 'مكتمل' : order.status}
                                         </span>
                                     </td>
                                 </tr>

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import api from "@/app/api"; 
+import api from "@/app/api";
 import { ShoppingCart, Plus, Minus, ArrowRight, Heart } from "lucide-react";
 import { toast } from "react-toastify";
 import Activity from "@/app/loading";
@@ -83,6 +83,7 @@ const CategoryProducts = () => {
       toast.info("سجّل الدخول لإضافة المفضلة");
       return router.push("/login");
     }
+
     if (isFavorite(bookId)) {
       await removeFromFavorites(bookId);
     } else {
@@ -94,26 +95,34 @@ const CategoryProducts = () => {
 
   return (
     <div className="bg-[#f8f8f8] min-h-screen pb-24" dir="rtl">
-      
+
       {/* عنوان القسم */}
-      <div className="bg-white/90 backdrop-blur-md sticky top-0 p-4 shadow-sm border-b border-gray-100 z-10">
-        <div className="max-w-7xl mx-auto flex items-center justify-center relative">
-          <button 
-            onClick={() => router.back()} 
-            className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-sky-900 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-md hover:bg-[#C5A059] transition-colors"
-            aria-label="رجوع"
-          >
-            <ArrowRight size={20} />
-          </button>
-          <h1 className="text-sky-900 font-extrabold text-xl md:text-2xl">{categoryName || "المنتجات"}</h1>
-        </div>
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+
+        <button
+          type="button"
+          onClick={() => {
+            console.log("clicked");
+            router.back();
+          }}
+          className="bg-gray-50 text-sky-900 w-10 h-10 rounded-xl flex items-center justify-center hover:bg-sky-50 transition-all shadow-sm active:scale-95 cursor-pointer z-[9999]"
+
+        >
+          <ArrowRight size={20} />
+        </button>
+
+        <h1 className="text-sky-900 font-extrabold text-xl md:text-2xl flex-1 text-center">
+          {categoryName || "المنتجات"}
+        </h1>
+
+        <div className="w-10" /> {/* spacer */}
       </div>
 
       <div className="p-4 flex flex-wrap justify-center gap-4 max-w-7xl mx-auto">
         {products.length > 0 ? (
           products.map((product) => (
             <div
-              key={product._id}
+              key={product.id} // ✅ تم التعديل من _id إلى id
               className="bg-white rounded-3xl shadow-sm flex flex-col items-center relative border border-gray-100 w-[calc(50%-8px)] md:w-[220px]"
             >
               {/* خصم */}
@@ -122,35 +131,40 @@ const CategoryProducts = () => {
                   {product.discountPercent} %
                 </div>
               )}
-              
+
               {/* المفضلة */}
-              <button 
-                onClick={(e) => toggleFavorite(e, product._id)}
-                className="absolute top-3 right-3 bg-white/90 p-1.5 rounded-full z-10 text-sky-900 hover:text-[#C5A059] hover:bg-sky-50 transition-colors shadow-sm"
+              <button
+                onClick={(e) => toggleFavorite(e, product.id)} // ✅ تم التعديل من _id إلى id
+                className="absolute top-3 right-3 bg-white/90 p-1.5 rounded-full z-10 text-sky-900 hover:text-amber-600 hover:bg-sky-50 transition-colors shadow-sm"
                 title="المفضلة"
               >
-                <Heart size={16} fill={isFavorite(product._id) ? "currentColor" : "none"} className={isFavorite(product._id) ? "text-[#C5A059]" : ""} />
+                <Heart size={16} fill={isFavorite(product.id) ? "currentColor" : "none"} className={isFavorite(product.id) ? "text-amber-600" : ""} />
               </button>
 
               {/* الصورة */}
-              <div 
+              <div
                 className="w-full h-44 flex items-center justify-center mb-3 cursor-pointer overflow-hidden rounded-2xl"
-                onClick={() => router.push(`/book/${product._id}`)}
-              > 
-                <img 
-                  src={product.cover || product.image || "/placeholder.jpg"} 
-                  alt={product.title || product.name} 
-                  className="object-cover w-full h-full" 
+                onClick={() => router.push(`/book/${product.id}`)} // ✅ تم التعديل من _id إلى id
+              >
+                <img
+                  src={product.coverUrl || "/placeholder.jpg"} // ✅ تم التبسيط لاستخدام coverUrl المباشر من الباك إند
+                  alt={product.title || product.name}
+                  className="object-cover w-full h-full"
                 />
               </div>
 
-              {/* الاسم فقط */}
-              <h3 
-                className="font-bold text-[13px] text-center mb-4 line-clamp-2 h-8 px-2 cursor-pointer hover:text-[#C5A059] transition-colors"
-                onClick={() => router.push(`/book/${product._id}`)}
+              {/* الاسم وتفاصيل إضافية */}
+              <div
+                className="flex flex-col items-center cursor-pointer pb-4"
+                onClick={() => router.push(`/book/${product.id}`)}
               >
-                {product.title || product.name}
-              </h3>
+                <h3 className="font-bold text-[13px] text-center line-clamp-2 h-8 px-2 hover:text-amber-600 transition-colors">
+                  {product.title || product.name}
+                </h3>
+                <span className="text-[10px] text-amber-600 font-bold mt-2 flex items-center gap-1 hover:underline">
+                  استكشف التفاصيل والمزيد...
+                </span>
+              </div>
             </div>
           ))
         ) : (
@@ -167,9 +181,8 @@ const CategoryProducts = () => {
             <button
               key={i}
               onClick={() => setPage(i + 1)}
-              className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                page === i + 1 ? "bg-sky-900" : "bg-gray-300"
-              }`}
+              className={`w-3 h-3 rounded-full transition-colors duration-300 ${page === i + 1 ? "bg-sky-900" : "bg-gray-300"
+                }`}
               aria-label={`اذهب إلى الصفحة ${i + 1}`}
             />
           ))}

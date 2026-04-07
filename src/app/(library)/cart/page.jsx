@@ -70,7 +70,7 @@ const handleCheckout = async () => {
     <div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center">
       <ShoppingBasket size={80} className="text-gray-200 mb-4" />
       <h2 className="text-xl font-bold text-gray-600">سجل دخولك لمتابعة التسوق</h2>
-      <Link href="/login" className="bg-[#C5A059] text-white px-10 py-3 rounded-3xl font-bold shadow-lg mt-4 hover:bg-sky-900 transition-colors">تسجيل الدخول</Link>
+      <Link href="/login" className="bg-amber-600 text-white px-10 py-3 rounded-3xl font-bold shadow-lg mt-4 hover:bg-sky-900 transition-colors">تسجيل الدخول</Link>
     </div>
   );
 
@@ -79,7 +79,19 @@ const handleCheckout = async () => {
       {/* Header */}
       <div className="bg-white/90 backdrop-blur-md sticky top-0 z-40 p-4 shadow-sm border-b border-gray-100">
         <div className="max-w-7xl mx-auto flex items-center justify-center relative">
-          <button onClick={() => router.back()} className="text-sky-900 absolute right-0 p-2 hover:text-[#C5A059] transition-colors"><ArrowRight size={28} /></button>
+          <button 
+            type="button"
+            onClick={() => {
+              if (window.history.length > 1) {
+                router.back();
+              } else {
+                router.push("/");
+              }
+            }} 
+            className="text-sky-900 absolute right-0 p-4 hover:text-amber-600 transition-all active:scale-95 z-50 cursor-pointer"
+          >
+            <ArrowRight size={28} />
+          </button>
           <h1 className="text-sky-900 font-extrabold text-xl">سلة المشتريات</h1>
         </div>
       </div>
@@ -89,7 +101,7 @@ const handleCheckout = async () => {
           <div className="text-center py-20 bg-white rounded-3xl shadow-sm border border-gray-100 px-6">
             <ShoppingBasket size={40} className="text-gray-200 mx-auto mb-4" />
             <p className="text-gray-500 font-bold">سلتك فارغة حالياً</p>
-            <Link href="/" className="bg-[#C5A059] text-white px-8 py-3 rounded-2xl font-bold mt-6 inline-block hover:bg-sky-900 transition-colors">تصفح الأقسام</Link>
+            <Link href="/" className="bg-amber-600 text-white px-8 py-3 rounded-2xl font-bold mt-6 inline-block hover:bg-sky-900 transition-colors">تصفح الأقسام</Link>
           </div>
         ) : (
           <div className="flex flex-col gap-4">
@@ -100,7 +112,7 @@ const handleCheckout = async () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-bold text-gray-800 text-sm">{item.productId?.name || "اسم غير متوفر"}</h3>
-                  <p className="text-[#C5A059] font-black text-sm">{((item.priceAtAdd || item.productId?.price) / 100)?.toLocaleString() || 0} د.ع</p>
+                  <p className="text-amber-600 font-black text-sm">{((item.priceAtAdd || item.productId?.price) / 100)?.toLocaleString() || 0} د.ع</p>
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center gap-2 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
                       <span className="font-bold text-gray-700">الكمية:</span>
@@ -115,7 +127,7 @@ const handleCheckout = async () => {
             <div className="mt-4 bg-white rounded-3xl p-6 shadow-xl border border-sky-50">
               <div className="flex justify-between items-center mb-6 pt-3">
                 <span className="text-gray-800 font-extrabold text-lg">المبلغ الإجمالي:</span>
-                <span className="text-2xl font-black text-[#C5A059]">{totalPrice?.toLocaleString()} د.ع</span>
+                <span className="text-2xl font-black text-amber-600">{totalPrice?.toLocaleString()} د.ع</span>
               </div>
 
               <div className="mb-6 border-t border-gray-100 pt-4">
@@ -139,7 +151,7 @@ const handleCheckout = async () => {
                       placeholder="أدخل رقم هاتفك" 
                       value={phone} 
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#C5A059] outline-none"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-amber-600 outline-none"
                     />
                   </div>
                 )}
