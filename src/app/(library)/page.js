@@ -1,8 +1,8 @@
 import CategoryGrid from "./components/categoriesgrid";
 import BannerCarousel from "./components/BannerCarousel";
-import OffersCarouselLoader from "./components/OffersCarouselLoader";
 import QuickAccessLinks from "./components/QuickAccessLinks";
-
+import HikmaResume from "./components/hikma resume";
+import IslamicResume from "./components/islamic resume";
 export default function Home() {
   return (
     <main className="min-h-screen bg-gray-50">
@@ -12,8 +12,8 @@ export default function Home() {
       <div>
         <CategoryGrid />
       </div>
-      <OffersCarouselLoader />
-      
+      <HikmaResume />
+      <IslamicResume />
       {/* 🔹 روابط الوصول السريع للأكثر طلباً وتفضيلاً */}
       <QuickAccessLinks />
     </main>

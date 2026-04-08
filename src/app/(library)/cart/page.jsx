@@ -2,173 +2,169 @@
 import React, { useEffect, useState } from "react";
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
 import { useCartStore } from "@/app/(library)/store/useCartStore";
-import { Trash2, Plus, Minus, ShoppingBasket, ArrowRight, CreditCard } from "lucide-react";
+import { Trash2, ShoppingBasket, ArrowRight, CreditCard, Lock, Smartphone, CheckCircle, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { toast } from "react-toastify";
 import api from "@/app/api";
 
+// إضافات Stripe زي التفاصيل
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import CheckoutForm from "@/app/(library)/components/CheckoutForm";
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+
 const CartPage = () => {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
-  const { cart, loading, fetchCart, removeFromCart, emptyCart } = useCartStore();
-  
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [provider, setProvider] = useState("stripe");
-  const [phone, setPhone] = useState("");
+  const { isAuthenticated } = useAuthStore();
+  // أضفنا loading هنا من الستور
+  const { cart, fetchCart, removeFromCart, loading } = useCartStore();
+
+  const [paymentModal, setPaymentModal] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [paymentProvider, setPaymentProvider] = useState("stripe");
+  const [processing, setProcessing] = useState(false);
+  const [clientSecret, setClientSecret] = useState("");
 
   useEffect(() => {
     if (isAuthenticated) fetchCart();
   }, [isAuthenticated, fetchCart]);
 
-  // حساب المجموع الكلي
-  const totalPrice = cart?.totalPrice ? cart.totalPrice / 100 : (cart?.items || []).reduce(
-    (acc, item) => acc + ((item.priceAtAdd || item.productId?.price || 0) * (item.qty || 1)),
-    0
-  ) / 100;
+  const totalPrice = cart?.total || 0;
 
-const handleCheckout = async () => {
-  if (!cart?.items || cart.items.length === 0) {
-    return toast.error("سلتك فارغة ولا يمكن إتمام الشراء");
-  }
-
-  if (provider === "paymob" && !phone) {
-    return toast.error("يرجى إدخال رقم الهاتف لإتمام الدفع عبر Paymob");
-  }
-
-  setCheckoutLoading(true);
-  try {
-    // نأخذ أول عنصر في السلة كمثال، أو يمكن تعديل المنطق ليشمل كل العناصر
-    const firstItem = cart.items[0];
-    const response = await api.post('/payments/create-intent', {
-      bookId: firstItem.productId?._id || firstItem.fileId,
-      quantity: firstItem.qty || 1,
-      provider: provider,
-      ...(provider === "paymob" && { phone: phone })
-    });
-    
-    const paymentData = response.data.data;
-    
-    if (paymentData.provider === "paymob") {
-      toast.info("جاري توجيهك لصفحة الدفع...");
-      window.location.assign(paymentData.paymentLink);
-    } else {
-      const clientSecret = paymentData.clientSecret;
-      toast.info("تم البدء، يرجى استكمال عملية الدفع...");
-      console.log("Stripe Client Secret:", clientSecret);
-      // ملاحظة: يجب إضافة Stripe Elements هنا لاحقاً
+  const handleStartPayment = async () => {
+    if (!cart?.items || cart.items.length === 0) {
+      return toast.error("سلتك فارغة");
     }
-  } catch (error) {
-    console.error("خطأ في بدء الدفع:", error.response?.data || error.message);
-    toast.error(error.response?.data?.message || "فشل بدء عملية الدفع. حاول لاحقاً");
-  } finally {
-    setCheckoutLoading(false);
-  }
-};
+
+    if (paymentProvider === 'paymob' && !phoneNumber) {
+      return toast.error("يرجى إدخال رقم الهاتف للمحفظة");
+    }
+
+    const paymentData = {
+      bookId: cart.items[0].file?._id, 
+      provider: paymentProvider,
+      currency: 'EGP',
+    };
+
+    if (paymentProvider === 'paymob') paymentData.phone = phoneNumber;
+
+    try {
+      setProcessing(true);
+      const { data } = await api.post('/payments/create-intent', paymentData);
+
+      if (paymentProvider === 'paymob' && data.data.paymentLink) {
+        window.location.assign(data.data.paymentLink);
+      } else if (paymentProvider === 'stripe' && data.data.clientSecret) {
+        setClientSecret(data.data.clientSecret);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "فشل في بدء عملية الدفع");
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   if (!isAuthenticated) return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center">
       <ShoppingBasket size={80} className="text-gray-200 mb-4" />
       <h2 className="text-xl font-bold text-gray-600">سجل دخولك لمتابعة التسوق</h2>
-      <Link href="/login" className="bg-amber-600 text-white px-10 py-3 rounded-3xl font-bold shadow-lg mt-4 hover:bg-sky-900 transition-colors">تسجيل الدخول</Link>
+      <button onClick={() => router.push("/login")} className="bg-amber-600 text-white px-10 py-3 rounded-3xl font-bold mt-4">تسجيل الدخول</button>
     </div>
   );
 
   return (
     <div className="bg-[#f8f8f8] min-h-screen pb-32 relative" dir="rtl">
-      {/* Header */}
       <div className="bg-white/90 backdrop-blur-md sticky top-0 z-40 p-4 shadow-sm border-b border-gray-100">
         <div className="max-w-7xl mx-auto flex items-center justify-center relative">
-          <button 
-            type="button"
-            onClick={() => {
-              if (window.history.length > 1) {
-                router.back();
-              } else {
-                router.push("/");
-              }
-            }} 
-            className="text-sky-900 absolute right-0 p-4 hover:text-amber-600 transition-all active:scale-95 z-50 cursor-pointer"
-          >
-            <ArrowRight size={28} />
-          </button>
+          <button onClick={() => router.back()} className="text-sky-900 absolute right-0 p-4"><ArrowRight size={28} /></button>
           <h1 className="text-sky-900 font-extrabold text-xl">سلة المشتريات</h1>
         </div>
       </div>
 
       <div className="max-w-3xl mx-auto p-4">
-        {!cart?.items || cart.items.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-3xl shadow-sm border border-gray-100 px-6">
-            <ShoppingBasket size={40} className="text-gray-200 mx-auto mb-4" />
-            <p className="text-gray-500 font-bold">سلتك فارغة حالياً</p>
-            <Link href="/" className="bg-amber-600 text-white px-8 py-3 rounded-2xl font-bold mt-6 inline-block hover:bg-sky-900 transition-colors">تصفح الأقسام</Link>
+        {/* التعديل هنا: لو بيحمل يعرض لودينج، لو خلص والأيتمز صفر يعرض سلة فارغة */}
+        {loading ? (
+          <div className="text-center py-20">
+            <p className="text-sky-900 font-bold animate-pulse">جاري تحميل سلتك...</p>
+          </div>
+        ) : !cart?.items || cart.items.length === 0 ? (
+          <div className="text-center py-20 bg-white rounded-[2rem] shadow-sm">
+             <ShoppingBasket size={40} className="text-gray-200 mx-auto mb-4" />
+             <p className="text-gray-500 font-bold">سلتك فارغة</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-4">
-            {cart.items.map((item, idx) => (
-              <div key={item._id || idx} className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 flex items-center gap-4">
-                <div className="w-20 h-20 bg-gray-50 rounded-2xl p-2 flex items-center justify-center">
-                  <img src={item.productId?.image || "/placeholder.png"} className="max-h-full object-contain" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-800 text-sm">{item.productId?.name || "اسم غير متوفر"}</h3>
-                  <p className="text-amber-600 font-black text-sm">{((item.priceAtAdd || item.productId?.price) / 100)?.toLocaleString() || 0} د.ع</p>
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center gap-2 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-                      <span className="font-bold text-gray-700">الكمية:</span>
-                      <span className="font-black">{item.qty || 1}</span>
-                    </div>
-                    <button onClick={() => removeFromCart(item.fileId || item._id)} className="text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={20} /></button>
+          <>
+            <div className="flex flex-col gap-4">
+              {cart.items.map((item) => (
+                <div key={item._id} className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 flex items-center gap-4">
+                  <img src={item.file?.coverUrl} className="w-20 h-20 object-contain rounded-xl bg-gray-50 p-1" alt="cover" />
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-800 text-sm">{item.file?.title}</h3>
+                    <p className="text-amber-600 font-black text-sm">{item.file?.price} ج.م</p>
                   </div>
+                  <button onClick={() => removeFromCart(item.file?._id)} className="text-gray-300 hover:text-red-500"><Trash2 size={20} /></button>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
 
-            <div className="mt-4 bg-white rounded-3xl p-6 shadow-xl border border-sky-50">
-              <div className="flex justify-between items-center mb-6 pt-3">
-                <span className="text-gray-800 font-extrabold text-lg">المبلغ الإجمالي:</span>
-                <span className="text-2xl font-black text-amber-600">{totalPrice?.toLocaleString()} د.ع</span>
-              </div>
-
-              <div className="mb-6 border-t border-gray-100 pt-4">
-                <h3 className="font-bold text-gray-800 mb-3 text-sm">طريقة الدفع</h3>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" value="stripe" checked={provider === "stripe"} onChange={(e) => setProvider(e.target.value)} className="accent-sky-900" />
-                    <span className="font-bold text-sm">بطاقة ائتمانية</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" value="paymob" checked={provider === "paymob"} onChange={(e) => setProvider(e.target.value)} className="accent-sky-900" />
-                    <span className="font-bold text-sm">المحافظ الإلكترونية</span>
-                  </label>
-                </div>
-                
-                {provider === "paymob" && (
-                  <div className="mt-4">
-                    <label className="block text-xs font-bold text-gray-500 mb-2">رقم الهاتف (مطلوب لـ Paymob)</label>
-                    <input 
-                      type="text" 
-                      placeholder="أدخل رقم هاتفك" 
-                      value={phone} 
-                      onChange={(e) => setPhone(e.target.value)}
-                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-amber-600 outline-none"
-                    />
-                  </div>
-                )}
-              </div>
-
-              <button 
-                onClick={handleCheckout}
-                disabled={checkoutLoading}
-                className={`w-full bg-sky-900 text-white py-4 rounded-2xl font-black text-lg shadow-lg flex items-center justify-center gap-2 hover:bg-sky-800 transition-colors ${checkoutLoading ? 'opacity-50' : ''}`}
+            <div className="mt-6 bg-white rounded-[2.5rem] p-6 shadow-xl border border-sky-50 text-center">
+              <p className="text-gray-400 font-bold mb-1">المبلغ الإجمالي</p>
+              <h2 className="text-3xl font-black text-sky-900 mb-6">{totalPrice.toLocaleString()} ج.م</h2>
+              
+              <button
+                onClick={() => setPaymentModal(true)}
+                className="w-full bg-sky-900 text-white py-4 rounded-2xl font-black text-lg flex items-center justify-center gap-2"
               >
-                <CreditCard size={24} />
-                {checkoutLoading ? "جاري البدء..." : "إتمام الشراء الآن"}
+                <CreditCard size={24} /> إتمام الشراء الآن
               </button>
             </div>
-          </div>
+          </>
         )}
       </div>
+
+      {paymentModal && (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-gray-950/40 backdrop-blur-md" onClick={() => { setPaymentModal(false); setClientSecret(""); }}></div>
+          <div className="relative bg-white w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-[2rem] shadow-2xl p-6">
+            
+            {clientSecret && paymentProvider === 'stripe' ? (
+              <Elements stripe={stripePromise} options={{ clientSecret }}>
+                <div className="flex flex-col">
+                  <h2 className="text-lg font-bold text-gray-950 mb-4 text-center">بيانات البطاقة</h2>
+                  <CheckoutForm clientSecret={clientSecret} />
+                  <button onClick={() => setClientSecret("")} className="mt-6 text-gray-400 text-xs font-bold">رجوع</button>
+                </div>
+              </Elements>
+            ) : (
+              <div className="flex flex-col items-center text-center">
+                <div className="w-12 h-12 bg-sky-50 text-sky-900 rounded-xl flex items-center justify-center mb-4"><Lock size={24}/></div>
+                <h2 className="text-xl font-bold text-gray-950 mb-6">إتمام الدفع</h2>
+
+                <div className="w-full space-y-2 mb-6">
+                  <button onClick={() => setPaymentProvider("paymob")} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'paymob' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
+                    <div className="flex items-center gap-3"><Smartphone size={18}/><span className="font-bold text-xs">محفظة إلكترونية</span></div>
+                    {paymentProvider === 'paymob' && <CheckCircle className="text-sky-900" size={16} fill="currentColor"/>}
+                  </button>
+                  <button onClick={() => setPaymentProvider("stripe")} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'stripe' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
+                    <div className="flex items-center gap-3"><CreditCard size={18}/><span className="font-bold text-xs">بطاقة بنكية</span></div>
+                    {paymentProvider === 'stripe' && <CheckCircle className="text-sky-900" size={16} fill="currentColor"/>}
+                  </button>
+                </div>
+
+                {paymentProvider === 'paymob' && (
+                  <input type="tel" placeholder="رقم المحفظة" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl mb-4 text-center outline-none focus:ring-1 focus:ring-sky-900"/>
+                )}
+
+                <button onClick={handleStartPayment} disabled={processing} className="w-full py-4 bg-sky-900 text-white rounded-xl font-bold">
+                  {processing ? "جاري المعالجة..." : "تأكيد ودفع"}
+                </button>
+                <button onClick={() => setPaymentModal(false)} className="mt-4 text-gray-400 text-xs">إلغاء</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

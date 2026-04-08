@@ -1,58 +1,76 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import api from "@/app/api";
 import { toast } from "react-toastify";
 
-export const useCartStore = create((set) => ({
-  cart: [],
-  loading: false,
+export const useCartStore = create(
+  persist(
+    (set, get) => ({
+      cart: { items: [], total: 0 },
+      loading: false,
 
-  addToCart: async (id) => {
-    console.group("🔍 تحقيق عملية الإضافة للسلة");
-
-    // تأكدي من استخراج الـ ID فقط
-    const cleanId = typeof id === 'object' ? (id.id || id._id) : id;
-
-    console.log("1. المعرف المبعوث (ID):", cleanId);
-    console.log("2. نوع المعرف (Type):", typeof cleanId);
-
-    try {
-      // محاولة الإرسال كما في الدليل
-      const res = await api.post("/cart/add", { fileId: cleanId });
-
-      console.log("✅ 3. نجحت العملية! رد السيرفر:", res.data);
-      set({ cart: res.data?.data || res.data });
-      toast.success("تمت الإضافة للسلة!");
-    } catch (err) {
-      console.error("❌ 3. فشلت العملية!");
-      console.error("حالة الخطأ (Status):", err.response?.status);
-      console.error("رد السيرفر بالتفصيل:", err.response?.data);
-
-      // هنا بنشوف لو السيرفر عنده مشكلة في مسار /add
-      if (err.response?.status === 404 || err.response?.data?.message?.includes("Cast to ObjectId")) {
-        console.warn("⚠️ تنبيه: يبدو أن مسار /add يسبب تداخل. سأجرب إرسال الطلب لـ /cart مباشرة.");
+      // جلب السلة من السيرفر
+      fetchCart: async () => {
+        set({ loading: true });
         try {
-          const res2 = await api.post("/cart", { fileId: cleanId });
-          console.log("✅ 4. نجحت المحاولة البديلة (/cart):", res2.data);
-          set({ cart: res2.data?.data || res2.data });
-          toast.success("تمت الإضافة!");
-          return;
-        } catch (innerErr) {
-          console.error("❌ 4. فشلت المحاولة البديلة أيضاً:", innerErr.response?.data);
+          const res = await api.get("/cart");
+          set({ cart: res.data.data || { items: [], total: 0 } });
+        } catch (err) {
+          console.error("خطأ جلب السلة:", err.message);
+        } finally {
+          set({ loading: false });
         }
+      },
+
+      // إضافة عنصر (حسب الـ API بتاعك POST /cart/:fileId)
+      addToCart: async (fileId) => {
+        try {
+          const response = await api.post(`/cart/${fileId}`, {
+            quantity: 1 
+          });
+          set({ cart: response.data.data });
+          return response.data;
+        } catch (error) {
+          console.error("فشل الإضافة:", error.response?.data || error);
+          throw error;
+        }
+      },
+
+      // حذف عنصر واحد (DELETE /cart/:fileId)
+      removeFromCart: async (fileId) => {
+        try {
+          const res = await api.delete(`/cart/${fileId}`);
+          set({ cart: res.data.data });
+          toast.success("تم الحذف من السلة");
+        } catch (err) {
+          toast.error("فشل حذف العنصر");
+        }
+      },
+
+      // تفريغ السلة بالكامل (DELETE /cart)
+      clearCart: async () => {
+        try {
+          await api.delete("/cart");
+          set({ cart: { items: [], total: 0 } });
+          // امسحي بيانات الـ Persist يدوياً لضمان النظافة
+          localStorage.removeItem("cart-storage"); 
+          toast.success("تم تفريغ السلة");
+        } catch (err) {
+          // حتى لو الـ API فشل (زي الـ 404 اللي ظهرت لك)، هنصفر الـ UI للأمان
+          set({ cart: { items: [], total: 0 } });
+          localStorage.removeItem("cart-storage");
+        }
+      },
+
+      // دالة إضافية لتصفير السلة "محلياً فقط" وقت الـ Logout بدون نداء API
+      resetCartLocal: () => {
+        set({ cart: { items: [], total: 0 } });
+        localStorage.removeItem("cart-storage");
       }
-
-      toast.error(err.response?.data?.message || "فشل الإضافة");
-    } finally {
-      console.groupEnd();
+    }),
+    {
+      name: "cart-storage", // اسم المفتاح في المتصفح
+      storage: createJSONStorage(() => localStorage),
     }
-  },
-
-  fetchCart: async () => {
-    try {
-      const res = await api.get("/cart");
-      set({ cart: res.data?.data || res.data || [] });
-    } catch (err) {
-      console.error("خطأ جلب السلة:", err.message);
-    }
-  },
-}));
+  )
+);

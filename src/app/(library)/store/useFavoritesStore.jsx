@@ -11,8 +11,10 @@ export const useFavoritesStore = create((set, get) => ({
     set({ loading: true });
     try {
       const res = await api.get("/favorites");
-      console.log("DEBUG: Favorites Data from API ->", res.data.data);
-      set({ favorites: res.data.data || res.data || [] });
+      // الباك إند يرسل البيانات في res.data.data بناءً على الـ Console
+      const data = res.data.data || res.data || [];
+      console.log("DEBUG: Favorites Data from API ->", data);
+      set({ favorites: data });
     } catch (err) {
       console.error("خطأ في جلب المفضلة:", err.response?.data || err.message);
       set({ favorites: [] });
@@ -25,8 +27,8 @@ export const useFavoritesStore = create((set, get) => ({
   addToFavorites: async (fileId) => {
     console.log("DEBUG: Adding book to favorites with ID:", fileId);
     try {
-      const res = await api.post("/favorites/add", { fileId });
-      // Update the local state
+      await api.post("/favorites/add", { fileId });
+      // تحديث الحالة بعد الإضافة
       await get().fetchFavorites();
       toast.success("تمت الإضافة للمفضلة!");
     } catch (err) {
@@ -36,26 +38,35 @@ export const useFavoritesStore = create((set, get) => ({
   },
 
   // إزالة كتاب من المفضلة
-  removeFromFavorites: async (fileId) => {
+  removeFromFavorites: async (id) => {
+    console.log("DEBUG: Removing from favorites with ID:", id);
     try {
-      const res = await api.delete(`/favorites/remove/${fileId}`);
-      // Update the local state
-      await get().fetchFavorites();
+      // الرابط الصحيح بناءً على كلام الباك إند: /favorites/remove/:fileId
+      // وبما أن المعرف في الكونسول هو 'id' فنحن نرسله هنا
+      await api.delete(`/favorites/remove/${id}`);
+
+      // تحديث القائمة محلياً فوراً لتحسين تجربة المستخدم
+      set((state) => ({
+        favorites: state.favorites.filter(item => (item.id || item._id) !== id)
+      }));
+
       toast.success("تم الحذف من المفضلة!");
     } catch (err) {
-      console.error(err.response?.data);
+      console.error("فشل الحذف:", err.response?.data || err.message);
       toast.error("فشل الحذف من المفضلة");
+      // في حال الفشل، نعيد جلب البيانات من السيرفر للتأكد
+      get().fetchFavorites();
     }
   },
 
   // التحقق هل الكتاب موجود بالمفضلة
-  isFavorite: (fileId) => {
+  isFavorite: (id) => {
     const { favorites } = get();
-    // Assuming favorites objects could have productId or fileId or _id
+    // بناءً على الـ Console، الأجسام داخل المصفوفة تحتوي على id
     return favorites.some(item =>
-      item.fileId === fileId ||
-      item.productId?._id === fileId ||
-      item._id === fileId
+      (item.id === id) ||
+      (item._id === id) ||
+      (item.fileId === id)
     );
   }
 }));

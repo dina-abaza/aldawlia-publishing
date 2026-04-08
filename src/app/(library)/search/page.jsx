@@ -111,17 +111,17 @@ export default function SearchPage() {
               {/* المفضلة */}
               <button
                 onClick={(e) => toggleFavorite(e, product._id)}
-                className="absolute top-5 left-5 bg-white/90 shadow-lg p-2 rounded-2xl z-10 text-sky-900 hover:text-red-500 hover:bg-red-50 transition-all"
+                className="absolute top-5 left-5 bg-white/90 shadow-lg p-2 rounded-2xl z-10 text-sky-900 hover:text-amber-600 hover:bg-red-50 transition-all"
                 title="المفضلة"
               >
-                <Heart size={18} fill={isFavorite(product._id) ? "currentColor" : "none"} className={isFavorite(product._id) ? "text-red-500" : ""} />
+                <Heart size={18} fill={isFavorite(product._id) ? "currentColor" : "none"} className={isFavorite(product._id) ? "text-amber-600" : ""} />
               </button>
 
               {/* رابط للصورة والاسم */}
               <Link href={`/book/${product._id}`} className="flex-grow">
                 <div className="relative w-full h-48 mb-4 bg-gray-50 rounded-2xl overflow-hidden group-hover:shadow-inner">
                   <Image
-                    src={product.cover || product.image || "/placeholder.jpg"}
+                    src={product.coverUrl || product.cover || "/placeholder.jpg"}
                     alt={product.title || product.name}
                     fill
                     loading="lazy"

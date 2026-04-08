@@ -1,33 +1,32 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import api from "@/app/api";
-import { ShoppingCart, Tag, ArrowRight } from "lucide-react";
+import { ShoppingCart, Tag, ArrowRight, Heart } from "lucide-react"; // ضفنا Heart
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/app/(library)/store/useCartStore";
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
+import { useFavoritesStore } from "@/app/(library)/store/useFavoritesStore"; // ضفنا الـ Store
 import { toast } from "react-toastify";
 import Link from "next/link";
 import Image from "next/image";
+
 const OffersPage = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { addToCart } = useCartStore();
   const { user, isAuthenticated } = useAuthStore();
-
-  const getImageUrl = (path) => {
-    if (!path) return "https://placehold.co/400x600?text=Aldawlia";
-    if (path.startsWith('http')) return path;
-    return `https://e-library-api-production.up.railway.app${path}`;
-  };
+  
+  // دوال المفضلة
+  const { isFavorite, addToFavorites, removeFromFavorites } = useFavoritesStore();
 
   useEffect(() => {
     const fetchOffers = async () => {
       try {
-        const response = await api.get("/files", {
+        const response = await api.get("/files/on-sale", {
           params: {
             limit: 20,
-            isOnSale: true // ✅ جلب العروض فقط كما في الباك اند
+            isOnSale: true 
           }
         });
         console.log("DEBUG: Offers Page Response Data:", response.data.data);
@@ -52,6 +51,22 @@ const OffersPage = () => {
     } catch (error) {
       console.error("Add to cart failed:", error);
       toast.error("فشل إضافة الكتاب للسلة");
+    }
+  };
+
+  // دالة الضغط على القلب
+  const toggleFavorite = async (e, bookId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      toast.info("سجّل الدخول لإضافة المفضلة");
+      return router.push("/login");
+    }
+
+    if (isFavorite(bookId)) {
+      await removeFromFavorites(bookId);
+    } else {
+      await addToFavorites(bookId);
     }
   };
 
@@ -86,60 +101,75 @@ const OffersPage = () => {
 
       <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-7xl mx-auto mt-4">
         {products.length > 0 ? (
-          products.map((product) => (
-            <div
-              key={product.id || product._id}
-              className="bg-white rounded-[30px] p-3 shadow-sm border border-red-100 flex flex-col relative overflow-hidden"
-            >
-              {/* نسبة الخصم */}
-              {product.discountPercent > 0 && (
-                <div className="absolute top-0 right-0 bg-amber-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-2xl z-10 shadow-sm">
-                  خصم {Math.round(product.discountPercent)}%
-                </div>
-              )}
+          products.map((product) => {
+            const productId = product.id || product._id;
+            const activeFav = isFavorite(productId);
 
-              <Link href={`/book/${product.id || product._id}`} className="flex flex-col items-center w-full">
-                <div className="h-40 w-full flex items-center justify-center mb-3 overflow-hidden rounded-2xl bg-gray-50">
-                  <div className="relative w-full h-full">
-                    <Image
-                      src={getImageUrl(product.cover || product.image || product.coverUrl)}
-                      alt={product.title || product.name}
-                      fill
-                      loading="lazy"
-                      quality={70}
-                      sizes="(max-width: 768px) 50vw, 25vw"
-                      className="object-cover hover:scale-110 transition-transform duration-500"
-                    />
-                  </div>
-                </div>
-                <h3 className="font-black text-sm h-10 line-clamp-2 text-gray-800 text-center px-2 group-hover:text-amber-600 transition-colors">
-                  {product.title || product.name}
-                </h3>
-                <span className="text-[10px] text-amber-600 font-bold mt-2 hover:underline">
-                   استكشف التفاصيل والمزيد...
-                </span>
-              </Link>
-
-
-              <div className="flex flex-col items-center my-2">
-                {product.discountPrice && product.discountPrice < product.price && (
-                  <span className="text-gray-400 line-through text-[10px]">
-                    {(product.price / 100)?.toLocaleString()} ج.م
-                  </span>
-                )}
-                <span className="text-amber-600 font-black text-sm">
-                  {(product.discountPrice / 100)?.toLocaleString() || (product.price / 100)?.toLocaleString()} ج.م
-                </span>
-              </div>
-
-              <button
-                onClick={() => handleAdd(product)}
-                className="w-full bg-sky-900 text-white py-2 rounded-2xl flex items-center justify-center gap-2 text-xs font-bold hover:bg-amber-600 transition-all shadow-sm"
+            return (
+              <div
+                key={productId}
+                className="bg-white rounded-[30px] p-3 shadow-sm border border-red-100 flex flex-col relative overflow-hidden group"
               >
-                <ShoppingCart size={14} /> إضافة
-              </button>
-            </div>
-          ))
+                {/* نسبة الخصم */}
+                {product.discountPercent > 0 && (
+                  <div className="absolute top-0 right-0 bg-amber-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-2xl z-10 shadow-sm">
+                    خصم {Math.round(product.discountPercent)}%
+                  </div>
+                )}
+
+                {/* زر القلب */}
+                <button
+                  onClick={(e) => toggleFavorite(e, productId)}
+                  className={`absolute top-2 right-2 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm active:scale-90 ${
+                    activeFav ? "bg-amber-50 text-amber-600" : "bg-white/80 text-gray-400 backdrop-blur-sm"
+                  }`}
+                >
+                  <Heart size={16} fill={activeFav ? "currentColor" : "none"} />
+                </button>
+
+                <Link href={`/book/${productId}`} className="flex flex-col items-center w-full">
+                  <div className="h-40 w-full flex items-center justify-center mb-3 overflow-hidden rounded-2xl bg-gray-50">
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={product.cover || product.image || product.coverUrl}
+                        alt={product.title || product.name}
+                        fill
+                        loading="lazy"
+                        quality={70}
+                        sizes="(max-width: 768px) 50vw, 25vw"
+                        className="object-cover hover:scale-110 transition-transform duration-500"
+                      />
+                    </div>
+                  </div>
+                  <h3 className="font-black text-sm h-10 line-clamp-2 text-gray-800 text-center px-2 group-hover:text-amber-600 transition-colors">
+                    {product.title || product.name}
+                  </h3>
+                  <span className="text-[10px] text-amber-600 font-bold mt-2 hover:underline">
+                    استكشف التفاصيل والمزيد...
+                  </span>
+                </Link>
+
+
+                <div className="flex flex-col items-center my-2">
+                  {product.discountPrice && product.discountPrice < product.price && (
+                    <span className="text-gray-400 line-through text-[10px]">
+                      {(product.price / 100)?.toLocaleString()} ج.م
+                    </span>
+                  )}
+                  <span className="text-amber-600 font-black text-sm">
+                    {(product.discountPrice / 100)?.toLocaleString() || (product.price / 100)?.toLocaleString()} ج.م
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => handleAdd(product)}
+                  className="w-full bg-sky-900 text-white py-2 rounded-2xl flex items-center justify-center gap-2 text-xs font-bold hover:bg-amber-600 transition-all shadow-sm"
+                >
+                  <ShoppingCart size={14} /> إضافة
+                </button>
+              </div>
+            );
+          })
         ) : (
           <div className="col-span-full text-center py-20 text-gray-500 font-bold">
             لا توجد عروض حالياً، انتظر مفاجآتنا القادمة!

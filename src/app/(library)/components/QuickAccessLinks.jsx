@@ -1,67 +1,84 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { Flame, Star, ChevronLeft } from "lucide-react";
+import { Flame, Star, Tag, ChevronLeft } from "lucide-react";
 
 const QuickAccessLinks = () => {
     const categories = [
         {
             id: "trending",
-            title: "إصداراتنا الأكثر طلباً",
-            subtitle: "اكتشف الكتب الأكثر مبيعاً ورواجاً حالياً",
-            icon: <Flame size={32} className="text-orange-500 drop-shadow-md" fill="currentColor" />,
-            bgColor: "bg-gradient-to-br from-orange-50 to-red-50",
-            borderColor: "border-orange-100",
-            iconBg: "bg-orange-100",
-            textColor: "text-orange-950",
-            link: "/search?sort=trending",
-            accentColor: "bg-orange-500"
+            title: "الأكثر طلباً",
+            subtitle: "اكتشف الكتب الأكثر مبيعاً ورواجاً حالياً في دار الحكمة",
+            icon: <Flame size={28} className="text-amber-600" fill="currentColor" />,
+            bgColor: "bg-gradient-to-br from-slate-50 to-amber-50/20",
+            borderColor: "border-slate-100",
+            iconBg: "bg-amber-100/50",
+            textColor: "text-sky-950",
+            // الروابط الأصلية اللي كانت عندك في المشروع
+            link: "/trending-books",
+            accentColor: "bg-amber-600"
         },
         {
             id: "popular",
-            title: "الأكثر تفضيلاً لدى القراء",
-            subtitle: "نخبة الكتب التي نالت إعجاب وتفضيل الجميع",
-            icon: <Star size={32} className="text-amber-500 drop-shadow-md" fill="currentColor" />,
-            bgColor: "bg-gradient-to-br from-amber-50 to-yellow-50",
-            borderColor: "border-amber-100",
-            iconBg: "bg-amber-100",
-            textColor: "text-amber-950",
-            link: "/search?sort=popular",
-            accentColor: "bg-amber-500"
+            title: "الأكثر تفضيلاً",
+            subtitle: "نخبة الكتب التي نالت إعجاب وتفضيل القراء لدينا",
+            icon: <Star size={28} className="text-amber-600" fill="currentColor" />,
+            bgColor: "bg-gradient-to-br from-slate-50 to-amber-50/20",
+            borderColor: "border-slate-100",
+            iconBg: "bg-amber-100/50",
+            textColor: "text-sky-950",
+            // الروابط الأصلية اللي كانت عندك في المشروع
+            link: "/popular-books",
+            accentColor: "bg-amber-600"
+        },
+        {
+            id: "offers",
+            title: "عروض مميزة",
+            subtitle: "خصومات حصرية وإصدارات خاصة بأسعار تنافسية",
+            icon: <Tag size={28} className="text-amber-600" fill="currentColor" />,
+            bgColor: "bg-gradient-to-br from-slate-50 to-amber-50/20",
+            borderColor: "border-slate-100",
+            iconBg: "bg-amber-100/50",
+            textColor: "text-sky-950",
+            // الروابط الأصلية اللي كانت عندك في المشروع
+            link: "/offers",
+            accentColor: "bg-amber-600"
         }
     ];
 
     return (
-        <section className="py-12 bg-white/50">
-            <div className="max-w-7xl mx-auto px-4 md:px-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+        <section className="py-10 bg-white">
+            <div className="max-w-7xl mx-auto px-4">
+                <div className="text-center mb-8">
+                    <h2 className="text-2xl md:text-3xl font-black text-sky-900">اكتشف مكتبتنا</h2>
+                    <div className="w-16 h-1 bg-amber-600 mx-auto mt-3 rounded-full"></div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
                     {categories.map((cat) => (
-                        <Link 
-                            key={cat.id} 
+                        <Link
+                            key={cat.id}
                             href={cat.link}
-                            className={`group relative overflow-hidden p-8 md:p-10 rounded-[3rem] border ${cat.borderColor} ${cat.bgColor} shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2`}
+                            className={`group relative overflow-hidden p-5 md:p-6 rounded-[2rem] border ${cat.borderColor} ${cat.bgColor} shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1.5`}
                         >
-                            {/* زخرفة خلفية */}
-                            <div className={`absolute -right-10 -top-10 w-40 h-40 ${cat.accentColor} opacity-5 blur-[60px] rounded-full group-hover:opacity-10 transition-opacity animate-pulse`}></div>
-                            
-                            <div className="relative flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 z-10 text-center md:text-right">
-                                <div className={`p-5 ${cat.iconBg} rounded-[2rem] shadow-inner group-hover:scale-110 transition-transform duration-500`}>
-                                    {cat.icon}
+                            <div className="relative flex flex-col items-center text-center z-10">
+                                <div className={`mb-4 p-4 ${cat.iconBg} rounded-2xl group-hover:scale-105 group-hover:bg-amber-600 transition-all duration-500`}>
+                                    {React.cloneElement(cat.icon, {
+                                        className: `transition-colors duration-500 ${cat.icon.props.className} group-hover:text-white`
+                                    })}
                                 </div>
-                                
-                                <div className="flex-1">
-                                    <h3 className={`text-2xl md:text-3xl font-black ${cat.textColor} mb-3 leading-tight`}>
-                                        {cat.title}
-                                    </h3>
-                                    <p className="text-gray-500 font-bold text-sm md:text-base leading-relaxed">
-                                        {cat.subtitle}
-                                    </p>
-                                    
-                                    <div className="mt-8 flex items-center justify-center md:justify-start gap-2 group-hover:gap-4 transition-all">
-                                        <span className={`h-1 w-12 ${cat.accentColor} rounded-full`}></span>
-                                        <span className={`text-xs font-black uppercase tracking-widest ${cat.textColor}`}>تصفح الآن</span>
-                                        <ChevronLeft size={16} className={`${cat.textColor}`} />
-                                    </div>
+
+                                <h3 className={`text-xl font-black ${cat.textColor} mb-2 group-hover:text-amber-600 transition-colors`}>
+                                    {cat.title}
+                                </h3>
+
+                                <p className="text-slate-500 font-medium text-xs md:text-sm leading-relaxed mb-6 line-clamp-2">
+                                    {cat.subtitle}
+                                </p>
+
+                                <div className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-sky-900 text-white group-hover:bg-amber-600 transition-all duration-300 shadow-sm">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider">اعرف المزيد</span>
+                                    <ChevronLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
                                 </div>
                             </div>
                         </Link>

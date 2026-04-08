@@ -27,13 +27,7 @@ const CategoryGrid = () => {
   if (loading) return <Activity />;
   if (error) return <div className="text-center text-red-500 mt-6">{error}</div>;
 
-  // تحديث الدالة لتقبل المسار الصحيح بناءً على بيانات الأدمين
-  const getImageUrl = (path) => {
-    if (!path) return "https://placehold.co/400x400?text=No+Image";
-    if (path.startsWith('http')) return path;
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
-    return `https://e-library-api-production.up.railway.app${cleanPath}`;
-  };
+
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 mb-20" dir="rtl">
@@ -53,7 +47,7 @@ const CategoryGrid = () => {
           >
             {/* التعديل هنا: استخدام coverUrl أو coverImageKey بدلاً من image */}
             <img
-              src={getImageUrl(category.coverUrl || category.coverImageKey || category.image)}
+              src={category.coverUrl || category.coverImageKey || category.image}
               alt={category.name}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />

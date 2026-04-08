@@ -6,20 +6,24 @@ import { ShoppingCart, Search, Phone, Info, Heart } from "lucide-react";
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
 import { useCartStore } from "@/app/(library)/store/useCartStore";
 import { useFavoritesStore } from "@/app/(library)/store/useFavoritesStore";
-import api from "@/app/api"; // استيراد ملف api.jsx للتعامل مع الطلبات
+import api from "@/app/api"; 
 import Image from "next/image";
 
 const Navbar = () => {
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuthStore();
-  const { cart } = useCartStore();
+  const { cart, fetchCart } = useCartStore();
   const { favorites, fetchFavorites } = useFavoritesStore();
 
   useEffect(() => {
-    if (isAuthenticated) fetchFavorites();
-  }, [isAuthenticated, fetchFavorites]);
+    if (isAuthenticated) {
+      fetchFavorites();
+      fetchCart(); 
+    }
+  }, [isAuthenticated, fetchFavorites, fetchCart]);
 
-  const cartItemsCount = cart?.items?.length || cart?.length || 0;
+  // التعديل هنا: إذا لم يكن مسجل دخول، اجعل العدد دائماً 0
+  const cartItemsCount = isAuthenticated ? (cart?.items?.length || 0) : 0;
 
   const [keyword, setKeyword] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -53,7 +57,6 @@ const Navbar = () => {
     <nav className="bg-[#f2f2f2] sticky top-0 z-50 px-4 h-20 flex items-center" dir="rtl">
       <div className="flex justify-between items-center w-full max-w-7xl mx-auto gap-2 md:gap-4">
 
-        {/* جهة اليمين */}
         <div className="flex items-center gap-2 md:gap-4">
           {isAuthenticated && (
             <div className="flex items-center gap-4">
@@ -114,7 +117,8 @@ const Navbar = () => {
             <Link href="/favorites" className="relative flex flex-col items-center group hover:scale-105 transition-all duration-300">
               <Heart size={22} className="group-hover:text-amber-600 transition-colors text-sky-900" />
               <span className="text-xs font-bold group-hover:text-amber-600 transition-colors text-sky-900">المفضلة</span>
-              {favorites?.length > 0 && (
+              {/* تعديل للمفضلة أيضاً لضمان عدم ظهور الرقم عند الخروج */}
+              {isAuthenticated && favorites?.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
                   {favorites.length}
                 </span>
@@ -133,7 +137,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* جهة اليسار: البحث + اللوجو */}
         <div className="flex items-center justify-center gap-2">
           <div className="relative flex-1 min-w-[120px] sm:min-w-[200px] md:max-w-[350px]">
             <input
