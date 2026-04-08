@@ -6,7 +6,7 @@ import { ShoppingCart, Search, Phone, Info, Heart } from "lucide-react";
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
 import { useCartStore } from "@/app/(library)/store/useCartStore";
 import { useFavoritesStore } from "@/app/(library)/store/useFavoritesStore";
-import api from "@/app/api"; 
+import api from "@/app/api";
 import Image from "next/image";
 
 const Navbar = () => {
@@ -18,7 +18,7 @@ const Navbar = () => {
   useEffect(() => {
     if (isAuthenticated) {
       fetchFavorites();
-      fetchCart(); 
+      fetchCart();
     }
   }, [isAuthenticated, fetchFavorites, fetchCart]);
 
@@ -54,7 +54,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-[#f2f2f2] sticky top-0 z-50 px-4 h-20 flex items-center" dir="rtl">
+    <nav className="bg-[#f2f2f2] sticky top-0 z-300 px-4 h-20 flex items-center" dir="rtl">
       <div className="flex justify-between items-center w-full max-w-7xl mx-auto gap-2 md:gap-4">
 
         <div className="flex items-center gap-2 md:gap-4">
@@ -76,14 +76,28 @@ const Navbar = () => {
                 </a>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3">
+                {/* القلب للموبايل فقط - مظبوط بالمللي */}
+                <Link href="/favorites" className="md:hidden relative flex items-center justify-center w-8 h-8">
+                  <Heart size={22} className="text-sky-900" />
+                  {favorites?.length > 0 && (
+                    <span className="absolute top-0 -right-1 bg-amber-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                      {favorites.length}
+                    </span>
+                  )}
+                </Link>
+
                 <button
                   onClick={logout}
                   className="hidden md:block bg-sky-900 text-white px-4 py-2 rounded-xl font-bold hover:bg-amber-600 transition-all"
                 >
                   تسجيل خروج
                 </button>
-                <span className="font-bold text-sm md:text-base whitespace-nowrap">مرحبا، {user?.name}</span>
+
+                {/* رجعنا حجم الخط الأصلي بتاعك */}
+                <span className="font-bold text-sm md:text-base whitespace-nowrap">
+                  مرحبا، {user?.name ? user.name.split(" ")[0] : "دينا"}
+                </span>
               </div>
             </div>
           )}
@@ -178,15 +192,17 @@ const Navbar = () => {
 
           <Link
             href="/"
-            className="flex-shrink-0 flex items-end justify-center h-full"
+            className="flex-shrink-0 flex items-end justify-center h-full -mt-4 md:-mt-6"
           >
             <Image
               src="/logohome.png"
               alt="Logo"
-              width={90}
-              height={90}
+              // هنا بنحدد الحجم الأصغر (للموبايل)
+              width={60}
+              height={60}
               priority
-              className="object-contain"
+              // هنا بنكبر الحجم في اللاب باستخدام md:w-[90px]
+              className="object-contain w-[60px] md:w-[90px] h-auto"
             />
           </Link>
         </div>

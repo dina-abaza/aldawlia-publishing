@@ -5,8 +5,8 @@ import api from "@/app/api";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import Activity from "@/app/loading";
-import { 
-    ArrowRight, Download, Heart, ShoppingCart, Star, 
+import {
+    ArrowRight, Download, Heart, ShoppingCart, Star,
     CreditCard, Smartphone, CheckCircle, Info, Lock, X
 } from "lucide-react";
 import { useFavoritesStore } from "@/app/(library)/store/useFavoritesStore";
@@ -140,25 +140,25 @@ const BookDetails = () => {
     return (
         <div className="bg-white min-h-screen pb-20" dir="rtl">
             {/* Header */}
-          <div className="bg-white/80 backdrop-blur-xl sticky top-0 z-[999] p-3 border-b border-gray-100">
-    {/* هنا ضفنا relative للـ Container الأساسي */}
-    <div className="max-w-7xl mx-auto flex items-center justify-center relative">
-        
-        {/* الزرار خليناه absolute عشان يخرج بره حسابات السنترة */}
-        <button 
-            onClick={() => router.back()} 
-            className="absolute right-0 text-amber-600 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm active:scale-95 transition-all"
-        >
-            <ArrowRight size={20} />
-        </button>
+            <div className="bg-white/80 backdrop-blur-xl sticky top-0 z-[200] p-3 border-b border-gray-100">
+                {/* هنا ضفنا relative للـ Container الأساسي */}
+                <div className="max-w-7xl mx-auto flex items-center justify-center relative">
 
-        {/* الكلمة دلوقتي هتاخد نص الشاشة بالظبط لأن الزرار مابقاش زاققها */}
-        <h1 className="text-gray-900 font-bold text-base truncate max-w-[200px] text-center">
-            تفاصيل الإصدار
-        </h1>
-        
-    </div>
-</div>
+                    {/* الزرار خليناه absolute عشان يخرج بره حسابات السنترة */}
+                    <button
+                        onClick={() => router.back()}
+                        className="absolute right-0 text-amber-600 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm active:scale-95 transition-all"
+                    >
+                        <ArrowRight size={20} />
+                    </button>
+
+                    {/* الكلمة دلوقتي هتاخد نص الشاشة بالظبط لأن الزرار مابقاش زاققها */}
+                    <h1 className="text-gray-900 font-bold text-base truncate max-w-[200px] text-center">
+                        تفاصيل الإصدار
+                    </h1>
+
+                </div>
+            </div>
 
             <div className="max-w-6xl mx-auto px-6 mt-6 flex flex-col md:flex-row gap-8">
                 {/* Book Cover */}
@@ -187,7 +187,7 @@ const BookDetails = () => {
                     </div>
 
                     <div className="p-4 bg-gray-50 rounded-2xl mb-6 border border-gray-100">
-                        <h3 className="font-bold text-sky-900 mb-2 flex items-center gap-2 text-[11px] uppercase"><Info size={12}/> نبذة</h3>
+                        <h3 className="font-bold text-sky-900 mb-2 flex items-center gap-2 text-[11px] uppercase"><Info size={12} /> نبذة</h3>
                         <p className="text-gray-600 leading-relaxed text-xs md:text-sm">{book.description}</p>
                     </div>
 
@@ -198,8 +198,8 @@ const BookDetails = () => {
                             disabled={processing}
                             className={`flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all shadow-md active:scale-95 ${processing ? "bg-gray-300" : isPaidAndNotOwned ? "bg-sky-900 text-white" : "bg-emerald-600 text-white"}`}
                         >
-                            {processing ? <div className="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full"></div> : 
-                            <>{isPaidAndNotOwned ? <ShoppingCart size={18}/> : <Download size={18}/>} {isPaidAndNotOwned ? "شراء الآن" : "تحميل"}</>}
+                            {processing ? <div className="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full"></div> :
+                                <>{isPaidAndNotOwned ? <ShoppingCart size={18} /> : <Download size={18} />} {isPaidAndNotOwned ? "شراء الآن" : "تحميل"}</>}
                         </button>
 
                         <button onClick={handleAddToCart} className="bg-white text-sky-900 font-bold py-3.5 rounded-xl border-2 border-sky-900 text-sm hover:bg-sky-50 transition-all">
@@ -215,7 +215,7 @@ const BookDetails = () => {
                     <div className="absolute inset-0 bg-gray-950/40 backdrop-blur-md" onClick={() => { setPaymentModal(false); setClientSecret(""); }}></div>
                     {/* التعديل هنا: أضفنا max-h و overflow-y-auto و pb-10 لضمان ظهور الزرار والسكرول */}
                     <div className="relative bg-white w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-[2rem] shadow-2xl p-6 pb-10 animate-in zoom-in duration-300 custom-scrollbar">
-                        
+
                         {clientSecret && paymentProvider === 'stripe' ? (
                             /* عرض فورم Stripe لو الـ Secret وصل */
                             <Elements stripe={stripePromise} options={{ clientSecret }}>
@@ -228,23 +228,23 @@ const BookDetails = () => {
                         ) : (
                             /* عرض واجهة اختيار وسيلة الدفع */
                             <div className="flex flex-col items-center text-center">
-                                <div className="w-12 h-12 bg-sky-50 text-sky-900 rounded-xl flex items-center justify-center mb-4"><Lock size={24}/></div>
+                                <div className="w-12 h-12 bg-sky-50 text-sky-900 rounded-xl flex items-center justify-center mb-4"><Lock size={24} /></div>
                                 <h2 className="text-xl font-bold text-gray-950 mb-6">إتمام الدفع</h2>
 
                                 <div className="w-full space-y-2 mb-6 text-right">
                                     <button onClick={() => setPaymentProvider("paymob")} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'paymob' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
-                                        <div className="flex items-center gap-3"><Smartphone size={18}/><span className="font-bold text-xs">محفظة إلكترونية</span></div>
-                                        {paymentProvider === 'paymob' && <CheckCircle className="text-sky-900" size={16} fill="currentColor"/>}
+                                        <div className="flex items-center gap-3"><Smartphone size={18} /><span className="font-bold text-xs">محفظة إلكترونية</span></div>
+                                        {paymentProvider === 'paymob' && <CheckCircle className="text-sky-900" size={16} fill="currentColor" />}
                                     </button>
                                     <button onClick={() => setPaymentProvider("stripe")} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'stripe' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
-                                        <div className="flex items-center gap-3"><CreditCard size={18}/><span className="font-bold text-xs">بطاقة بنكية</span></div>
-                                        {paymentProvider === 'stripe' && <CheckCircle className="text-sky-900" size={16} fill="currentColor"/>}
+                                        <div className="flex items-center gap-3"><CreditCard size={18} /><span className="font-bold text-xs">بطاقة بنكية</span></div>
+                                        {paymentProvider === 'stripe' && <CheckCircle className="text-sky-900" size={16} fill="currentColor" />}
                                     </button>
                                 </div>
 
                                 {paymentProvider === 'paymob' && (
                                     <div className="w-full mb-6 text-right">
-                                        <input type="tel" placeholder="رقم المحفظة (01xxxxxxxxx)" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl text-center font-bold outline-none focus:ring-1 focus:ring-sky-900"/>
+                                        <input type="tel" placeholder="رقم المحفظة (01xxxxxxxxx)" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl text-center font-bold outline-none focus:ring-1 focus:ring-sky-900" />
                                     </div>
                                 )}
 

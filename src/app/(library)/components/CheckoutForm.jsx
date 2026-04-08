@@ -21,21 +21,21 @@ const CheckoutForm = ({ clientSecret }) => {
       confirmParams: {
         // العميل هيروح فين بعد ما يدفع بنجاح
         // اتأكدي إن الصفحة دي موجودة عندك (مثلاً /payment-status)
-        return_url: `${window.location.origin}/auth-success`,
+        return_url: `${window.location.origin}/payment-status`,
       },
     });
 
     if (error) {
       setErrorMessage(error.message);
     }
-    
+
     setLoading(false);
   };
 
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <PaymentElement />
-      
+
       {errorMessage && (
         <div className="text-red-500 text-xs mt-2 text-center bg-red-50 p-2 rounded-lg">
           {errorMessage}

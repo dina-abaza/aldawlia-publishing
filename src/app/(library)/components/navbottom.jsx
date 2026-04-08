@@ -10,13 +10,13 @@ const NavBottom = () => {
   const pathname = usePathname();
   const { isAuthenticated, logout } = useAuthStore();
   const { cart } = useCartStore();
-  const cartItemsCount = cart?.items?.reduce((acc, item) => acc + (item.qty || 0), 0) || 0;
+  const cartItemsCount = isAuthenticated ? (cart?.items?.length || 0) : 0;
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center h-16 z-50 px-2" dir="rtl">
-      
+
       {/* الرئيسية */}
-      <div 
+      <div
         onClick={() => router.push('/')}
         className={`flex flex-col items-center cursor-pointer ${pathname === '/' ? 'text-amber-600' : 'text-gray-400'}`}
       >
@@ -25,7 +25,7 @@ const NavBottom = () => {
       </div>
 
       {/* تواصل معنا - مضافة بجانب الرئيسية */}
-      <div 
+      <div
         onClick={() => router.push('/contact')}
         className={`flex flex-col items-center cursor-pointer ${pathname === '/contact' ? 'text-amber-600' : 'text-gray-400'}`}
       >
@@ -34,7 +34,7 @@ const NavBottom = () => {
       </div>
 
       {/* زر السلة */}
-      <div 
+      <div
         onClick={() => router.push('/cart')}
         className="relative -mt-10 flex flex-col items-center cursor-pointer"
       >
@@ -55,7 +55,7 @@ const NavBottom = () => {
       </div>
 
       {/* عن الموقع - بدلاً من العروض */}
-      <div 
+      <div
         onClick={() => router.push('/about')}
         className={`flex flex-col items-center cursor-pointer ${pathname === '/about' ? 'text-amber-600' : 'text-gray-400'}`}
       >
@@ -65,7 +65,7 @@ const NavBottom = () => {
 
       {/* الحساب / تسجيل خروج */}
       {isAuthenticated ? (
-        <div 
+        <div
           onClick={logout}
           className="flex flex-col items-center cursor-pointer text-gray-400 hover:text-amber-600"
         >
@@ -73,7 +73,7 @@ const NavBottom = () => {
           <span className="text-[10px] mt-1 font-bold">تسجيل خروج</span>
         </div>
       ) : (
-        <div 
+        <div
           onClick={() => router.push('/register')}
           className={`flex flex-col items-center cursor-pointer ${pathname === '/register' ? 'text-amber-600' : 'text-gray-400'}`}
         >

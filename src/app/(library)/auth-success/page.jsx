@@ -15,17 +15,22 @@ const AuthSuccessPage = () => {
 
     const authenticate = async () => {
       if (token) {
-        // حفظ التوكن
+        // 1. حفظ التوكن فوراً
         localStorage.setItem("jwtToken", token);
-        
-        // جلب بيانات المستخدم للتأكد وتحديث الحالة
-        await checkAuth();
-        
-        toast.success("تم تسجيل الدخول بنجاح عبر جوجل");
-        router.push("/");
-      } else {
-        toast.error("فشل في استلام بيانات تسجيل الدخول");
-        router.push("/login");
+
+        try {
+          // 2. أهم خطوة: استني لما بيانات اليوزر تيجي فعلياً
+          // تأكدي إن checkAuth في الـ store بتعمل await للطلب
+          const userData = await checkAuth();
+
+          toast.success(`مرحباً بك يا ${userData?.name || "دينا"}`);
+
+          // 3. التحويل للصفحة الرئيسية بعد التأكد من وجود البيانات
+          router.replace("/");
+        } catch (error) {
+          toast.error("حدث خطأ أثناء جلب بيانات الحساب");
+          router.replace("/login");
+        }
       }
     };
 

@@ -46,7 +46,7 @@ export const useAuthStore = create(
         try {
           const res = await api.get("/auth/me");
           set({
-            user: res.data,
+            user: res.data.data,
             isAuthenticated: true,
             loading: false,
           });
@@ -75,7 +75,7 @@ export const useAuthStore = create(
           }
 
           if (useFavoritesStore.getState().clearFavorites) {
-             useFavoritesStore.getState().clearFavorites();
+            useFavoritesStore.getState().clearFavorites();
           }
 
           set({ user: null, isAuthenticated: false, loading: false });
