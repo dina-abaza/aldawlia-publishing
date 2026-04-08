@@ -41,7 +41,11 @@ export const useAdminAuthStore = create((set) => {
                 return { success: false, message: error.response?.data?.message || "فشل تسجيل الدخول" };
             }
         },
-
+        forceAdminLogout: () => {
+            localStorage.removeItem('jwtToken');
+            localStorage.removeItem('adminUser');
+            set({ admin: null, loading: false });
+        },
         // تسجيل خروج الأدمن
         adminLogout: async () => {
             try {

@@ -21,6 +21,7 @@ import CheckoutForm from "@/app/(library)/components/CheckoutForm";
 
 // حطي مفتاح العميل هنا
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+
 const BookDetails = () => {
     const { id } = useParams();
     const router = useRouter();
@@ -49,7 +50,9 @@ const BookDetails = () => {
         try {
             setProcessing(true);
             const response = await api.get(`/files/${id}/download-link`);
-            window.open(response.data.data.url, "_blank");
+            // التأكد من جلب الرابط حسب هيكلة رد السيرفر
+            const downloadUrl = response.data.data.url || response.data.data;
+            window.open(downloadUrl, "_blank");
             toast.success("تم بدء التحميل!");
         } catch (err) {
             toast.error(err.response?.data?.message || "فشل الحصول على رابط التحميل");
@@ -98,6 +101,7 @@ const BookDetails = () => {
             toast.info("يرجى تسجيل الدخول أولاً");
             return router.push("/login");
         }
+        // تعديل: لو الكتاب مجاني أو تم شراؤه مسبقاً، حمل فوراً
         if (book.price === 0 || book.isPurchased) {
             handleDownload();
         } else {
@@ -135,28 +139,23 @@ const BookDetails = () => {
         </div>
     );
 
+    // متغير لتحديد هل الكتاب يحتاج شراء أم هو متاح للتحميل
     const isPaidAndNotOwned = book.price > 0 && !book.isPurchased;
 
     return (
         <div className="bg-white min-h-screen pb-20" dir="rtl">
             {/* Header */}
             <div className="bg-white/80 backdrop-blur-xl sticky top-0 z-[200] p-3 border-b border-gray-100">
-                {/* هنا ضفنا relative للـ Container الأساسي */}
                 <div className="max-w-7xl mx-auto flex items-center justify-center relative">
-
-                    {/* الزرار خليناه absolute عشان يخرج بره حسابات السنترة */}
                     <button
                         onClick={() => router.back()}
                         className="absolute right-0 text-amber-600 w-10 h-10 rounded-xl flex items-center justify-center shadow-sm active:scale-95 transition-all"
                     >
                         <ArrowRight size={20} />
                     </button>
-
-                    {/* الكلمة دلوقتي هتاخد نص الشاشة بالظبط لأن الزرار مابقاش زاققها */}
                     <h1 className="text-gray-900 font-bold text-base truncate max-w-[200px] text-center">
                         تفاصيل الإصدار
                     </h1>
-
                 </div>
             </div>
 
@@ -165,6 +164,11 @@ const BookDetails = () => {
                 <div className="md:w-1/2 flex flex-col items-center">
                     <div className="relative w-full aspect-[3/4] max-w-[280px] rounded-[2rem] overflow-hidden shadow-xl border-4 border-white ring-1 ring-gray-100">
                         <Image src={book.coverUrl || book.cover || "/placeholder.jpg"} alt={book.title} fill priority className="object-cover" />
+                        {book.isPurchased && (
+                            <div className="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-[10px] font-black shadow-lg">
+                                مـمـلوك
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -180,7 +184,7 @@ const BookDetails = () => {
                     <div className="mb-6">
                         <div className="flex items-baseline gap-1">
                             <span className={`text-3xl font-black ${isPaidAndNotOwned ? 'text-sky-900' : 'text-emerald-600'}`}>
-                                {!isPaidAndNotOwned ? (book.isPurchased ? "تم الشراء" : "مـجـانـي") : (book.price / 100).toLocaleString()}
+                                {!isPaidAndNotOwned ? (book.isPurchased ? "أنت تمتلكه" : "مـجـانـي") : (book.price / 100).toLocaleString()}
                             </span>
                             {isPaidAndNotOwned && <span className="text-sky-900 font-bold text-xs">جنيه مصري</span>}
                         </div>
@@ -199,34 +203,39 @@ const BookDetails = () => {
                             className={`flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all shadow-md active:scale-95 ${processing ? "bg-gray-300" : isPaidAndNotOwned ? "bg-sky-900 text-white" : "bg-emerald-600 text-white"}`}
                         >
                             {processing ? <div className="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full"></div> :
-                                <>{isPaidAndNotOwned ? <ShoppingCart size={18} /> : <Download size={18} />} {isPaidAndNotOwned ? "شراء الآن" : "تحميل"}</>}
+                                <>
+                                    {isPaidAndNotOwned ? <ShoppingCart size={18} /> : <Download size={18} />} 
+                                    {isPaidAndNotOwned ? "شراء الآن" : "تحميل الكتاب"}
+                                </>
+                            }
                         </button>
 
-                        <button onClick={handleAddToCart} className="bg-white text-sky-900 font-bold py-3.5 rounded-xl border-2 border-sky-900 text-sm hover:bg-sky-50 transition-all">
-                            أضف للسلة
+                        <button 
+                            onClick={handleAddToCart} 
+                            disabled={book.isPurchased}
+                            className={`font-bold py-3.5 rounded-xl border-2 text-sm transition-all ${book.isPurchased ? "border-gray-200 text-gray-400 cursor-not-allowed" : "border-sky-900 text-sky-900 hover:bg-sky-50"}`}
+                        >
+                            {book.isPurchased ? "في مكتبتك" : "أضف للسلة"}
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Payment Modal المطور */}
+            {/* Payment Modal */}
             {paymentModal && (
                 <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-gray-950/40 backdrop-blur-md" onClick={() => { setPaymentModal(false); setClientSecret(""); }}></div>
-                    {/* التعديل هنا: أضفنا max-h و overflow-y-auto و pb-10 لضمان ظهور الزرار والسكرول */}
                     <div className="relative bg-white w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-[2rem] shadow-2xl p-6 pb-10 animate-in zoom-in duration-300 custom-scrollbar">
 
                         {clientSecret && paymentProvider === 'stripe' ? (
-                            /* عرض فورم Stripe لو الـ Secret وصل */
                             <Elements stripe={stripePromise} options={{ clientSecret }}>
                                 <div className="flex flex-col">
                                     <h2 className="text-lg font-bold text-gray-950 mb-4 text-center">بيانات البطاقة</h2>
-                                    <CheckoutForm clientSecret={clientSecret} />
+                                    <CheckoutForm clientSecret={clientSecret} bookId={id}/>
                                     <button onClick={() => setClientSecret("")} className="mt-6 text-gray-400 text-xs font-bold pb-4">رجوع للوسائل</button>
                                 </div>
                             </Elements>
                         ) : (
-                            /* عرض واجهة اختيار وسيلة الدفع */
                             <div className="flex flex-col items-center text-center">
                                 <div className="w-12 h-12 bg-sky-50 text-sky-900 rounded-xl flex items-center justify-center mb-4"><Lock size={24} /></div>
                                 <h2 className="text-xl font-bold text-gray-950 mb-6">إتمام الدفع</h2>

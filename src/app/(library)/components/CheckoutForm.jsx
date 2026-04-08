@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
-const CheckoutForm = ({ clientSecret }) => {
+// 1. استلمي الـ bookId هنا كـ Prop
+const CheckoutForm = ({ clientSecret, bookId }) => { 
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
@@ -19,9 +20,8 @@ const CheckoutForm = ({ clientSecret }) => {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        // العميل هيروح فين بعد ما يدفع بنجاح
-        // اتأكدي إن الصفحة دي موجودة عندك (مثلاً /payment-status)
-        return_url: `${window.location.origin}/payment-status`,
+        // 2. تعديل الرابط هنا ليرسل الـ success والـ bookId
+        return_url: `${window.location.origin}/payment-status?success=true&bookId=${bookId}`,
       },
     });
 

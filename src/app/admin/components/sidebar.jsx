@@ -10,7 +10,7 @@ import {
     LogOut,
     X,
     Package,
-    MessageSquareQuote
+    Settings // ✅ تم إضافة الاستيراد هنا لحل مشكلة ReferenceError
 } from "lucide-react";
 import { useAdminAuthStore } from "../store/useAdminAuthStore";
 
@@ -24,6 +24,7 @@ export default function AdminSidebar({ disabled, isOpen, setIsOpen }) {
         { name: "المجالات الرئيسية", href: "/admin/categories", icon: Tags, color: "#22c55e" },
         { name: "أنواع المنتجات", href: "/admin/types", icon: Tags, color: "#a855f7" },
         { name: "المدفوعات", href: "/admin/orders", icon: Package, color: "#f97316" },
+        { name: "إعدادات الموقع", href: "/admin/socialSettings", icon: Settings, color: "#f59e0b" }, // ✅ الأيقونة الآن معرفة
         { name: "التحليلات", href: "/admin/analytics", icon: Share2, color: "#ec4899" },
     ];
 
@@ -32,7 +33,7 @@ export default function AdminSidebar({ disabled, isOpen, setIsOpen }) {
             className={`fixed inset-y-0 ltr:left-0 rtl:right-0 z-40 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 p-6 flex flex-col transform ${isOpen ? 'ltr:translate-x-0 rtl:translate-x-0' : 'ltr:-translate-x-full rtl:translate-x-full'
                 } md:ltr:translate-x-0 md:rtl:translate-x-0 transition-transform duration-300 ease-in-out`}
         >
-            {/* زر الإغلاق (X) بدون خلفية */}
+            {/* زر الإغلاق للموبايل */}
             <button
                 onClick={() => setIsOpen(false)}
                 className="md:hidden absolute top-4 ltr:right-4 rtl:left-4 p-2 bg-transparent text-gray-800 dark:text-gray-200 border-none outline-none"
@@ -40,7 +41,7 @@ export default function AdminSidebar({ disabled, isOpen, setIsOpen }) {
                 <X size={30} />
             </button>
 
-            {/* روابط التنقل مع إزاحة علوية لعدم التداخل مع زر الإغلاق */}
+            {/* الروابط */}
             <nav className="flex flex-col gap-3 mt-14">
                 {navLinks.map((link) => {
                     const isActive = pathname === link.href;
@@ -60,7 +61,7 @@ export default function AdminSidebar({ disabled, isOpen, setIsOpen }) {
                             key={link.href}
                             href={link.href}
                             onClick={() => setIsOpen(false)}
-                            className={`flex items-center gap-3 p-2.5 rounded-xl text-gray-800 dark:text-gray-200 no-underline transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 ${isActive ? "bg-gray-100 dark:bg-gray-700 text-red-600 font-bold" : ""
+                            className={`flex items-center gap-3 p-2.5 rounded-xl text-gray-800 dark:text-gray-200 no-underline transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-700 ${isActive ? "bg-gray-100 dark:bg-gray-700 text-sky-900 font-bold" : ""
                                 }`}
                         >
                             <Icon size={20} style={{ color: link.color }} />
