@@ -9,7 +9,7 @@ import { useCartStore } from "@/app/(library)/store/useCartStore";
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
 import { useFavoritesStore } from "@/app/(library)/store/useFavoritesStore";
 import { toast } from "react-toastify";
-import Activity from "@/app/loading";
+import PageLoader from "@/app/loading";
 import Image from "next/image";
 
 export default function SearchPage() {
@@ -61,7 +61,7 @@ export default function SearchPage() {
 
   const { title, icon } = getPageTitle();
 
-  if (queryLoading) return <Activity />;
+  if (queryLoading) return <PageLoader />;
 
   const toggleFavorite = async (e, bookId) => {
     e.stopPropagation();

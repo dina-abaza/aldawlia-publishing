@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
-import Activity from "@/app/loading";
+import PageLoader from "@/app/loading";
 
 const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
 
@@ -31,7 +31,7 @@ export default function Providers({ children }) {
 
       {loading && (
         <div className="fixed top-20 bottom-0 left-0 right-0 flex items-center justify-center bg-white/70 z-50">
-          <Activity />
+          <PageLoader />
         </div>
       )}
 

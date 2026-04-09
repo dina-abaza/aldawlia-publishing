@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, Search, Phone, Info, Heart } from "lucide-react";
+import { ShoppingCart, Search, Phone, Info, Heart, BookOpen } from "lucide-react";
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
 import { useCartStore } from "@/app/(library)/store/useCartStore";
 import { useFavoritesStore } from "@/app/(library)/store/useFavoritesStore";
@@ -138,6 +138,13 @@ const Navbar = () => {
                 </span>
               )}
             </Link>
+
+            {isAuthenticated && (
+              <Link href="/my-purchases" className="relative flex flex-col items-center group hover:scale-105 transition-all duration-300">
+                <BookOpen size={22} className="group-hover:text-amber-600 transition-colors text-sky-900" />
+                <span className="text-xs font-bold group-hover:text-amber-600 transition-colors text-sky-900">مشترياتي</span>
+              </Link>
+            )}
 
             <Link href="/cart" className="relative flex flex-col items-center group hover:scale-105 transition-all duration-300">
               <ShoppingCart size={22} className="group-hover:text-amber-600 transition-colors text-sky-900" />

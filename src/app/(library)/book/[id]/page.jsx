@@ -4,7 +4,6 @@ import { useParams, useRouter } from "next/navigation";
 import api from "@/app/api";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import Activity from "@/app/loading";
 import {
     ArrowRight, Download, Heart, ShoppingCart, Star,
     CreditCard, Smartphone, CheckCircle, Info, Lock, X
@@ -86,13 +85,13 @@ const [redirectionUrl, setRedirectionUrl] = useState("");
                 window.location.assign(data.data.paymentLink);
             } 
             else if (paymentProvider === 'stripe' && data.data.clientSecret) {
-    // تفعيل فورم Stripe وتخزين رابط الرجوع المستلم من السيرفر
-    setClientSecret(data.data.clientSecret);
-    setRedirectionUrl(data.data.redirectionUrl); // السطر ده مهم جداً وفقاً للوثيقة
-}
+                // تفعيل فورم Stripe وتخزين رابط الرجوع المستلم من السيرفر
+                setClientSecret(data.data.clientSecret);
+                setRedirectionUrl(data.data.redirectionUrl);
+            }
         } catch (err) {
-            console.error("Validation Details:", err.response?.data);
-            toast.error(err.response?.data?.message || "فشل في التحقق من البيانات");
+            console.error("Payment Initiation Error:", err.response?.data || err.message);
+            toast.error(err.response?.data?.message || err.message || "فشل في بدء عملية الدفع");
         } finally {
             setProcessing(false);
         }
@@ -132,7 +131,11 @@ const [redirectionUrl, setRedirectionUrl] = useState("");
         isFavorite(id) ? await removeFromFavorites(id) : await addToFavorites(id);
     };
 
-    if (isLoading) return <Activity />;
+    if (isLoading) return (
+        <div className="flex justify-center items-center min-h-[50vh] mt-10">
+            <div className="w-10 h-10 border-4 border-sky-100 border-t-sky-900 rounded-full animate-spin"></div>
+        </div>
+    );
     if (!book || error) return (
         <div className="flex flex-col items-center justify-center min-h-screen text-center p-6">
             <Info size={64} className="text-gray-300 mb-4" />

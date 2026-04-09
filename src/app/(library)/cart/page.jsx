@@ -25,6 +25,7 @@ const CartPage = () => {
   const [paymentProvider, setPaymentProvider] = useState("stripe");
   const [processing, setProcessing] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
+  const [redirectionUrl, setRedirectionUrl] = useState("");
 
   useEffect(() => {
     if (isAuthenticated) fetchCart();
@@ -41,8 +42,15 @@ const CartPage = () => {
       return toast.error("يرجى إدخال رقم الهاتف للمحفظة");
     }
 
+    const firstItem = cart.items[0];
+    const firstBookId = firstItem.file?._id || firstItem.file?.id;
+
+    if (!firstBookId) {
+      return toast.error("بيانات الكتاب غير مكتملة في السلة");
+    }
+
     const paymentData = {
-      bookId: cart.items[0].file?._id, 
+      bookId: firstBookId, 
       provider: paymentProvider,
       currency: 'EGP',
     };
@@ -57,9 +65,11 @@ const CartPage = () => {
         window.location.assign(data.data.paymentLink);
       } else if (paymentProvider === 'stripe' && data.data.clientSecret) {
         setClientSecret(data.data.clientSecret);
+        setRedirectionUrl(data.data.redirectionUrl);
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "فشل في بدء عملية الدفع");
+      console.error("Payment Initiation Error:", err.response?.data || err.message);
+      toast.error(err.response?.data?.message || err.message || "فشل في بدء عملية الدفع");
     } finally {
       setProcessing(false);
     }
@@ -96,12 +106,23 @@ const CartPage = () => {
         ) : (
           <>
             <div className="flex flex-col gap-4">
-              {cart.items.map((item) => (
-                <div key={item._id} className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 flex items-center gap-4">
+              {cart.items.map((item, idx) => (
+                <div key={item.file?._id || item.file?.id || idx} className="bg-white rounded-3xl p-4 shadow-sm border border-gray-100 flex items-center gap-4">
                   <img src={item.file?.coverUrl} className="w-20 h-20 object-contain rounded-xl bg-gray-50 p-1" alt="cover" />
                   <div className="flex-1">
                     <h3 className="font-bold text-gray-800 text-sm">{item.file?.title}</h3>
-                    <p className="text-amber-600 font-black text-sm">{item.file?.price} ج.م</p>
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2">
+                        <p className="text-amber-600 font-black text-sm">
+                          {((item.file?.isOnSale && item.file?.discountPrice) ? item.file.discountPrice : item.file?.price) / 100} ج.م
+                        </p>
+                        {item.file?.isOnSale && (
+                          <span className="text-gray-400 line-through text-[10px]">
+                            {(item.file?.price / 100).toLocaleString()} ج.م
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                   <button onClick={() => removeFromCart(item.file?._id)} className="text-gray-300 hover:text-red-500"><Trash2 size={20} /></button>
                 </div>
@@ -110,7 +131,7 @@ const CartPage = () => {
 
             <div className="mt-6 bg-white rounded-[2.5rem] p-6 shadow-xl border border-sky-50 text-center">
               <p className="text-gray-400 font-bold mb-1">المبلغ الإجمالي</p>
-              <h2 className="text-3xl font-black text-sky-900 mb-6">{totalPrice.toLocaleString()} ج.م</h2>
+              <h2 className="text-3xl font-black text-sky-900 mb-6">{(totalPrice / 100).toLocaleString()} ج.م</h2>
               
               <button
                 onClick={() => setPaymentModal(true)}
@@ -132,8 +153,8 @@ const CartPage = () => {
               <Elements stripe={stripePromise} options={{ clientSecret }}>
                 <div className="flex flex-col">
                   <h2 className="text-lg font-bold text-gray-950 mb-4 text-center">بيانات البطاقة</h2>
-                  <CheckoutForm clientSecret={clientSecret} />
-                  <button onClick={() => setClientSecret("")} className="mt-6 text-gray-400 text-xs font-bold">رجوع</button>
+                  <CheckoutForm clientSecret={clientSecret} redirectionUrl={redirectionUrl} />
+                  <button onClick={() => { setClientSecret(""); setRedirectionUrl(""); }} className="mt-6 text-gray-400 text-xs font-bold">رجوع</button>
                 </div>
               </Elements>
             ) : (

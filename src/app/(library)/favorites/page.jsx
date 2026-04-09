@@ -6,7 +6,7 @@ import { useCartStore } from "@/app/(library)/store/useCartStore";
 import { Trash2, Heart, ArrowRight, ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Activity from "@/app/loading";
+import PageLoader from "@/app/loading";
 
 const FavoritesPage = () => {
   const router = useRouter();
@@ -26,7 +26,7 @@ const FavoritesPage = () => {
     </div>
   );
 
-  if (loading && favorites.length === 0) return <Activity />;
+  if (loading && favorites.length === 0) return <PageLoader />;
 
   return (
     <div className="bg-[#f8f8f8] min-h-screen pb-32 relative" dir="rtl">
@@ -68,10 +68,15 @@ const FavoritesPage = () => {
                   {/* الصورة */}
                   <div className="w-24 h-32 bg-gray-50 rounded-2xl p-1 flex shrink-0 items-center justify-center overflow-hidden border border-slate-50">
                     <img
-                      src={book?.cover || book?.coverUrl || book?.image || "/placeholder.png"}
+                      src={book?.cover || book?.coverUrl || book?.image || "/logo.png"}
                       className="w-full h-full object-cover rounded-xl"
                       alt={book?.title || "book cover"}
-                      onError={(e) => { e.target.src = "/placeholder.png"; }}
+                      onError={(e) => {
+                        const img = e.target;
+                        if (img && img.src && !img.src.endsWith('/logo.png')) {
+                          img.src = "/logo.png";
+                        }
+                      }}
                     />
                   </div>
 
@@ -81,9 +86,16 @@ const FavoritesPage = () => {
                       <h3 className="font-bold text-sky-900 text-[13px] md:text-sm line-clamp-2 leading-tight uppercase">
                         {book?.name || book?.title || "اسم غير متوفر"}
                       </h3>
-                      <p className="text-amber-600 font-black text-sm mt-2">
-                        {((book?.price) / 100)?.toLocaleString() || 0} ج.م
-                      </p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <p className="text-amber-600 font-black text-sm">
+                          {((book?.isOnSale && book?.discountPrice) ? book.discountPrice : (book?.price || 0)) / 100} ج.م
+                        </p>
+                        {book?.isOnSale && (
+                          <span className="text-gray-400 line-through text-[10px]">
+                            {((book?.price) / 100).toLocaleString()} ج.م
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex items-center justify-between mt-auto">

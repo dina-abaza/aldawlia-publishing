@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
 import { toast } from "react-toastify";
-import Activity from "@/app/loading";
+import PageLoader from "@/app/loading";
 
 const AuthSuccessPage = () => {
   const router = useRouter();
@@ -38,7 +38,7 @@ const AuthSuccessPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] bg-[#f8f8f8]">
-      <Activity />
+      <PageLoader />
       <h2 className="mt-4 text-xl font-bold text-gray-700">جاري تسجيل الدخول...</h2>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Activity from '@/app/loading';
+import PageLoader from '@/app/loading';
 import api from '@/app/api';
 
 const CategoryGrid = () => {
@@ -24,7 +24,7 @@ const CategoryGrid = () => {
     fetchCategories();
   }, []);
 
-  if (loading) return <Activity />;
+  if (loading) return <PageLoader />;
   if (error) return <div className="text-center text-red-500 mt-6">{error}</div>;
 
 

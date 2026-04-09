@@ -15,6 +15,7 @@ export default function AdminDashboard() {
 
     useEffect(() => {
         fetchStats();
+        console.log( stats.recentSales, "AdminDashboard mounted, fetching stats..."); // إضافة لوج للتأكد من أن الـ useEffect يعمل
     }, []);
 
     const fetchStats = async () => {
@@ -99,8 +100,8 @@ export default function AdminDashboard() {
                                     <td colSpan="4" className="p-8 text-center text-gray-500">لا توجد مبيعات حديثة</td>
                                 </tr>
                             ) : (
-                                stats.recentSales.map((sale) => (
-                                    <tr key={sale._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                stats.recentSales.map((sale, index) => (
+                                    <tr key={sale._id || index} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                         <td className="p-4 font-medium text-gray-800 dark:text-gray-200">
                                             {sale.userName || "عميل غير متاح"}
                                             <span className="block text-xs text-gray-400 mt-1">{sale.user?.email}</span>
