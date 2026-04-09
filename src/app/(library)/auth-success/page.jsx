@@ -23,7 +23,6 @@ const AuthSuccessPage = () => {
           // تأكدي إن checkAuth في الـ store بتعمل await للطلب
           const userData = await checkAuth();
 
-          toast.success(`مرحباً بك يا ${userData?.name || "دينا"}`);
 
           // 3. التحويل للصفحة الرئيسية بعد التأكد من وجود البيانات
           router.replace("/");

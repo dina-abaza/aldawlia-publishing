@@ -1,9 +1,8 @@
-import { Activity } from "lucide-react";
-
 export default function PageLoader() {
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen gap-2">
-      <Activity className="animate-spin text-red-600 w-12 h-12" />
+    <div className="flex justify-center items-center min-h-screen">
+      {/* دايرة بسيطة، خفيفة، وبلون المشروع */}
+      <div className="w-10 h-10 border-4 border-sky-100 border-t-sky-900 rounded-full animate-spin"></div>
     </div>
   );
 }

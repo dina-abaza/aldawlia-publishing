@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import api from "@/app/api";
 import { ShoppingCart, Plus, Minus, ArrowRight, Heart } from "lucide-react";
 import { toast } from "react-toastify";
-import Activity from "@/app/loading";
+import PageLoader from "@/app/loading";
 // ✅ Stores
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
 import { useCartStore } from "@/app/(library)/store/useCartStore";
@@ -91,7 +91,7 @@ const CategoryProducts = () => {
     }
   };
 
-  if (loading) return <Activity />;
+  if (loading) return <PageLoader/>;
 
   return (
     <div className="bg-[#f8f8f8] min-h-screen pb-24" dir="rtl">

@@ -1,5 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import "../globals.css" // لاحظي الـ .. لأننا دخلنا في مجلد (shop)
+import "../globals.css";
 import Providers from "./providers"; 
 import Navbar from "./components/navbar"; 
 import NavBottom from "./components/navbottom"; 
@@ -49,11 +49,9 @@ export const metadata = {
   alternates: {
     canonical: "/",
   },
-  // themeColor moved to generateViewport for Next.js metadata API compatibility
 };
 
 export default function ShopLayout({ children }) {
-  
   return (
     <div className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}>
         <Providers>

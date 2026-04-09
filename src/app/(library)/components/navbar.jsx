@@ -96,7 +96,7 @@ const Navbar = () => {
 
                 {/* رجعنا حجم الخط الأصلي بتاعك */}
                 <span className="font-bold text-sm md:text-base whitespace-nowrap">
-                  مرحبا، {user?.name ? user.name.split(" ")[0] : "دينا"}
+                 {user?.name && `مرحبا، ${user.name.split(" ")[0]}`}
                 </span>
               </div>
             </div>

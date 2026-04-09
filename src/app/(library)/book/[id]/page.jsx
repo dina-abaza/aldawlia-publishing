@@ -28,7 +28,7 @@ const BookDetails = () => {
     const { isAuthenticated } = useAuthStore();
     const { isFavorite, addToFavorites, removeFromFavorites } = useFavoritesStore();
     const { addToCart } = useCartStore();
-
+const [redirectionUrl, setRedirectionUrl] = useState("");
     const [paymentModal, setPaymentModal] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState("");
     const [paymentProvider, setPaymentProvider] = useState("paymob");
@@ -84,10 +84,12 @@ const BookDetails = () => {
             if (paymentProvider === 'paymob' && data.data.paymentLink) {
                 // تحويل لـ Paymob
                 window.location.assign(data.data.paymentLink);
-            } else if (paymentProvider === 'stripe' && data.data.clientSecret) {
-                // تفعيل فورم Stripe في المودال
-                setClientSecret(data.data.clientSecret);
-            }
+            } 
+            else if (paymentProvider === 'stripe' && data.data.clientSecret) {
+    // تفعيل فورم Stripe وتخزين رابط الرجوع المستلم من السيرفر
+    setClientSecret(data.data.clientSecret);
+    setRedirectionUrl(data.data.redirectionUrl); // السطر ده مهم جداً وفقاً للوثيقة
+}
         } catch (err) {
             console.error("Validation Details:", err.response?.data);
             toast.error(err.response?.data?.message || "فشل في التحقق من البيانات");
@@ -183,9 +185,12 @@ const BookDetails = () => {
 
                     <div className="mb-6">
                         <div className="flex items-baseline gap-1">
-                            <span className={`text-3xl font-black ${isPaidAndNotOwned ? 'text-sky-900' : 'text-emerald-600'}`}>
-                                {!isPaidAndNotOwned ? (book.isPurchased ? "أنت تمتلكه" : "مـجـانـي") : (book.price / 100).toLocaleString()}
-                            </span>
+                           <span className={`text-3xl font-black ${isPaidAndNotOwned ? 'text-sky-900' : 'text-emerald-600'}`}>
+    {!isPaidAndNotOwned 
+        ? (book.isPurchased ? "أنت تمتلكه" : "مـجـانـي") 
+        : ((book.isOnSale ? book.discountPrice : book.price) / 100).toLocaleString()
+    }
+</span>
                             {isPaidAndNotOwned && <span className="text-sky-900 font-bold text-xs">جنيه مصري</span>}
                         </div>
                     </div>
@@ -231,7 +236,10 @@ const BookDetails = () => {
                             <Elements stripe={stripePromise} options={{ clientSecret }}>
                                 <div className="flex flex-col">
                                     <h2 className="text-lg font-bold text-gray-950 mb-4 text-center">بيانات البطاقة</h2>
-                                    <CheckoutForm clientSecret={clientSecret} bookId={id}/>
+                                   <CheckoutForm 
+    clientSecret={clientSecret} 
+    redirectionUrl={redirectionUrl} // نمرر الرابط الجاهز بدلاً من الـ ID
+/>
                                     <button onClick={() => setClientSecret("")} className="mt-6 text-gray-400 text-xs font-bold pb-4">رجوع للوسائل</button>
                                 </div>
                             </Elements>

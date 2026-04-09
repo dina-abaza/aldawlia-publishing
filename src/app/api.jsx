@@ -11,6 +11,7 @@ const api = axios.create({
     // 2. السطر ده هو "كلمة السر" عشان ngrok يبعت البيانات للمتصفح من غير تحذير
     'Accept': 'application/json',
     'Content-Type': 'application/json'
+   
   }
 });
 
