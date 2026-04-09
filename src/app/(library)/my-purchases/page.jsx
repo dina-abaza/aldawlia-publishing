@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, BookOpen, CheckCircle2, ShoppingCart } from "lucide-react";
+import { ArrowRight, BookOpen, CheckCircle2, ShoppingCart, Download, Loader2, Clock, AlertCircle } from "lucide-react";
 import api from "@/app/api";
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
 import PageLoader from "@/app/loading";
@@ -13,7 +13,68 @@ const MyPurchasesPage = () => {
   const { isAuthenticated } = useAuthStore();
   const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [downloadLinks, setDownloadLinks] = useState({}); // { bookId: "url" }
+  const [timers, setTimers] = useState({});             // { bookId: secondsLeft }
+  const [fetchingLink, setFetchingLink] = useState({}); // { bookId: true/false }
+
   const totalPrice = purchases.reduce((sum, purchase) => sum + (Number(purchase.book?.price) || 0), 0);
+
+  // تحديث العدادات كل ثانية
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimers((prev) => {
+        const next = { ...prev };
+        let changed = false;
+        Object.keys(next).forEach(id => {
+          if (next[id] > 0) {
+            next[id] -= 1;
+            changed = true;
+          }
+        });
+        return changed ? next : prev;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
+  };
+
+  const handleGetDownloadLink = async (bookId) => {
+    if (!bookId) return;
+    try {
+      setFetchingLink((prev) => ({ ...prev, [bookId]: true }));
+      const { data } = await api.get(`/files/${bookId}/download-link`);
+      const info = data.data;
+      
+      if (info.url) {
+        setDownloadLinks((prev) => ({ ...prev, [bookId]: info.url }));
+        
+        // حساب الوقت المتبقي بدقة بناءً على توقيت السيرفر
+        const expiry = new Date(info.expiresAt).getTime();
+        const now = new Date(info.serverTime).getTime();
+        const secondsLeft = Math.max(0, (expiry - now) / 1000);
+        
+        setTimers((prev) => ({ ...prev, [bookId]: secondsLeft }));
+        window.open(info.url, "_blank");
+        
+        // تحديث حالة المشتريات محلياً لتغيير شكل الزر
+        setPurchases(prev => prev.map(p => {
+          const pId = p.book?._id || p.bookId || p.book?.id;
+          if (pId === bookId) return { ...p, isDownloaded: true, downloadExpiry: info.expiresAt };
+          return p;
+        }));
+      }
+    } catch (err) {
+      console.error("Download Error:", err.response?.data || err.message);
+      toast.error(err.response?.data?.message || "فشل الحصول على الرابط");
+    } finally {
+      setFetchingLink((prev) => ({ ...prev, [bookId]: false }));
+    }
+  };
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -23,20 +84,23 @@ const MyPurchasesPage = () => {
       try {
         const res = await api.get("/payments/my-purchases");
         const data = res.data?.data || [];
-        console.log("[My Purchases] Full Response:", res.data);
-        console.log("[My Purchases] Purchases Array:", data);
-        console.log("[My Purchases] First purchase:", data[0]);
-        if (data.length > 0) {
-          console.log("[My Purchases] Book field of first purchase:", data[0].book);
-          console.log("[My Purchases] All fields of first purchase:", {
-            bookId: data[0].bookId,
-            book: data[0].book,
-            bookTitle: data[0].bookTitle,
-            amount: data[0].amount,
-            status: data[0].status,
-            _id: data[0]._id
-          });
-        }
+        const serverTime = res.data.serverTime || new Date();
+        
+        // إعادة بناء العدادات لمن تم تحميلهم مسبقاً وما زال وقتهم فعالاً
+        const initialTimers = {};
+        data.forEach(p => {
+          if (p.isDownloaded && p.downloadExpiry) {
+            const expiry = new Date(p.downloadExpiry).getTime();
+            const now = new Date(serverTime).getTime();
+            const secondsLeft = Math.max(0, (expiry - now) / 1000);
+            if (secondsLeft > 0) {
+              const bookId = p.book?._id || p.bookId || p.book?.id;
+              if (bookId) initialTimers[bookId] = secondsLeft;
+            }
+          }
+        });
+        
+        setTimers(initialTimers);
         setPurchases(data);
       } catch (error) {
         console.error("[My Purchases] Failed to load:", error.response?.data || error.message);
@@ -167,16 +231,76 @@ const MyPurchasesPage = () => {
                       )}
                     </div>
 
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="inline-flex items-center gap-2 rounded-full bg-green-100 text-green-700 px-4 py-2 text-sm font-bold">
-                        <CheckCircle2 size={16} /> تم الشراء
+                    <div className="flex flex-col gap-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-green-50 text-green-700 px-4 py-2 text-xs font-black self-start">
+                          <CheckCircle2 size={16} /> تم تأكيد الملكية
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <Link
+                            href={`/book/${purchase.book?._id || purchase.bookId || purchase.book?.id}`}
+                            className="p-3 rounded-2xl border border-gray-100 text-sky-900 hover:bg-gray-50 bg-white shadow-sm flex items-center gap-2 text-xs font-bold transition-all"
+                          >
+                            <BookOpen size={16} /> عرض التفاصيل
+                          </Link>
+                        </div>
                       </div>
-                      <Link
-                        href={`/book/${purchase.book?.id || purchase.bookId}`}
-                        className="inline-flex items-center justify-center min-w-[160px] rounded-3xl border border-sky-900 px-4 py-3 text-sm font-bold text-sky-900 hover:bg-sky-950 hover:text-white transition-colors"
-                      >
-                        عرض الكتاب
-                      </Link>
+
+                      <div className="border-t border-dashed border-gray-100 pt-4">
+                        {timers[purchase.book?._id || purchase.bookId || purchase.book?.id] > 0 ? (
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center justify-between bg-amber-50 rounded-2xl p-4 border border-amber-100">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-amber-600 font-black shadow-sm shrink-0">
+                                  {formatTime(timers[purchase.book?._id || purchase.bookId || purchase.book?.id])}
+                                </div>
+                                <div>
+                                  <p className="text-[10px] text-amber-700 font-bold uppercase tracking-wider">رابط فعال الآن</p>
+                                  <p className="text-xs text-amber-900 font-medium tracking-tight">يرجى حفظ الملف فوراً.</p>
+                                </div>
+                              </div>
+                              <a 
+                                href={downloadLinks[purchase.book?._id || purchase.bookId || purchase.book?.id]} 
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-amber-600 text-white px-5 py-2 rounded-xl font-bold text-xs flex items-center gap-2 shadow-md hover:bg-amber-700 transition-all shadow-amber-100"
+                              >
+                                <Download size={14} /> استلام الملف
+                              </a>
+                            </div>
+                          </div>
+                        ) : purchase.isDownloaded ? (
+                          <div className="flex items-center gap-3 bg-gray-50 rounded-2xl p-4 border border-gray-100 text-gray-400">
+                            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-300 shadow-sm shrink-0">
+                              <CheckCircle2 size={20} />
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-bold uppercase tracking-wider">تم التحميل مسبقاً</p>
+                                <p className="text-xs font-medium">تم استهلاك رابط التحميل المؤقت لهذا الكتاب.</p>
+                            </div>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleGetDownloadLink(purchase.book?._id || purchase.bookId || purchase.book?.id)}
+                            disabled={fetchingLink[purchase.book?._id || purchase.bookId || purchase.book?.id]}
+                            className="w-full bg-sky-900 text-white py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-lg shadow-sky-100 hover:bg-sky-950 transition-all active:scale-95 disabled:opacity-70 group"
+                          >
+                            {fetchingLink[purchase.book?._id || purchase.bookId || purchase.book?.id] ? (
+                              <Loader2 className="animate-spin" size={20} />
+                            ) : (
+                              <Download size={20} className="group-hover:translate-y-0.5 transition-transform" />
+                            )}
+                            تحميل الكتاب المباشر (PDF)
+                          </button>
+                        )}
+                        <p className="text-[10px] text-gray-400 mt-3 flex items-center gap-1">
+                          <AlertCircle size={10} /> 
+                          {!purchase.isDownloaded 
+                            ? "ملاحظة: يمكنك إصدار رابط تحميل واحد فقط لكل عملية شراء." 
+                            : "لديك 5 دقائق لتحميل الملف بعد الضغط على الزر لأول مرة."}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
