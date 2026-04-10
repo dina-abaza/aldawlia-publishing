@@ -47,7 +47,7 @@ const OffersPage = () => {
     }
     try {
       await addToCart(book.id || book._id);
-      toast.success("تمت الإضافة للسلة");
+      
     } catch (error) {
       console.error("Add to cart failed:", error);
       toast.error("فشل إضافة الكتاب للسلة");
