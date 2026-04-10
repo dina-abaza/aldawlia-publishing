@@ -39,8 +39,15 @@ const CartPage = () => {
       return toast.error("سلتك فارغة");
     }
 
-    if (paymentProvider === 'paymob' && paymentMethod === 'wallet' && !phoneNumber) {
-      return toast.error("يرجى إدخال رقم الهاتف للمحفظة");
+    // Validate phone for wallet payments
+    if (paymentProvider === 'paymob' && paymentMethod === 'wallet') {
+      if (!phoneNumber) {
+        return toast.error("يرجى إدخال رقم المحفظة");
+      }
+      const cleanPhone = phoneNumber.replace(/\s/g, '').replace(/^\+2/, '');
+      if (cleanPhone.length < 10) {
+        return toast.error("رقم المحفظة يجب أن يكون 10 أرقام على الأقل (مثال: 01012345678)");
+      }
     }
 
     const firstItem = cart.items[0];
@@ -66,6 +73,11 @@ const CartPage = () => {
       const { data } = await api.post('/payments/create-intent', paymentData);
 
       if (paymentProvider === 'paymob' && data.data.paymentLink) {
+        // Verify the backend actually used the correct method
+        if (paymentMethod === 'wallet' && data.data.paymentMethodUsed === 'card') {
+          toast.error("فشل الدفع بالمحفظة. يرجى المحاولة مرة أخرى أو اختيار الدفع بالبطاقة.");
+          return;
+        }
         window.location.assign(data.data.paymentLink);
       } else if (paymentProvider === 'stripe' && data.data.clientSecret) {
         setClientSecret(data.data.clientSecret);
@@ -78,6 +90,7 @@ const CartPage = () => {
       setProcessing(false);
     }
   };
+
 
   if (!isAuthenticated) return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] p-6 text-center">
