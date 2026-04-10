@@ -114,11 +114,11 @@ const CartPage = () => {
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2">
                         <p className="text-amber-600 font-black text-sm">
-                          {((item.file?.isOnSale && item.file?.discountPrice) ? item.file.discountPrice : item.file?.price) / 100} ج.م
+                          {(item.file?.isOnSale && item.file?.discountPrice) ? item.file.discountPrice : item.file?.price} ج.م
                         </p>
                         {item.file?.isOnSale && (
                           <span className="text-gray-400 line-through text-[10px]">
-                            {(item.file?.price / 100).toLocaleString()} ج.م
+                            {item.file?.price?.toLocaleString()} ج.م
                           </span>
                         )}
                       </div>
@@ -131,7 +131,7 @@ const CartPage = () => {
 
             <div className="mt-6 bg-white rounded-[2.5rem] p-6 shadow-xl border border-sky-50 text-center">
               <p className="text-gray-400 font-bold mb-1">المبلغ الإجمالي</p>
-              <h2 className="text-3xl font-black text-sky-900 mb-6">{(totalPrice / 100).toLocaleString()} ج.م</h2>
+              <h2 className="text-3xl font-black text-sky-900 mb-6">{totalPrice.toLocaleString()} ج.م</h2>
               
               <button
                 onClick={() => setPaymentModal(true)}

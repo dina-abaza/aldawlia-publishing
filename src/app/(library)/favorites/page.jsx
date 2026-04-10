@@ -88,11 +88,11 @@ const FavoritesPage = () => {
                       </h3>
                       <div className="flex items-center gap-2 mt-2">
                         <p className="text-amber-600 font-black text-sm">
-                          {((book?.isOnSale && book?.discountPrice) ? book.discountPrice : (book?.price || 0)) / 100} ج.م
+                          {(book?.isOnSale && book?.discountPrice) ? book.discountPrice : (book?.price || 0)} ج.م
                         </p>
                         {book?.isOnSale && (
                           <span className="text-gray-400 line-through text-[10px]">
-                            {((book?.price) / 100).toLocaleString()} ج.م
+                            {book?.price?.toLocaleString()} ج.م
                           </span>
                         )}
                       </div>

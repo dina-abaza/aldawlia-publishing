@@ -169,7 +169,7 @@ const BookDetails = () => {
                            <span className={`text-3xl font-black ${isPaidAndNotOwned ? 'text-sky-900' : 'text-emerald-600'}`}>
                                 {!isPaidAndNotOwned 
                                     ? (book.isPurchased ? "أنت تمتلكه" : "مـجـانـي") 
-                                    : ((book.isOnSale ? book.discountPrice : book.price) / 100).toLocaleString()
+                                    : (book.isOnSale ? book.discountPrice : book.price).toLocaleString()
                                 }
                             </span>
                             {isPaidAndNotOwned && <span className="text-sky-900 font-bold text-xs">جنيه مصري</span>}

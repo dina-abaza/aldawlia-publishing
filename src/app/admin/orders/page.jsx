@@ -78,7 +78,7 @@ export default function AdminOrdersPage() {
                     <div>
                         <p className="text-gray-500 text-sm font-bold mb-1">إجمالي المبالغ المنفذة</p>
                         <h3 className="text-2xl lg:text-3xl font-black text-gray-800 dark:text-white">
-                            {(filteredOrders.reduce((acc, curr) => acc + curr.amount, 0) / 100).toLocaleString()} <span className="text-sm">ج.م</span>
+                            {filteredOrders.reduce((acc, curr) => acc + curr.amount, 0).toLocaleString()} <span className="text-sm">ج.م</span>
                         </h3>
                     </div>
                     <div className="bg-green-50 dark:bg-green-900/20 p-3 lg:p-4 rounded-full">
@@ -124,7 +124,7 @@ export default function AdminOrdersPage() {
                                         <span className="block text-[10px] text-gray-400 mt-1 opacity-60 uppercase">المزود: {order.provider}</span>
                                     </td>
                                     <td className="p-5 text-center font-black text-orange-600">
-                                        {(order.amount / 100).toLocaleString()} {order.currency === 'egp' ? 'ج.م' : order.currency}
+                                        {order.amount.toLocaleString()} {order.currency === 'egp' ? 'ج.م' : order.currency}
                                     </td>
                                     <td className="p-5 text-center text-sm text-gray-500 font-semibold">
                                         {new Date(order.createdAt).toLocaleString('en-GB', { hour12: false })}
@@ -164,7 +164,7 @@ export default function AdminOrdersPage() {
                                 </div>
                                 <div>
                                     <p className="text-[10px] text-gray-400 mb-1">المبلغ</p>
-                                    <p className="text-xs font-black text-orange-600">{(order.amount / 100).toLocaleString()} ج.م</p>
+                                    <p className="text-xs font-black text-orange-600">{order.amount.toLocaleString()} ج.م</p>
                                 </div>
                                 <div className="col-span-2">
                                     <p className="text-[10px] text-gray-400 mb-1">رقم العملية (ID)</p>

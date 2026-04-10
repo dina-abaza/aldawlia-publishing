@@ -96,7 +96,7 @@ export default function AdminAnalyticsPage() {
                         <h3 className="font-bold text-gray-700">متوسط قيمة الطلب</h3>
                     </div>
                     <div className="text-4xl font-black text-gray-900">
-                        {((stats.aov?.averageCents || 0) / 100).toLocaleString()} <span className="text-lg font-normal text-gray-400">ج.م</span>
+                        {(stats.aov?.averageAmount || 0).toLocaleString()} <span className="text-lg font-normal text-gray-400">ج.م</span>
                     </div>
                 </div>
 
@@ -145,7 +145,7 @@ export default function AdminAnalyticsPage() {
                                         <div key={i} className="space-y-2">
                                             <div className="flex justify-between text-sm font-black">
                                                 <span>{cat.categoryDetails?.[0]?.name || "قسم عام"}</span>
-                                                <span className="text-pink-600">{(cat.totalRevenueCents / 100).toLocaleString()} ج.م</span>
+                                                <span className="text-pink-600">{cat.totalRevenueCents.toLocaleString()} ج.م</span>
                                             </div>
                                             <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                                                 <div className="h-full bg-pink-500" style={{ width: `${percent}%` }} />
@@ -180,7 +180,7 @@ export default function AdminAnalyticsPage() {
                                             </div>
                                         </div>
                                         <div className="text-left font-black text-emerald-600 text-xs">
-                                            +{(pay.amount / 100).toFixed(0)}
+                                            +{pay.amount.toFixed(0)}
                                         </div>
                                     </div>
                                 ))
