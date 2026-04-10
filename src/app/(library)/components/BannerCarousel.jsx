@@ -36,8 +36,6 @@ export default function BannerCarousel() {
     setIndex(i);
   };
 
-
-
   return (
     <section className="relative mx-auto mt-4 md:mt-6 overflow-hidden rounded-2xl" style={{ height: "min(70vh, 620px)" }}>
       {/* Stack all slides */}
@@ -45,11 +43,23 @@ export default function BannerCarousel() {
         <motion.div
           key={slide.src}
           initial={{ opacity: 0 }}
+          // رجعنا الـ animate زي ما كان بالظبط عشان الصور متختفيش من الـ Memory
           animate={{ opacity: i === index ? 1 : 0 }}
           transition={{ duration: 1.2, ease: "easeInOut" }}
           className="absolute inset-0"
+          style={{ zIndex: i === index ? 10 : 0 }}
         >
-          <Image src={slide.src} alt={slide.title} fill className="object-cover" priority={i === 0} />
+          <Image 
+            src={slide.src} 
+            alt={slide.title} 
+            fill 
+            className="object-cover" 
+            // التحسين الفعلي هنا وبدون تعطيل التحميل:
+            priority={i === 0} // الصورة الأولى فقط تحمل فوراً
+            loading={i === 0 ? "eager" : "lazy"} // الصور الباقية تحمل في الخلفية بهدوء
+            sizes="100vw" // عشان المتصفح ميرتبكش في الحسابات
+            quality={90} // رفعنا الجودة لـ 90 عشان الوضوح
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent flex items-center">
             <div className="container mx-auto px-6 md:px-12 max-w-7xl">
               <motion.div
@@ -65,7 +75,6 @@ export default function BannerCarousel() {
           </div>
         </motion.div>
       ))}
-
 
       {/* Dots */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-3" suppressHydrationWarning>

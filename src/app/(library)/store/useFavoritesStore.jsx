@@ -1,72 +1,68 @@
 import { create } from "zustand";
-import api from "@/app/api"; // استيراد ملف api.jsx للتعامل مع الطلبات
+import { persist, createJSONStorage } from "zustand/middleware";
+import api from "@/app/api";
 import { toast } from "react-toastify";
 
-export const useFavoritesStore = create((set, get) => ({
-  favorites: [],
-  loading: false,
+export const useFavoritesStore = create(
+  persist(
+    (set, get) => ({
+      favorites: [],
+      loading: false,
 
-  // جلب المفضلة
-  fetchFavorites: async () => {
-    set({ loading: true });
-    try {
-      const res = await api.get("/favorites");
-      // الباك إند يرسل البيانات في res.data.data بناءً على الـ Console
-      const data = res.data.data || res.data || [];
-      console.log("DEBUG: Favorites Data from API ->", data);
-      set({ favorites: data });
-    } catch (err) {
-      console.error("خطأ في جلب المفضلة:", err.response?.data || err.message);
-      set({ favorites: [] });
-    } finally {
-      set({ loading: false });
+      fetchFavorites: async () => {
+        set({ loading: true });
+        try {
+          const res = await api.get("/favorites");
+          const data = res.data.data || res.data || [];
+          set({ favorites: data });
+        } catch (err) {
+          console.error("خطأ في جلب المفضلة:", err.message);
+          set({ favorites: [] });
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      addToFavorites: async (fileId) => {
+        try {
+          await api.post("/favorites/add", { fileId });
+          await get().fetchFavorites();
+          toast.success("تمت الإضافة للمفضلة!");
+        } catch (err) {
+          toast.error(err.response?.data?.message || "فشل الإضافة للمفضلة");
+        }
+      },
+
+      removeFromFavorites: async (id) => {
+        try {
+          await api.delete(`/favorites/remove/${id}`);
+          // تحديث محلي فوري
+          set((state) => ({
+            favorites: state.favorites.filter(item => (item.id || item._id || item.fileId) !== id)
+          }));
+          toast.success("تم الحذف من المفضلة!");
+        } catch (err) {
+          toast.error("فشل الحذف من المفضلة");
+          get().fetchFavorites();
+        }
+      },
+
+      isFavorite: (id) => {
+        const { favorites } = get();
+        return favorites.some(item => 
+          (item.id === id) || (item._id === id) || (item.fileId === id) || (item.file?.id === id) || (item.file?._id === id)
+        );
+      },
+      
+      clearFavorites: () => {
+        set({ favorites: [], loading: false });
+        localStorage.removeItem("favorites-storage");
+      }
+    }),
+    {
+      name: "favorites-storage",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ favorites: state.favorites }),
     }
-  },
-
-  // إضافة كتاب للمفضلة
-  addToFavorites: async (fileId) => {
-    console.log("DEBUG: Adding book to favorites with ID:", fileId);
-    try {
-      await api.post("/favorites/add", { fileId });
-      // تحديث الحالة بعد الإضافة
-      await get().fetchFavorites();
-      toast.success("تمت الإضافة للمفضلة!");
-    } catch (err) {
-      console.error(err.response?.data);
-      toast.error(err.response?.data?.message || "فشل الإضافة للمفضلة");
-    }
-  },
-
-  // إزالة كتاب من المفضلة
-  removeFromFavorites: async (id) => {
-    console.log("DEBUG: Removing from favorites with ID:", id);
-    try {
-      // الرابط الصحيح بناءً على كلام الباك إند: /favorites/remove/:fileId
-      // وبما أن المعرف في الكونسول هو 'id' فنحن نرسله هنا
-      await api.delete(`/favorites/remove/${id}`);
-
-      // تحديث القائمة محلياً فوراً لتحسين تجربة المستخدم
-      set((state) => ({
-        favorites: state.favorites.filter(item => (item.id || item._id) !== id)
-      }));
-
-      toast.success("تم الحذف من المفضلة!");
-    } catch (err) {
-      console.error("فشل الحذف:", err.response?.data || err.message);
-      toast.error("فشل الحذف من المفضلة");
-      // في حال الفشل، نعيد جلب البيانات من السيرفر للتأكد
-      get().fetchFavorites();
-    }
-  },
-
-  // التحقق هل الكتاب موجود بالمفضلة
-  isFavorite: (id) => {
-    const { favorites } = get();
-    // بناءً على الـ Console، الأجسام داخل المصفوفة تحتوي على id
-    return favorites.some(item =>
-      (item.id === id) ||
-      (item._id === id) ||
-      (item.fileId === id)
-    );
-  }
-}));
+  )
+);

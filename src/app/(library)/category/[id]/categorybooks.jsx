@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 import api from "@/app/api";
 import { ShoppingCart, Plus, Minus, ArrowRight, Heart } from "lucide-react";
 import { toast } from "react-toastify";
@@ -68,12 +69,6 @@ const CategoryProducts = () => {
   }, [queryData, categoryNameFromQuery, limit]);
 
   useEffect(() => {
-    if (categoryNameFromQuery) {
-      setCategoryName(categoryNameFromQuery);
-    }
-  }, [categoryNameFromQuery]);
-
-  useEffect(() => {
     setLoading(queryLoading);
   }, [queryLoading]);
 
@@ -97,16 +92,11 @@ const CategoryProducts = () => {
     <div className="bg-[#f8f8f8] min-h-screen pb-24" dir="rtl">
 
       {/* عنوان القسم */}
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-
+      <div className="max-w-7xl mx-auto flex items-center justify-between p-4">
         <button
           type="button"
-          onClick={() => {
-            console.log("clicked");
-            router.back();
-          }}
+          onClick={() => router.back()}
           className="bg-gray-50 text-sky-900 w-10 h-10 rounded-xl flex items-center justify-center hover:bg-sky-50 transition-all shadow-sm active:scale-95 cursor-pointer z-[9999]"
-
         >
           <ArrowRight size={20} />
         </button>
@@ -115,47 +105,46 @@ const CategoryProducts = () => {
           {categoryName || "المنتجات"}
         </h1>
 
-        <div className="w-10" /> {/* spacer */}
+        <div className="w-10" />
       </div>
 
       <div className="p-4 flex flex-wrap justify-center gap-4 max-w-7xl mx-auto">
         {products.length > 0 ? (
-          products.map((product) => (
+          products.map((product, index) => (
             <div
-              key={product.id} // ✅ تم التعديل من _id إلى id
+              key={product.id}
               className="bg-white rounded-3xl shadow-sm flex flex-col items-center relative border border-gray-100 w-[calc(50%-8px)] md:w-[220px]"
             >
-              {/* خصم */}
               {product.discountPercent > 0 && (
                 <div className="absolute top-3 left-3 bg-gray-100 text-[10px] px-2 py-0.5 rounded-full z-10">
                   {product.discountPercent} %
                 </div>
               )}
 
-              {/* المفضلة */}
               <button
-                onClick={(e) => toggleFavorite(e, product.id)} // ✅ تم التعديل من _id إلى id
+                onClick={(e) => toggleFavorite(e, product.id)}
                 className="absolute top-3 right-3 bg-white/90 p-1.5 rounded-full z-10 text-sky-900 hover:text-amber-600 hover:bg-sky-50 transition-colors shadow-sm"
                 title="المفضلة"
               >
                 <Heart size={16} fill={isFavorite(product.id) ? "currentColor" : "none"} className={isFavorite(product.id) ? "text-amber-600" : ""} />
               </button>
 
-              {/* الصورة */}
               <div
-                className="w-full h-44 flex items-center justify-center mb-3 cursor-pointer overflow-hidden rounded-2xl"
-                onClick={() => router.push(`/book/${product.id}`)} // ✅ تم التعديل من _id إلى id
+                className="w-full h-44 flex items-center justify-center mb-3 cursor-pointer overflow-hidden rounded-2xl relative"
+                onClick={() => router.push(`/book/${product.id}`)}
               >
-                <img
-                  src={product.coverUrl || "/placeholder.jpg"} // ✅ تم التبسيط لاستخدام coverUrl المباشر من الباك إند
+                <Image
+                  src={product.coverUrl || "/placeholder.jpg"}
                   alt={product.title || product.name}
-                  className="object-cover w-full h-full"
+                  fill
+                  sizes="(max-width: 768px) 45vw, 220px"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  priority={index < 4}
                 />
               </div>
 
-              {/* الاسم وتفاصيل إضافية */}
               <div
-                className="flex flex-col items-center cursor-pointer pb-4"
+                className="flex flex-col items-center cursor-pointer pb-4 w-full"
                 onClick={() => router.push(`/book/${product.id}`)}
               >
                 <h3 className="font-bold text-[13px] text-center line-clamp-2 h-8 px-2 hover:text-amber-600 transition-colors">
@@ -174,15 +163,13 @@ const CategoryProducts = () => {
         )}
       </div>
 
-      {/* Pagination Dots */}
       {totalPages && totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-6">
           {Array.from({ length: totalPages }).map((_, i) => (
             <button
               key={i}
               onClick={() => setPage(i + 1)}
-              className={`w-3 h-3 rounded-full transition-colors duration-300 ${page === i + 1 ? "bg-sky-900" : "bg-gray-300"
-                }`}
+              className={`w-3 h-3 rounded-full transition-colors duration-300 ${page === i + 1 ? "bg-sky-900" : "bg-gray-300"}`}
               aria-label={`اذهب إلى الصفحة ${i + 1}`}
             />
           ))}

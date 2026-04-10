@@ -1,7 +1,13 @@
 "use client";
 import React from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Home, ShoppingCart, User, Info, Phone } from "lucide-react"; // استيراد الأيقونات الجديدة
+// التعديل: استيراد مباشر لتقليل الـ Bundle
+import Home from "lucide-react/dist/esm/icons/home";
+import ShoppingCart from "lucide-react/dist/esm/icons/shopping-cart";
+import User from "lucide-react/dist/esm/icons/user";
+import Info from "lucide-react/dist/esm/icons/info";
+import Phone from "lucide-react/dist/esm/icons/phone";
+
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
 import { useCartStore } from "@/app/(library)/store/useCartStore";
 
@@ -24,7 +30,7 @@ const NavBottom = () => {
         <span className={`text-[10px] mt-1 ${pathname === '/' ? 'font-bold' : ''}`}>الرئيسية</span>
       </div>
 
-      {/* تواصل معنا - مضافة بجانب الرئيسية */}
+      {/* تواصل معنا */}
       <div
         onClick={() => router.push('/contact')}
         className={`flex flex-col items-center cursor-pointer ${pathname === '/contact' ? 'text-amber-600' : 'text-gray-400'}`}
@@ -42,7 +48,6 @@ const NavBottom = () => {
           <div className={`p-3 rounded-full ${pathname === '/cart' ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-400'}`}>
             <ShoppingCart size={28} />
           </div>
-          {/* عداد المنتجات */}
           {cartItemsCount > 0 && (
             <span className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-amber-600 text-white text-[10px] font-bold flex items-center justify-center shadow">
               {cartItemsCount}
@@ -54,7 +59,7 @@ const NavBottom = () => {
         </span>
       </div>
 
-      {/* عن الموقع - بدلاً من العروض */}
+      {/* عن الموقع */}
       <div
         onClick={() => router.push('/about')}
         className={`flex flex-col items-center cursor-pointer ${pathname === '/about' ? 'text-amber-600' : 'text-gray-400'}`}

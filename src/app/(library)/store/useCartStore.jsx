@@ -9,9 +9,9 @@ export const useCartStore = create(
       cart: { items: [], total: 0 },
       loading: false,
 
-      // جلب السلة من السيرفر
       fetchCart: async () => {
-        set({ loading: true });
+        // مبيعملش لودينج لو الداتا موجودة أصلاً عشان نحسن السرعة
+        if (get().cart.items.length === 0) set({ loading: true });
         try {
           const res = await api.get("/cart");
           set({ cart: res.data.data || { items: [], total: 0 } });
@@ -22,34 +22,26 @@ export const useCartStore = create(
         }
       },
 
-      // إضافة عنصر (حسب الـ API بتاعك POST /cart/:fileId)
-     
-// إضافة عنصر مع منع التكرار
       addToCart: async (fileId) => {
         const { cart } = get();
-        
-        // فحص ما إذا كان الكتاب موجود مسبقاً في السلة
         const isExist = cart.items.some(item => (item.file?._id === fileId || item.file?.id === fileId));
 
         if (isExist) {
           toast.info("هذا الكتاب مضاف بالفعل إلى السلة");
-          return; // الخروج من الدالة ومنع الإضافة
+          return;
         }
 
         try {
-          const response = await api.post(`/cart/${fileId}`, {
-            quantity: 1 
-          });
+          const response = await api.post(`/cart/${fileId}`, { quantity: 1 });
           set({ cart: response.data.data });
           toast.success("تمت الإضافة للسلة");
           return response.data;
         } catch (error) {
-          console.error("فشل الإضافة:", error.response?.data || error);
           toast.error("فشل إضافة الكتاب للسلة");
           throw error;
         }
       },
-      // حذف عنصر واحد (DELETE /cart/:fileId)
+
       removeFromCart: async (fileId) => {
         try {
           const res = await api.delete(`/cart/${fileId}`);
@@ -60,30 +52,28 @@ export const useCartStore = create(
         }
       },
 
-      // تفريغ السلة بالكامل (DELETE /cart)
       clearCart: async () => {
         try {
           await api.delete("/cart");
           set({ cart: { items: [], total: 0 } });
-          // امسحي بيانات الـ Persist يدوياً لضمان النظافة
-          localStorage.removeItem("cart-storage"); 
+          localStorage.removeItem("cart-storage");
           toast.success("تم تفريغ السلة");
         } catch (err) {
-          // حتى لو الـ API فشل (زي الـ 404 اللي ظهرت لك)، هنصفر الـ UI للأمان
           set({ cart: { items: [], total: 0 } });
           localStorage.removeItem("cart-storage");
         }
       },
 
-      // دالة إضافية لتصفير السلة "محلياً فقط" وقت الـ Logout بدون نداء API
       resetCartLocal: () => {
-        set({ cart: { items: [], total: 0 } });
+        set({ cart: { items: [], total: 0 }, loading: false });
         localStorage.removeItem("cart-storage");
       }
     }),
     {
-      name: "cart-storage", // اسم المفتاح في المتصفح
+      name: "cart-storage",
       storage: createJSONStorage(() => localStorage),
+      // بنحفظ بس بيانات السلة، مش حالة الـ Loading
+      partialize: (state) => ({ cart: state.cart }),
     }
   )
 );

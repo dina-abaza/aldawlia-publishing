@@ -1,25 +1,31 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware"; // 1. استيراد الـ persist
+import { persist, createJSONStorage } from "zustand/middleware";
 import api from "@/app/api";
 import { useCartStore } from "./useCartStore";
 import { useFavoritesStore } from "./useFavoritesStore";
 
 export const useAuthStore = create(
-  persist( // 2. تغليف الـ Store بالـ persist
-    (set) => ({
+  persist(
+    (set, get) => ({
       user: null,
       isAuthenticated: false,
       loading: true,
 
+      // دالة لتحديث الحالة يدوياً لو احتجتي
       setUser: (user) => set({ user, isAuthenticated: !!user, loading: false }),
 
       clearUser: () => set({ user: null, isAuthenticated: false, loading: false }),
 
       login: async (email, password) => {
         try {
+          // مفيش داعي نفتح اللودينج هنا لو هنحول الصفحة
           const res = await api.post("/auth/login", { email, password });
           const { token, user } = res.data.data;
-          localStorage.setItem('jwtToken', token);
+          
+          if (typeof window !== "undefined") {
+            localStorage.setItem('jwtToken', token);
+          }
+          
           set({ user, isAuthenticated: true, loading: false });
           return { success: true };
         } catch (error) {
@@ -32,7 +38,11 @@ export const useAuthStore = create(
         try {
           const res = await api.post("/auth/register", { name, email, password });
           const { token, user } = res.data;
-          localStorage.setItem('jwtToken', token);
+          
+          if (typeof window !== "undefined") {
+            localStorage.setItem('jwtToken', token);
+          }
+          
           set({ user, isAuthenticated: true, loading: false });
           return { success: true };
         } catch (error) {
@@ -42,7 +52,13 @@ export const useAuthStore = create(
       },
 
       checkAuth: async () => {
-        set({ loading: true });
+        // لو التوكن مش موجود أصلاً، اقفل اللودينج فوراً بدل ما تستنى الـ API يرد بـ Error
+        const token = typeof window !== "undefined" ? localStorage.getItem('jwtToken') : null;
+        if (!token) {
+          set({ user: null, isAuthenticated: false, loading: false });
+          return;
+        }
+
         try {
           const res = await api.get("/auth/me");
           set({
@@ -51,6 +67,8 @@ export const useAuthStore = create(
             loading: false,
           });
         } catch (error) {
+          // لو التوكن منتهي أو فيه مشكلة
+          localStorage.removeItem("jwtToken");
           set({
             user: null,
             isAuthenticated: false,
@@ -67,6 +85,7 @@ export const useAuthStore = create(
         } finally {
           localStorage.removeItem("jwtToken");
 
+          // تنظيف السلة والمفضلة
           if (useCartStore.getState().resetCartLocal) {
             useCartStore.getState().resetCartLocal();
           } else {
@@ -87,7 +106,13 @@ export const useAuthStore = create(
       },
     }),
     {
-      name: "auth-storage", // 3. اسم المفتاح في الـ localStorage
+      name: "auth-storage",
+      storage: createJSONStorage(() => localStorage),
+      // أهم جزء: بنقول لزاستند متعملش Hydration للـ Loading خليها دايماً تبدأ بـ True أو False حسب الحاجة
+      partialize: (state) => ({ 
+        user: state.user, 
+        isAuthenticated: state.isAuthenticated 
+      }),
     }
   )
 );

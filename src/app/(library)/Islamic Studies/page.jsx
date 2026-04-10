@@ -1,14 +1,15 @@
+"use client";
 import React from 'react';
+// تأكدي من مسار الملف اللي فيه MotionScroll و FadeInItem
+import { MotionScroll, FadeInItem } from "@/app/(library)/components/motionScroll";
 
 const AlhekmaInstitutePage = () => {
     return (
         <div className="bg-white text-right font-sans leading-relaxed text-gray-800" dir="rtl">
 
-            {/* 1. Header & Official Identity - الهوية الرسمية مع اللوجو */}
-            <section className="bg-gradient-to-l from-sky-900 to-sky-800 py-8 px-8 text-white border-b-[6px] border-amber-600">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-6">
-
-                    {/* مكان اللوجو المستخرج من الفايل */}
+            {/* 1. Header & Official Identity */}
+            <header className="bg-gradient-to-l from-sky-900 to-sky-800 py-8 px-8 text-white border-b-[6px] border-amber-600">
+                <FadeInItem className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-6">
                     <div className="flex-shrink-0">
                         <img
                             src="/logo-institute.png"
@@ -31,15 +32,17 @@ const AlhekmaInstitutePage = () => {
                             <p>التبعية القانونية: جناح الدراسات والأبحاث لشركة International House for Distribution LLC</p>
                         </div>
                     </div>
-                </div>
-            </section>
+                </FadeInItem>
+            </header>
 
             <main className="max-w-7xl mx-auto px-8 py-8">
 
-                {/* 2. The Core Idea - الفكرة الأساسية */}
-                <section className="mb-10">
-                    <h3 className="text-2xl font-bold text-sky-900 mb-4 border-r-8 border-amber-600 pr-4">أولًا: الفكرة الأساسية للمعهد (The Core Idea)</h3>
-                    <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                {/* 2. The Core Idea */}
+                <MotionScroll className="mb-10">
+                    <FadeInItem>
+                        <h3 className="text-2xl font-bold text-sky-900 mb-4 border-r-8 border-amber-600 pr-4">أولًا: الفكرة الأساسية للمعهد (The Core Idea)</h3>
+                    </FadeInItem>
+                    <FadeInItem className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
                         <p className="text-lg leading-relaxed mb-6">
                             يقوم المعهد على دراسة التحولات العالمية في السياسة والاستراتيجية والجغرافيا السياسية، مع التركيز على فهم توازنات القوة الدولية وصياغة رؤى فكرية تساعد على قراءة المستقبل.
                         </p>
@@ -50,37 +53,39 @@ const AlhekmaInstitutePage = () => {
                             <div className="bg-white p-4 rounded-xl shadow-sm font-bold text-center border-b-4 border-sky-600">قراءة التحولات الجيوسياسية</div>
                         </div>
                         <p className="mt-6 text-center italic text-gray-500">من أجل تقديم رؤى عميقة تساعد الباحثين وصناع القرار والمجتمعات على فهم العالم المتغير.</p>
-                    </div>
-                </section>
+                    </FadeInItem>
+                </MotionScroll>
 
-                {/* 3. Vision, Mission & About - التعريف والرؤية والرسالة */}
-                <section className="mb-10 grid lg:grid-cols-2 gap-6">
+                {/* 3. Vision, Mission & About */}
+                <MotionScroll className="mb-10 grid lg:grid-cols-2 gap-6">
                     <div className="space-y-4">
-                        <div className="p-5 bg-sky-50 rounded-xl border-r-4 border-sky-900">
+                        <FadeInItem className="p-5 bg-sky-50 rounded-xl border-r-4 border-sky-900 h-full">
                             <h4 className="font-bold text-sky-900 mb-2">1️⃣ التعريف بالمعهد (About the Institute)</h4>
-                            <p className="text-sm">معهد الحكمة الدولية (IWI) هو مركز فكري مستقل يعنى بالدراسات الاستراتيجية والجيوسياسية، ويهدف إلى فهم التحولات الكبرى في النظام الدولي وتحليل ديناميات القوة والتوازنات العالمية. يسعى المعهد لتقديم رؤى فكرية عميقة تساعد على تفسير التحولات السياسية والاستراتيجية.</p>
-                        </div>
-                        <div className="p-5 border border-sky-100 rounded-xl">
+                            <p className="text-sm">معهد الحكمة الدولية (IWI) هو مركز فكري مستقل يعنى بالدراسات الاستراتيجية والجيوسياسية، ويهدف إلى فهم التحولات الكبرى في النظام الدولي وتحليل ديناميات القوة والتوازنات العالمية.</p>
+                        </FadeInItem>
+                        <FadeInItem className="p-5 border border-sky-100 rounded-xl">
                             <h4 className="font-bold text-sky-900 mb-2">2️⃣ الرؤية (Vision)</h4>
                             <p className="text-sm">منصة فكرية دولية رائدة في الدراسات الاستراتيجية، تسهم في بناء فهم أعمق للتحولات العالمية وصياغة رؤى مستقبلية متوازنة.</p>
-                        </div>
+                        </FadeInItem>
                     </div>
                     <div className="space-y-4">
-                        <div className="p-5 bg-sky-900 text-white rounded-xl">
+                        <FadeInItem className="p-5 bg-sky-900 text-white rounded-xl h-full">
                             <h4 className="font-bold text-amber-600 mb-2">3️⃣ الرسالة (Mission)</h4>
                             <p className="text-sm">تقديم دراسات وتحليلات استراتيجية عالية المستوى حول القضايا الدولية والجيوسياسية، وتعزيز ثقافة التفكير الاستراتيجي والحكمة السياسية.</p>
-                        </div>
-                        <div className="p-5 bg-amber-600/10 rounded-xl border border-amber-600">
+                        </FadeInItem>
+                        <FadeInItem className="p-5 bg-amber-600/10 rounded-xl border border-amber-600">
                             <h4 className="font-bold text-sky-900 mb-2">6️⃣ القيم الأساسية (Core Values)</h4>
-                            <p className="text-xs font-bold text-sky-800 tracking-wide">الاستقلال الفكري | الموضوعية العلمية | التفكير الاستراتيجي | الحكمة في التحليل | الانفتاح على الحوار العالمي</p>
-                        </div>
+                            <p className="text-xs font-bold text-sky-800 tracking-wide underline decoration-amber-600 decoration-2">الاستقلال الفكري | الموضوعية العلمية | التفكير الاستراتيجي | الحكمة في التحليل | الانفتاح على الحوار العالمي</p>
+                        </FadeInItem>
                     </div>
-                </section>
+                </MotionScroll>
 
-                {/* 4. Strategic Objectives - الأهداف */}
+                {/* 4. Strategic Objectives */}
                 <section className="mb-10">
-                    <h4 className="text-xl font-bold text-sky-900 mb-4">4️⃣ الأهداف الاستراتيجية (Strategic Objectives)</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+                    <FadeInItem>
+                        <h4 className="text-xl font-bold text-sky-900 mb-4">4️⃣ الأهداف الاستراتيجية (Strategic Objectives)</h4>
+                    </FadeInItem>
+                    <MotionScroll className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
                         {[
                             "تطوير الدراسات الاستراتيجية والجيوسياسية.",
                             "تحليل التحولات في النظام الدولي وموازين القوة.",
@@ -89,21 +94,23 @@ const AlhekmaInstitutePage = () => {
                             "إنتاج بحوث ودراسات تخدم صناع القرار والباحثين.",
                             "بناء شبكة دولية من الباحثين والمفكرين والخبراء."
                         ].map((text, i) => (
-                            <div key={i} className="bg-white border p-3 rounded-lg flex items-center gap-3">
-                                <span className="bg-sky-100 text-sky-900 w-6 h-6 flex items-center justify-center rounded-full text-xs font-black">{i + 1}</span>
+                            <FadeInItem key={i} className="bg-white border p-3 rounded-lg flex items-center gap-3 shadow-sm">
+                                <span className="bg-sky-100 text-sky-900 w-6 h-6 flex-shrink-0 flex items-center justify-center rounded-full text-xs font-black">{i + 1}</span>
                                 <p>{text}</p>
-                            </div>
+                            </FadeInItem>
                         ))}
-                    </div>
+                    </MotionScroll>
                 </section>
 
-                {/* 5. Research Departments - الأقسام البحثية كاملة */}
+                {/* 5. Research Departments */}
                 <section className="mb-10 py-8 bg-sky-50 rounded-3xl px-6">
-                    <h3 className="text-2xl font-black text-sky-900 mb-8 text-center underline decoration-amber-600 underline-offset-8">الأقسام البحثية للمعهد</h3>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
+                    <FadeInItem>
+                        <h3 className="text-2xl font-black text-sky-900 mb-8 text-center underline decoration-amber-600 underline-offset-8">الأقسام البحثية للمعهد</h3>
+                    </FadeInItem>
+                    
+                    <MotionScroll className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {/* Dept 1 */}
-                        <div className="bg-white p-5 rounded-xl shadow-sm border-t-4 border-sky-900">
+                        <FadeInItem className="bg-white p-5 rounded-xl shadow-sm border-t-4 border-sky-900">
                             <h5 className="font-bold text-sky-900 mb-2">1️⃣ قسم الدراسات الجيوسياسية</h5>
                             <p className="text-[11px] text-gray-500 mb-3 italic">دراسة تأثير الجغرافيا في تشكيل السياسات الدولية وتوازنات القوة.</p>
                             <ul className="text-xs space-y-1 font-medium">
@@ -111,10 +118,10 @@ const AlhekmaInstitutePage = () => {
                                 <li>• دراسة مناطق النفوذ والصراع</li>
                                 <li>• تحليل التحالفات ومتابعة تحولات النظام</li>
                             </ul>
-                        </div>
+                        </FadeInItem>
 
                         {/* Dept 2 */}
-                        <div className="bg-white p-5 rounded-xl shadow-sm border-t-4 border-sky-900">
+                        <FadeInItem className="bg-white p-5 rounded-xl shadow-sm border-t-4 border-sky-900">
                             <h5 className="font-bold text-sky-900 mb-2">2️⃣ قسم الدراسات الاستراتيجية</h5>
                             <p className="text-[11px] text-gray-500 mb-3 italic">تحليل الاستراتيجيات الدولية والعسكرية والسياسية للدول الكبرى.</p>
                             <ul className="text-xs space-y-1 font-medium">
@@ -122,10 +129,10 @@ const AlhekmaInstitutePage = () => {
                                 <li>• دراسة العقائد العسكرية وإدارة الصراعات</li>
                                 <li>• تقييم سياسات الأمن القومي</li>
                             </ul>
-                        </div>
+                        </FadeInItem>
 
                         {/* Dept 3 */}
-                        <div className="bg-white p-5 rounded-xl shadow-sm border-t-4 border-sky-900">
+                        <FadeInItem className="bg-white p-5 rounded-xl shadow-sm border-t-4 border-sky-900">
                             <h5 className="font-bold text-sky-900 mb-2">3️⃣ قسم دراسات النظام الدولي</h5>
                             <p className="text-[11px] text-gray-500 mb-3 italic">دراسة تطور النظام الدولي وتحولات القوة بين الأقطاب.</p>
                             <ul className="text-xs space-y-1 font-medium">
@@ -133,7 +140,7 @@ const AlhekmaInstitutePage = () => {
                                 <li>• تحليل صعود وسقوط القوى الكبرى</li>
                                 <li>• دراسة موازين القوة ومستقبل النظام</li>
                             </ul>
-                        </div>
+                        </FadeInItem>
 
                         {/* Sub Depts */}
                         <div className="lg:col-span-3 grid md:grid-cols-4 gap-4 mt-2">
@@ -141,66 +148,70 @@ const AlhekmaInstitutePage = () => {
                                 { name: "الأمن الدولي", text: "الأمن الإقليمي، الإرهاب، الأمن السيبراني والطاقوي." },
                                 { name: "الاقتصاد الجيوسياسي", text: "الاقتصاد السياسي، الصراعات الاقتصادية، العقوبات والموارد." },
                                 { name: "الدراسات المستقبلية", text: "بناء السيناريوهات، استشراف التحولات، ودراسة مستقبل القوة." },
-                                { name: "الفكر والحكمة السياسية", text: "فلسفة القوة، الفكر الاستراتيجي، والحكمة السياسية." }
+                                { name: "الفكر والحكمة السياسية", text: "فلسفة القوة، الفكر الاستراتيجية، والحكمة السياسية." }
                             ].map((dept, i) => (
-                                <div key={i} className="bg-sky-900 text-white p-4 rounded-xl border-r-4 border-amber-600">
+                                <FadeInItem key={i} className="bg-sky-900 text-white p-4 rounded-xl border-r-4 border-amber-600 shadow-md">
                                     <h6 className="font-bold text-xs mb-1 text-amber-600 underline">{dept.name}</h6>
                                     <p className="text-[10px] opacity-80 leading-tight">{dept.text}</p>
-                                </div>
+                                </FadeInItem>
                             ))}
                         </div>
-                    </div>
+                    </MotionScroll>
                 </section>
 
-                {/* 6. Strategic Specialized Units - الوحدات المتخصصة */}
+                {/* 6. Strategic Specialized Units */}
                 <section className="mb-10">
-                    <h4 className="text-xl font-bold text-sky-900 mb-6 border-r-4 border-amber-600 pr-3">الوحدات الاستراتيجية المتخصصة</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div className="p-4 border border-gray-200 rounded-xl">
-                            <h5 className="font-bold text-sky-800 mb-1 text-sm underline">1️⃣ وحدة تحليل الأزمات الدولية</h5>
-                            <p className="text-[11px] leading-relaxed italic">متابعة الأزمات وتقديم تقديرات الموقف ودراسة السيناريوهات.</p>
-                        </div>
-                        <div className="p-4 border border-gray-200 rounded-xl">
-                            <h5 className="font-bold text-sky-800 mb-1 text-sm underline">2️⃣ وحدة الدراسات الإقليمية</h5>
-                            <p className="text-[11px] leading-relaxed italic">التوازنات في الشرق الأوسط، آسيا، أوروبا، إفريقيا، والأميركيتان.</p>
-                        </div>
-                        <div className="p-4 border border-gray-200 rounded-xl">
-                            <h5 className="font-bold text-sky-800 mb-1 text-sm underline">3️⃣ وحدة التقارير الاستراتيجية</h5>
-                            <p className="text-[11px] leading-relaxed italic">التقرير الجيوسياسي السنوي، تقرير المخاطر العالمية، وموازين القوة.</p>
-                        </div>
-                        <div className="p-4 border border-gray-200 rounded-xl">
-                            <h5 className="font-bold text-sky-800 mb-1 text-sm underline">4️⃣ وحدة الخرائط الجيوسياسية</h5>
-                            <p className="text-[11px] leading-relaxed italic">إنتاج خرائط مناطق النفوذ، التحالفات العسكرية، والطاقة والموارد.</p>
-                        </div>
-                        <div className="p-4 border border-gray-200 rounded-xl lg:col-span-2">
+                    <FadeInItem>
+                        <h4 className="text-xl font-bold text-sky-900 mb-6 border-r-4 border-amber-600 pr-3">الوحدات الاستراتيجية المتخصصة</h4>
+                    </FadeInItem>
+                    <MotionScroll className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {[
+                            { title: "1️⃣ وحدة تحليل الأزمات الدولية", desc: "متابعة الأزمات وتقديم تقديرات الموقف ودراسة السيناريوهات." },
+                            { title: "2️⃣ وحدة الدراسات الإقليمية", desc: "التوازنات في الشرق الأوسط، آسيا، أوروبا، إفريقيا، والأميركيتان." },
+                            { title: "3️⃣ وحدة التقارير الاستراتيجية", desc: "التقرير الجيوسياسي السنوي، تقرير المخاطر العالمية، وموازين القوة." },
+                            { title: "4️⃣ وحدة الخرائط الجيوسياسية", desc: "إنتاج خرائط مناطق النفوذ، التحالفات العسكرية، والطاقة والموارد." }
+                        ].map((unit, i) => (
+                            <FadeInItem key={i} className="p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
+                                <h5 className="font-bold text-sky-800 mb-1 text-sm underline">{unit.title}</h5>
+                                <p className="text-[11px] leading-relaxed italic text-gray-600">{unit.desc}</p>
+                            </FadeInItem>
+                        ))}
+                        <FadeInItem className="p-4 border border-gray-200 rounded-xl lg:col-span-2 bg-sky-50/50">
                             <h5 className="font-bold text-sky-800 mb-1 text-sm underline">5️⃣ وحدة البيانات والتحليل</h5>
-                            <p className="text-[11px] leading-relaxed italic">بناء قواعد بيانات استراتيجية، تحليل الاتجاهات العالمية، تحليل المخاطر ودعم الدراسات بالأرقام.</p>
-                        </div>
-                    </div>
+                            <p className="text-[11px] leading-relaxed italic text-gray-600">بناء قواعد بيانات استراتيجية، تحليل الاتجاهات العالمية، تحليل المخاطر ودعم الدراسات بالأرقام والرسوم البيانية.</p>
+                        </FadeInItem>
+                    </MotionScroll>
                 </section>
 
-                {/* 7. Future Institutional Structure - الهيكل المؤسسي الحقيقي */}
-                <section className="mb-10 bg-gray-900 text-white p-8 rounded-[2rem]">
-                    <h4 className="text-xl font-bold text-amber-600 mb-6 text-center">المرحلة القادمة: الهيبة والهيكل المؤسسي</h4>
-                    <div className="flex flex-wrap justify-center gap-3">
+                {/* 7. Future Institutional Structure */}
+                <section className="mb-10 bg-gray-900 text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-amber-600"></div>
+                    <FadeInItem>
+                        <h4 className="text-xl font-bold text-amber-600 mb-6 text-center">المرحلة القادمة: الهيبة والهيكل المؤسسي</h4>
+                    </FadeInItem>
+                    <MotionScroll className="flex flex-wrap justify-center gap-3 relative z-10">
                         {[
                             "مجلس الأمناء", "المجلس العلمي", "المدير التنفيذي", "المجلس الاستشاري الدولي",
                             "هيئة الباحثين", "مجلة المعهد العلمية", "سلسلة الإصدارات", "مركز التدريب",
                             "مركز الحوار الدولي", "وحدة النشر"
                         ].map((name, i) => (
-                            <span key={i} className="bg-white/10 px-4 py-2 rounded-lg text-xs font-bold border border-white/10">
-                                {name}
-                            </span>
+                            <FadeInItem key={i}>
+                                <span className="bg-white/10 px-4 py-2 rounded-lg text-xs font-bold border border-white/10 backdrop-blur-md hover:bg-white/20 transition-all cursor-default">
+                                    {name}
+                                </span>
+                            </FadeInItem>
                         ))}
-                    </div>
-                    <p className="mt-8 text-center text-sm font-black italic text-amber-600">"حكمة الرؤية.. قوة التحليل"</p>
+                    </MotionScroll>
+                    <FadeInItem delay={0.4}>
+                        <p className="mt-8 text-center text-sm font-black italic text-amber-600 tracking-widest uppercase">"حكمة الرؤية.. قوة التحليل"</p>
+                    </FadeInItem>
                 </section>
 
-                {/* 8. Activities & Domains - الأنشطة ومجالات البحث */}
-                <section className="grid md:grid-cols-2 gap-8 border-t pt-8">
-                    <div>
-                        <h4 className="text-lg font-bold text-sky-900 mb-4 underline">5️⃣ مجالات البحث (Research Domains)</h4>
-                        <div className="grid grid-cols-2 gap-2 text-xs font-bold opacity-80">
+                {/* 8. Activities & Domains */}
+                <MotionScroll className="grid md:grid-cols-2 gap-8 border-t pt-8">
+                    <FadeInItem>
+                        <h4 className="text-lg font-bold text-sky-900 mb-4 underline decoration-amber-600">5️⃣ مجالات البحث (Research Domains)</h4>
+                        <div className="grid grid-cols-2 gap-2 text-xs font-bold text-gray-700">
                             <p>• الجغرافيا السياسية</p>
                             <p>• الاستراتيجية الدولية</p>
                             <p>• تحولات النظام العالمي</p>
@@ -208,27 +219,29 @@ const AlhekmaInstitutePage = () => {
                             <p>• الاقتصاد الجيوسياسي</p>
                             <p>• دراسات القوة والنفوذ</p>
                         </div>
-                    </div>
-                    <div>
-                        <h4 className="text-lg font-bold text-sky-900 mb-4 underline">7️⃣ أنشطة المعهد (Activities)</h4>
-                        <ul className="space-y-1 text-xs font-medium">
-                            <li>• إصدار الدراسات والتقارير الاستراتيجية الدورية.</li>
-                            <li>• تنظيم المؤتمرات والندوات الفكرية الدولية.</li>
-                            <li>• نشر المقالات التحليلية وبناء منصات للحوار.</li>
-                            <li>• تدريب الباحثين الشباب في التفكير الاستراتيجي.</li>
+                    </FadeInItem>
+                    <FadeInItem>
+                        <h4 className="text-lg font-bold text-sky-900 mb-4 underline decoration-amber-600">7️⃣ أنشطة المعهد (Activities)</h4>
+                        <ul className="space-y-1 text-xs font-medium text-gray-700">
+                            <li className="flex items-center gap-2">🔹 إصدار الدراسات والتقارير الاستراتيجية الدورية.</li>
+                            <li className="flex items-center gap-2">🔹 تنظيم المؤتمرات والندوات الفكرية الدولية.</li>
+                            <li className="flex items-center gap-2">🔹 نشر المقالات التحليلية وبناء منصات للحوار.</li>
+                            <li className="flex items-center gap-2">🔹 تدريب الباحثين الشباب في التفكير الاستراتيجي.</li>
                         </ul>
-                    </div>
-                </section>
+                    </FadeInItem>
+                </MotionScroll>
 
             </main>
 
             {/* Footer Branding */}
             <footer className="bg-sky-900 text-white py-10 px-8 text-center border-t-8 border-amber-600">
-                <h5 className="text-xl font-black mb-1">INTERNATIONAL WISDOM INSTITUTE (IWI)</h5>
-                <p className="text-xs opacity-60 italic mb-4 tracking-widest">Strategic & Geopolitical Studies</p>
-                <div className="text-[10px] opacity-40 uppercase">
-                    جناح الدراسات والأبحاث لشركة International House for Distribution LLC © 2026
-                </div>
+                <FadeInItem>
+                    <h5 className="text-xl font-black mb-1">INTERNATIONAL WISDOM INSTITUTE (IWI)</h5>
+                    <p className="text-xs opacity-60 italic mb-4 tracking-widest">Strategic & Geopolitical Studies</p>
+                    <div className="text-[10px] opacity-40 uppercase font-bold">
+                        جناح الدراسات والأبحاث لشركة International House for Distribution LLC © 2026
+                    </div>
+                </FadeInItem>
             </footer>
         </div>
     );

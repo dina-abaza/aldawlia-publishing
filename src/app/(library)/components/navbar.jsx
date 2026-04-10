@@ -2,7 +2,14 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ShoppingCart, Search, Phone, Info, Heart, BookOpen } from "lucide-react";
+// التعديل: استيراد مباشر لكل أيقونة لتقليل حجم الـ JavaScript
+import ShoppingCart from "lucide-react/dist/esm/icons/shopping-cart";
+import Search from "lucide-react/dist/esm/icons/search";
+import Phone from "lucide-react/dist/esm/icons/phone";
+import Info from "lucide-react/dist/esm/icons/info";
+import Heart from "lucide-react/dist/esm/icons/heart";
+import BookOpen from "lucide-react/dist/esm/icons/book-open";
+
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
 import { useCartStore } from "@/app/(library)/store/useCartStore";
 import { useFavoritesStore } from "@/app/(library)/store/useFavoritesStore";
@@ -17,12 +24,15 @@ const Navbar = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      fetchFavorites();
-      fetchCart();
+      // تعديل الأداء: تأخير بسيط للطلبات عشان الصفحة تفتح الأول
+      const timer = setTimeout(() => {
+        fetchFavorites();
+        fetchCart();
+      }, 400);
+      return () => clearTimeout(timer);
     }
   }, [isAuthenticated, fetchFavorites, fetchCart]);
 
-  // التعديل هنا: إذا لم يكن مسجل دخول، اجعل العدد دائماً 0
   const cartItemsCount = isAuthenticated ? (cart?.items?.length || 0) : 0;
 
   const [keyword, setKeyword] = useState("");
@@ -54,7 +64,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-[#f2f2f2] sticky top-0 z-300 px-4 h-20 flex items-center" dir="rtl">
+    <nav className="bg-[#f2f2f2] sticky top-0 z-[300] px-4 h-20 flex items-center" dir="rtl">
       <div className="flex justify-between items-center w-full max-w-7xl mx-auto gap-2 md:gap-4">
 
         <div className="flex items-center gap-2 md:gap-4">
@@ -77,7 +87,6 @@ const Navbar = () => {
               </div>
 
               <div className="flex items-center gap-2 md:gap-3">
-                {/* القلب للموبايل فقط - مظبوط بالمللي */}
                 <Link href="/favorites" className="md:hidden relative flex items-center justify-center w-8 h-8">
                   <Heart size={22} className="text-sky-900" />
                   {favorites?.length > 0 && (
@@ -94,9 +103,8 @@ const Navbar = () => {
                   تسجيل خروج
                 </button>
 
-                {/* رجعنا حجم الخط الأصلي بتاعك */}
                 <span className="font-bold text-sm md:text-base whitespace-nowrap">
-                 {user?.name && `مرحبا، ${user.name.split(" ")[0]}`}
+                  {user?.name && `مرحبا، ${user.name.split(" ")[0]}`}
                 </span>
               </div>
             </div>
@@ -131,7 +139,6 @@ const Navbar = () => {
             <Link href="/favorites" className="relative flex flex-col items-center group hover:scale-105 transition-all duration-300">
               <Heart size={22} className="group-hover:text-amber-600 transition-colors text-sky-900" />
               <span className="text-xs font-bold group-hover:text-amber-600 transition-colors text-sky-900">المفضلة</span>
-              {/* تعديل للمفضلة أيضاً لضمان عدم ظهور الرقم عند الخروج */}
               {isAuthenticated && favorites?.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
                   {favorites.length}
@@ -204,11 +211,9 @@ const Navbar = () => {
             <Image
               src="/logohome.png"
               alt="Logo"
-              // هنا بنحدد الحجم الأصغر (للموبايل)
               width={60}
               height={60}
               priority
-              // هنا بنكبر الحجم في اللاب باستخدام md:w-[90px]
               className="object-contain w-[60px] md:w-[90px] h-auto"
             />
           </Link>

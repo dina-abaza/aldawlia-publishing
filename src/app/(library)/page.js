@@ -1,5 +1,4 @@
-"use client"; // ضروري جداً عشان Framer Motion تشتغل
-
+"use client";
 import { motion } from "framer-motion";
 import CategoryGrid from "./components/categoriesgrid";
 import BannerCarousel from "./components/BannerCarousel";
@@ -8,48 +7,36 @@ import HikmaResume from "./components/hikma resume";
 import IslamicResume from "./components/islamic resume";
 
 export default function Home() {
-  
-  // إعدادات الحركة الموحدة لكل سيكشن (ظهور تدريجي مع حركة خفيفة)
   const fadeInVariant = {
-    initial: { opacity: 0, y: 30 }, // بيبدأ شفاف ونازل لتحت 30 بكسل
-    whileInView: { opacity: 1, y: 0 }, // بيظهر وبيرجع لمكانه الأصلي
-    viewport: { once: true, margin: "-100px" }, // بيشتغل مرة واحدة لما يدخل الشاشة بمسافة 100 بكسل
-    transition: { duration: 0.8, ease: "easeOut" } // مدة الحركة ونعومتها
+    initial: { opacity: 0, y: 20 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.1 }, // تعديل: amount بدلاً من margin لتحسين المراقبة
+    transition: { duration: 0.5, ease: "easeOut" } // تقليل المدة لسرعة الاستجابة
   };
 
   return (
     <main className="min-h-screen bg-gray-50 overflow-hidden">
-      
-      {/* 1. البانر: يظهر فوراً عند فتح الصفحة */}
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
-        transition={{ duration: 1 }}
-        className="max-w-7xl mx-auto px-4"
-      >
+      {/* 1. البانر: شيلنا الـ motion.div التقيل وخليناه عادي لأن البانر نفسه جواه أنميشن */}
+      <div className="max-w-7xl mx-auto px-4">
         <BannerCarousel />
-      </motion.div>
+      </div>
 
-      {/* 2. الأقسام: تظهر عند السكرول */}
-      <motion.div {...fadeInVariant}>
+      {/* 2. السكاشن الباقية: استخدمنا motion.section عشان المتصفح يفهم التقسيم */}
+      <motion.section {...fadeInVariant}>
         <CategoryGrid />
-      </motion.div>
+      </motion.section>
 
-      {/* 3. سيكشن Hikma: يظهر بنعومة */}
-      <motion.div {...fadeInVariant}>
+      <motion.section {...fadeInVariant}>
         <HikmaResume />
-      </motion.div>
+      </motion.section>
 
-      {/* 4. سيكشن Islamic: يظهر بنعومة */}
-      <motion.div {...fadeInVariant}>
+      <motion.section {...fadeInVariant}>
         <IslamicResume />
-      </motion.div>
+      </motion.section>
 
-      {/* 5. روابط الوصول السريع: تظهر في الآخر */}
-      <motion.div {...fadeInVariant}>
+      <motion.section {...fadeInVariant}>
         <QuickAccessLinks />
-      </motion.div>
-      
+      </motion.section>
     </main>
   );
 }

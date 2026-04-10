@@ -1,9 +1,15 @@
 "use client";
-
+import dynamic from 'next/dynamic';
 import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { GoogleOAuthProvider } from "@react-oauth/google";
+
+// استخدمت اسم مختلف هنا (GoogleProvider) عشان ميعملش Conflict مع الاسم اللي تحت
+const GoogleProvider = dynamic(
+  () => import('@react-oauth/google').then(mod => mod.GoogleOAuthProvider),
+  { ssr: false }
+);
+
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
 import PageLoader from "@/app/loading";
 
@@ -12,8 +18,6 @@ const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
 export default function Providers({ children }) {
   const loading = useAuthStore((state) => state.loading);
 
-  // تعليق checkAuth مؤقتاً لتجنب infinite loop
-  // سيتم تفعيله بعد التأكد من اتصال الـ API
   useEffect(() => {
     const checkAuthAsync = async () => {
       try {
@@ -48,8 +52,8 @@ export default function Providers({ children }) {
   );
 
   return (
-    <GoogleOAuthProvider clientId={clientId}>
+    <GoogleProvider clientId={clientId}>
       {childrenWithLoaders}
-    </GoogleOAuthProvider>
+    </GoogleProvider>
   );
 }

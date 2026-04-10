@@ -1,17 +1,16 @@
 import axios from 'axios';
 import { useAdminAuthStore } from './admin/store/useAdminAuthStore';
 
-// 1. حطي رابط الـ ngrok اللي معاكي هنا مباشرة (Base URL)
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
+  timeout: 10000,
   headers: {
-    // 2. السطر ده هو "كلمة السر" عشان ngrok يبعت البيانات للمتصفح من غير تحذير
     'Accept': 'application/json',
-    'Content-Type': 'application/json'
-   
+    'Content-Type': 'application/json',
+
   }
 });
 
@@ -30,29 +29,33 @@ api.interceptors.request.use(
 );
 
 // Response Interceptor: التعامل مع انتهاء التوكن
-// Response Interceptor: التعامل مع انتهاء التوكن
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
+    // لو الرد 401 (غير مصرح) واحنا لسه ما حاولناش نعيد الطلب
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       if (typeof window !== 'undefined') {
-        useAdminAuthStore.getState().forceAdminLogout();
-        // 1. امسحي التوكن والبيانات فوراً عشان الـ Zustand يحس بالتغيير
+        // 1. مسح كل البيانات المتعلقة بالجلسة فوراً
         localStorage.removeItem('jwtToken');
         localStorage.removeItem('adminUser');
-        localStorage.removeItem('auth-storage'); // احتياطي لو بتستخدمي ستور تاني
+        localStorage.removeItem('auth-storage'); // تنظيف ستور المستخدم العادي
+        localStorage.removeItem('admin-auth-storage'); // تنظيف ستور الأدمن
 
-        // 2. شوفي إنتي في صفحة أدمن ولا مستخدم عادي ووديه المكان الصح
-        const isAdminPath = window.location.pathname.startsWith('/admin');
+        // 2. استدعاء Logout من الـ Stores مباشرة لتصفير الحالة (State)
+        useAdminAuthStore.getState().forceAdminLogout?.();
+
+        // 3. تحديد المسار بناءً على مكان المستخدم الحالي
+        const currentPath = window.location.pathname;
+        const isAdminPath = currentPath.startsWith('/admin');
         const loginPath = isAdminPath ? '/admin/login' : '/login';
 
-        // لو إنتي أصلاً مش في صفحة اللوجن، اطل
-        // بي منه يخرج
-        if (!window.location.pathname.includes(loginPath)) {
+        // 4. التوجيه لصفحة الدخول فقط لو المستخدم مش فيها حالياً
+        // ومنع الـ Loop لو الـ API بتاع /me رجع 401
+        if (!currentPath.includes('/login')) {
           window.location.href = loginPath;
         }
       }

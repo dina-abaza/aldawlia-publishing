@@ -10,28 +10,31 @@ import PageTransition from "./components/pageTransition"
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: 'swap', // إضافة لضمان ثبات الخط أثناء التحميل
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: 'swap',
 });
 
-// الـ Metadata هتفضل شغالة هنا عادي لأن الملف بقى Server Component
 export const metadata = {
   title: "مكتبة إلكترونية",
-  // ... باقي الميتاداتا بتاعتك زي ما هي بالظبط
+  description: "استكشف آلاف الكتب الرقمية",
 };
 
 export default function ShopLayout({ children }) {
   return (
-    <html lang="ar" dir="rtl"> 
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}>
+    <html lang="ar" dir="rtl" suppressHydrationWarning> 
+      <body 
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
+        suppressHydrationWarning
+      >
           <Providers>
             <TopBanner/>
             <Navbar />
             <main className="min-h-screen">
-              {/* هنا لفينا المحتوى بالأنميشن من غير ما نضرب الـ Metadata */}
               <PageTransition>
                 {children}
               </PageTransition>
