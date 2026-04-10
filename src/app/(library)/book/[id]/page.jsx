@@ -232,7 +232,7 @@ const BookDetails = () => {
                                         {paymentProvider === 'paymob' && paymentMethod === 'wallet' && <CheckCircle className="text-sky-900" size={16} fill="currentColor" />}
                                     </button>
                                     <button onClick={() => { setPaymentProvider("paymob"); setPaymentMethod("card"); }} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'paymob' && paymentMethod === 'card' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
-                                        <div className="flex items-center gap-3"><CreditCard size={18} /><span className="font-bold text-xs">بطاقة بنكية (باي موب)</span></div>
+                                        <div className="flex items-center gap-3"><CreditCard size={18} /><span className="font-bold text-xs">بطاقة افتراضية (باي موب)</span></div>
                                         {paymentProvider === 'paymob' && paymentMethod === 'card' && <CheckCircle className="text-sky-900" size={16} fill="currentColor" />}
                                     </button>
                                     <button onClick={() => { setPaymentProvider("stripe"); setPaymentMethod("card"); }} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'stripe' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
