@@ -22,7 +22,8 @@ const CartPage = () => {
 
   const [paymentModal, setPaymentModal] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [paymentProvider, setPaymentProvider] = useState("stripe");
+  const [paymentProvider, setPaymentProvider] = useState("paymob");
+  const [paymentMethod, setPaymentMethod] = useState("card"); // 'card' or 'wallet'
   const [processing, setProcessing] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
   const [redirectionUrl, setRedirectionUrl] = useState("");
@@ -38,7 +39,7 @@ const CartPage = () => {
       return toast.error("سلتك فارغة");
     }
 
-    if (paymentProvider === 'paymob' && !phoneNumber) {
+    if (paymentProvider === 'paymob' && paymentMethod === 'wallet' && !phoneNumber) {
       return toast.error("يرجى إدخال رقم الهاتف للمحفظة");
     }
 
@@ -53,9 +54,12 @@ const CartPage = () => {
       bookId: firstBookId, 
       provider: paymentProvider,
       currency: 'EGP',
+      paymentMethod: paymentProvider === 'paymob' ? paymentMethod : 'card'
     };
 
-    if (paymentProvider === 'paymob') paymentData.phone = phoneNumber;
+    if (paymentProvider === 'paymob' && paymentMethod === 'wallet') {
+      paymentData.phone = phoneNumber;
+    }
 
     try {
       setProcessing(true);
@@ -93,7 +97,6 @@ const CartPage = () => {
       </div>
 
       <div className="max-w-3xl mx-auto p-4">
-        {/* التعديل هنا: لو بيحمل يعرض لودينج، لو خلص والأيتمز صفر يعرض سلة فارغة */}
         {loading ? (
           <div className="text-center py-20">
             <p className="text-sky-900 font-bold animate-pulse">جاري تحميل سلتك...</p>
@@ -114,11 +117,11 @@ const CartPage = () => {
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2">
                         <p className="text-amber-600 font-black text-sm">
-                          {((item.file?.isOnSale && item.file?.discountPrice) ? item.file.discountPrice : item.file?.price) / 100} ج.م
+                          {(item.file?.isOnSale && item.file?.discountPrice) ? item.file.discountPrice : item.file?.price} ج.م
                         </p>
                         {item.file?.isOnSale && (
                           <span className="text-gray-400 line-through text-[10px]">
-                            {(item.file?.price / 100).toLocaleString()} ج.م
+                            {item.file?.price?.toLocaleString()} ج.م
                           </span>
                         )}
                       </div>
@@ -131,7 +134,7 @@ const CartPage = () => {
 
             <div className="mt-6 bg-white rounded-[2.5rem] p-6 shadow-xl border border-sky-50 text-center">
               <p className="text-gray-400 font-bold mb-1">المبلغ الإجمالي</p>
-              <h2 className="text-3xl font-black text-sky-900 mb-6">{(totalPrice / 100).toLocaleString()} ج.م</h2>
+              <h2 className="text-3xl font-black text-sky-900 mb-6">{totalPrice.toLocaleString()} ج.م</h2>
               
               <button
                 onClick={() => setPaymentModal(true)}
@@ -163,17 +166,26 @@ const CartPage = () => {
                 <h2 className="text-xl font-bold text-gray-950 mb-6">إتمام الدفع</h2>
 
                 <div className="w-full space-y-2 mb-6">
-                  <button onClick={() => setPaymentProvider("paymob")} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'paymob' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
-                    <div className="flex items-center gap-3"><Smartphone size={18}/><span className="font-bold text-xs">محفظة إلكترونية</span></div>
-                    {paymentProvider === 'paymob' && <CheckCircle className="text-sky-900" size={16} fill="currentColor"/>}
+                  {/* خيار المحفظة (Paymob) */}
+                  <button onClick={() => { setPaymentProvider("paymob"); setPaymentMethod("wallet"); }} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'paymob' && paymentMethod === 'wallet' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
+                    <div className="flex items-center gap-3"><Smartphone size={18}/><span className="font-bold text-xs">محفظة إلكترونية (فون كاش)</span></div>
+                    {paymentProvider === 'paymob' && paymentMethod === 'wallet' && <CheckCircle className="text-sky-900" size={16} fill="currentColor"/>}
                   </button>
-                  <button onClick={() => setPaymentProvider("stripe")} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'stripe' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
-                    <div className="flex items-center gap-3"><CreditCard size={18}/><span className="font-bold text-xs">بطاقة بنكية</span></div>
+
+                  {/* خيار البطاقة (Paymob) */}
+                  <button onClick={() => { setPaymentProvider("paymob"); setPaymentMethod("card"); }} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'paymob' && paymentMethod === 'card' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
+                    <div className="flex items-center gap-3"><CreditCard size={18}/><span className="font-bold text-xs">بطاقة بنكية (باي موب)</span></div>
+                    {paymentProvider === 'paymob' && paymentMethod === 'card' && <CheckCircle className="text-sky-900" size={16} fill="currentColor"/>}
+                  </button>
+
+                  {/* خيار Stripe (كما هو أو اختياري) */}
+                  <button onClick={() => { setPaymentProvider("stripe"); setPaymentMethod("card"); }} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'stripe' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
+                    <div className="flex items-center gap-3"><CreditCard size={18}/><span className="font-bold text-xs">بطاقة بنكية (Stripe)</span></div>
                     {paymentProvider === 'stripe' && <CheckCircle className="text-sky-900" size={16} fill="currentColor"/>}
                   </button>
                 </div>
 
-                {paymentProvider === 'paymob' && (
+                {paymentProvider === 'paymob' && paymentMethod === 'wallet' && (
                   <input type="tel" placeholder="رقم المحفظة" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl mb-4 text-center outline-none focus:ring-1 focus:ring-sky-900"/>
                 )}
 

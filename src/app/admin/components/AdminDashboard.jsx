@@ -72,7 +72,7 @@ export default function AdminDashboard() {
                 />
                 <StatCard
                     title="إجمالي الإيرادات"
-                    value={`${(stats.totalRevenueCents / 100).toLocaleString()} ج.م`}
+                    value={`${(stats.totalRevenueCents || 0).toLocaleString()} ج.م`}
                     icon={<DollarSign className="w-8 h-8 text-white" />}
                     color="bg-amber-500"
                 />
@@ -110,7 +110,7 @@ export default function AdminDashboard() {
                                             {sale.bookTitle || "كتاب محذوف"}
                                         </td>
                                         <td className="p-4 font-bold text-green-600">
-                                            {(sale.amount / 100).toLocaleString()} ج.م
+                                            {Number(sale?.amount || 0).toLocaleString()} ج.م
                                         </td>
                                         <td className="p-4 text-xs text-gray-400">
                                             {new Date(sale.date).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}

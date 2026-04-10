@@ -72,9 +72,9 @@ export default function AdminProductsPage() {
         setSubmitting(true);
         const formData = new FormData();
         formData.append("title", form.title);
-        formData.append("price", Math.round(parseFloat(form.price) * 100));
+        formData.append("price", parseFloat(form.price));
         if (form.discountPrice && form.discountPrice.toString().trim() !== "") {
-            formData.append("discountPrice", Math.round(parseFloat(form.discountPrice) * 100));
+            formData.append("discountPrice", parseFloat(form.discountPrice));
         }
         formData.append("isOnSale", form.isOnSale ? "true" : "false");
         formData.append("category", form.category);
@@ -133,8 +133,8 @@ export default function AdminProductsPage() {
         setEditProductId(productId);
         setForm({
             title: product.title || "",
-            price: product.price ? (product.price / 100).toString() : "",
-            discountPrice: product.discountPrice ? (product.discountPrice / 100).toString() : "",
+            price: product.price ? product.price.toString() : "",
+            discountPrice: product.discountPrice ? product.discountPrice.toString() : "",
             isOnSale: product.isOnSale || false,
             category: product.category?._id || product.category || "",
             productType: product.productType?._id || product.productType || "",
@@ -195,12 +195,12 @@ export default function AdminProductsPage() {
 
                     <div className="space-y-1.5">
                         <label className="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 mr-1">السعر (ج.م)</label>
-                        <input className="w-full p-3.5 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl font-bold text-sm" type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="150" required />
+                        <input className="w-full p-3.5 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl font-bold text-sm" type="number" step="any" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="150.00" required />
                     </div>
 
                     <div className="space-y-1.5">
                         <label className="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 mr-1">السعر بعد الخصم</label>
-                        <input className="w-full p-3.5 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl font-bold text-sm" type="number" step="0.01" value={form.discountPrice} onChange={(e) => setForm({ ...form, discountPrice: e.target.value })} placeholder="اختياري..." />
+                        <input className="w-full p-3.5 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl font-bold text-sm" type="number" step="any" value={form.discountPrice} onChange={(e) => setForm({ ...form, discountPrice: e.target.value })} placeholder="100.00" />
                     </div>
 
                     <div className="flex items-center gap-3 px-4 py-3 md:py-0 bg-blue-50/50 dark:bg-blue-900/10 rounded-xl md:rounded-2xl border border-blue-100 dark:border-blue-900/30">
@@ -285,11 +285,11 @@ export default function AdminProductsPage() {
                                     <td className="p-5 font-black text-blue-600">
                                         {p.isOnSale && p.discountPrice ? (
                                             <div className="flex flex-col">
-                                                <span className="text-gray-400 line-through text-[10px] font-normal">{(p.price / 100)}</span>
-                                                <span>{(p.discountPrice / 100)} <span className="text-[8px]">ج.م</span></span>
+                                                <span className="text-gray-400 line-through text-[10px] font-normal">{p.price}</span>
+                                                <span>{p.discountPrice} <span className="text-[8px]">ج.م</span></span>
                                             </div>
                                         ) : (
-                                            <span>{(p.price / 100)} <span className="text-[8px]">ج.م</span></span>
+                                            <span>{p.price} <span className="text-[8px]">ج.م</span></span>
                                         )}
                                     </td>
                                     <td className="p-5">
@@ -325,11 +325,11 @@ export default function AdminProductsPage() {
                                     <div className="font-black text-blue-600 text-sm">
                                         {p.isOnSale && p.discountPrice ? (
                                             <div className="flex flex-col">
-                                                <span className="text-gray-400 line-through text-[10px] font-normal">{(p.price / 100)}</span>
-                                                <span>{(p.discountPrice / 100)} ج.م</span>
+                                                <span className="text-gray-400 line-through text-[10px] font-normal">{p.price}</span>
+                                                <span>{p.discountPrice} ج.م</span>
                                             </div>
                                         ) : (
-                                            <span>{(p.price / 100)} ج.م</span>
+                                            <span>{p.price} ج.م</span>
                                         )}
                                     </div>
                                     <div className="flex gap-1">

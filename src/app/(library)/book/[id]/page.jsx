@@ -29,6 +29,7 @@ const BookDetails = () => {
     const [paymentModal, setPaymentModal] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState("");
     const [paymentProvider, setPaymentProvider] = useState("paymob");
+    const [paymentMethod, setPaymentMethod] = useState("card"); // 'card' or 'wallet'
     const [processing, setProcessing] = useState(false);
     const [clientSecret, setClientSecret] = useState("");
 
@@ -56,7 +57,7 @@ const BookDetails = () => {
     };
 
     const startPayment = async () => {
-        if (paymentProvider === 'paymob' && !phoneNumber) {
+        if (paymentProvider === 'paymob' && paymentMethod === 'wallet' && !phoneNumber) {
             return toast.error("يرجى إدخال رقم الهاتف للمحفظة");
         }
 
@@ -64,9 +65,10 @@ const BookDetails = () => {
             bookId: id,
             provider: paymentProvider,
             currency: 'EGP',
+            paymentMethod: paymentProvider === 'paymob' ? paymentMethod : 'card'
         };
 
-        if (paymentProvider === 'paymob') {
+        if (paymentProvider === 'paymob' && paymentMethod === 'wallet') {
             paymentData.phone = phoneNumber;
         }
 
@@ -169,7 +171,7 @@ const BookDetails = () => {
                            <span className={`text-3xl font-black ${isPaidAndNotOwned ? 'text-sky-900' : 'text-emerald-600'}`}>
                                 {!isPaidAndNotOwned 
                                     ? (book.isPurchased ? "أنت تمتلكه" : "مـجـانـي") 
-                                    : ((book.isOnSale ? book.discountPrice : book.price) / 100).toLocaleString()
+                                    : (book.isOnSale ? book.discountPrice : book.price).toLocaleString()
                                 }
                             </span>
                             {isPaidAndNotOwned && <span className="text-sky-900 font-bold text-xs">جنيه مصري</span>}
@@ -225,17 +227,21 @@ const BookDetails = () => {
                                 <h2 className="text-xl font-bold text-gray-950 mb-6">إتمام الدفع</h2>
 
                                 <div className="w-full space-y-2 mb-6 text-right">
-                                    <button onClick={() => setPaymentProvider("paymob")} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'paymob' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
-                                        <div className="flex items-center gap-3"><Smartphone size={18} /><span className="font-bold text-xs">محفظة إلكترونية</span></div>
-                                        {paymentProvider === 'paymob' && <CheckCircle className="text-sky-900" size={16} fill="currentColor" />}
+                                    <button onClick={() => { setPaymentProvider("paymob"); setPaymentMethod("wallet"); }} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'paymob' && paymentMethod === 'wallet' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
+                                        <div className="flex items-center gap-3"><Smartphone size={18} /><span className="font-bold text-xs">محفظة إلكترونية (فون كاش)</span></div>
+                                        {paymentProvider === 'paymob' && paymentMethod === 'wallet' && <CheckCircle className="text-sky-900" size={16} fill="currentColor" />}
                                     </button>
-                                    <button onClick={() => setPaymentProvider("stripe")} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'stripe' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
-                                        <div className="flex items-center gap-3"><CreditCard size={18} /><span className="font-bold text-xs">بطاقة بنكية</span></div>
+                                    <button onClick={() => { setPaymentProvider("paymob"); setPaymentMethod("card"); }} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'paymob' && paymentMethod === 'card' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
+                                        <div className="flex items-center gap-3"><CreditCard size={18} /><span className="font-bold text-xs">بطاقة بنكية (باي موب)</span></div>
+                                        {paymentProvider === 'paymob' && paymentMethod === 'card' && <CheckCircle className="text-sky-900" size={16} fill="currentColor" />}
+                                    </button>
+                                    <button onClick={() => { setPaymentProvider("stripe"); setPaymentMethod("card"); }} className={`w-full flex items-center justify-between p-4 rounded-xl border-2 ${paymentProvider === 'stripe' ? 'border-sky-900 bg-sky-50' : 'border-gray-100'}`}>
+                                        <div className="flex items-center gap-3"><CreditCard size={18} /><span className="font-bold text-xs">بطاقة بنكية (Stripe)</span></div>
                                         {paymentProvider === 'stripe' && <CheckCircle className="text-sky-900" size={16} fill="currentColor" />}
                                     </button>
                                 </div>
 
-                                {paymentProvider === 'paymob' && (
+                                {paymentProvider === 'paymob' && paymentMethod === 'wallet' && (
                                     <div className="w-full mb-6 text-right">
                                         <input type="tel" placeholder="رقم المحفظة" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="w-full bg-gray-50 border border-gray-100 p-3 rounded-xl text-center font-bold outline-none" />
                                     </div>

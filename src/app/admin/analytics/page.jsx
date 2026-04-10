@@ -96,7 +96,7 @@ export default function AdminAnalyticsPage() {
                         <h3 className="font-bold text-gray-700">متوسط قيمة الطلب</h3>
                     </div>
                     <div className="text-4xl font-black text-gray-900">
-                        {((stats.aov?.averageCents || 0) / 100).toLocaleString()} <span className="text-lg font-normal text-gray-400">ج.م</span>
+                        {Number(stats.aov?.averageAmount || stats.aov?.averageCents || 0).toLocaleString()} <span className="text-lg font-normal text-gray-400">ج.م</span>
                     </div>
                 </div>
 
@@ -107,10 +107,12 @@ export default function AdminAnalyticsPage() {
                         <h3 className="font-bold text-gray-700">قنوات التسجيل</h3>
                     </div>
                     <div className="space-y-2">
-                        {stats.signupChannels && Object.entries(stats.signupChannels).map(([key, val]) => (
-                            <div key={key} className="flex justify-between p-2 bg-gray-50 rounded-xl border border-gray-100/50">
-                                <span className="text-xs font-bold text-gray-600 uppercase">{key === 'google' ? 'جوجل' : 'إيميل'}</span>
-                                <span className="font-black text-blue-600">{val}</span>
+                        {(Array.isArray(stats.signupChannels) ? stats.signupChannels : []).map((chan, idx) => (
+                            <div key={idx} className="flex justify-between p-2 bg-gray-50 rounded-xl border border-gray-100/50">
+                                <span className="text-xs font-bold text-gray-600 uppercase">
+                                    {chan.channel === 'google' ? 'جوجل' : (chan.channel === 'local' ? 'إيميل' : chan.channel)}
+                                </span>
+                                <span className="font-black text-blue-600">{chan.count}</span>
                             </div>
                         ))}
                     </div>
@@ -139,13 +141,15 @@ export default function AdminAnalyticsPage() {
                         <div className="space-y-6">
                             {Array.isArray(stats.categoryPerformance) && stats.categoryPerformance.length > 0 ? (
                                 stats.categoryPerformance.map((cat, i) => {
-                                    const max = Math.max(...stats.categoryPerformance.map(c => c.totalRevenueCents || 0), 1);
-                                    const percent = ((cat.totalRevenueCents || 0) / max) * 100;
+                                    if (!cat) return null;
+                                    const amount = Number(cat.totalRevenue || cat.totalRevenueCents) || 0;
+                                    const max = Math.max(...stats.categoryPerformance.map(c => Number(c?.totalRevenue || c?.totalRevenueCents) || 0), 1);
+                                    const percent = (amount / max) * 100;
                                     return (
                                         <div key={i} className="space-y-2">
                                             <div className="flex justify-between text-sm font-black">
-                                                <span>{cat.categoryDetails?.[0]?.name || "قسم عام"}</span>
-                                                <span className="text-pink-600">{(cat.totalRevenueCents / 100).toLocaleString()} ج.م</span>
+                                                <span>{cat.category || cat.name || cat.categoryName || cat._id?.name || "قسم عام"}</span>
+                                                <span className="text-pink-600">{amount.toLocaleString()} ج.م</span>
                                             </div>
                                             <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                                                 <div className="h-full bg-pink-500" style={{ width: `${percent}%` }} />
@@ -180,7 +184,7 @@ export default function AdminAnalyticsPage() {
                                             </div>
                                         </div>
                                         <div className="text-left font-black text-emerald-600 text-xs">
-                                            +{(pay.amount / 100).toFixed(0)}
+                                            +{Number(pay?.amount || 0).toLocaleString()}
                                         </div>
                                     </div>
                                 ))
