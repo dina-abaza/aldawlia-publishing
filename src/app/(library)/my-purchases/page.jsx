@@ -19,6 +19,8 @@ const MyPurchasesPage = () => {
 
   const totalPrice = purchases.reduce((sum, purchase) => sum + (Number(purchase.book?.price) || 0), 0);
 
+  console.log("purchases ------------------------");
+  console.log(purchases);
   // تحديث العدادات كل ثانية
   useEffect(() => {
     const interval = setInterval(() => {
