@@ -112,7 +112,14 @@ export default function AdminProductsPage() {
             }
             resetForm();
         } catch (err) {
-            toast.error(err.response?.data?.message || "فشل رفع الكتاب");
+            if (err.response?.data?.errors) {
+                // عرض جميع أخطاء الفاليديشن القادمة من الباك اند
+                err.response.data.errors.forEach(error => {
+                    toast.error(error.message);
+                });
+            } else {
+                toast.error(err.response?.data?.message || "فشل رفع الكتاب");
+            }
         } finally {
             setSubmitting(false);
         }
@@ -182,8 +189,13 @@ export default function AdminProductsPage() {
             <div className="bg-white dark:bg-gray-800 rounded-3xl md:rounded-[2.5rem] shadow-xl p-5 md:p-10 border border-gray-100 dark:border-gray-700">
                 <form onSubmit={submitProduct} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
                     <div className="space-y-1.5 lg:col-span-3">
-                        <label className="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 mr-1">عنوان الكتاب</label>
-                        <input className="w-full p-3.5 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="أدخل اسم الكتاب..." required />
+                        <div className="flex justify-between items-center mr-1">
+                            <label className="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300">عنوان الكتاب</label>
+                            <span className={`text-[10px] font-bold ${form.title.length > 100 ? "text-red-500" : "text-gray-400"}`}>
+                                {form.title.length}/100
+                            </span>
+                        </div>
+                        <input className="w-full p-3.5 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="أدخل اسم الكتاب..." required maxLength={100} />
                     </div>
 
                     <div className="space-y-1.5 relative">
@@ -234,8 +246,15 @@ export default function AdminProductsPage() {
                     </div>
 
                     <div className="col-span-full space-y-1.5">
-                        <label className="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2 mr-1"><AlignRight size={14} /> النبذة المكتوبة</label>
-                        <textarea className="w-full p-3.5 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl font-medium text-sm outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="اكتب تفاصيل وملخص الكتاب..." />
+                        <div className="flex justify-between items-center mr-1">
+                            <label className="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                <AlignRight size={14} /> النبذة المكتوبة
+                            </label>
+                            <span className={`text-[10px] font-bold ${form.description.length > 3000 ? "text-red-500" : "text-gray-400"}`}>
+                                {form.description.length}/3000
+                            </span>
+                        </div>
+                        <textarea className="w-full p-3.5 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl font-medium text-sm outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="اكتب تفاصيل وملخص الكتاب..." maxLength={3000} />
                     </div>
 
                     <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useAdminAuthStore } from './admin/store/useAdminAuthStore';
+import i18n from '@/i18n'; // Import i18n to get the current language
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -10,11 +11,10 @@ const api = axios.create({
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
-
   }
 });
 
-// Request Interceptor: إضافة التوكن لكل طلب
+// Request Interceptor: إضافة التوكن واللغة لكل طلب
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
@@ -22,6 +22,10 @@ api.interceptors.request.use(
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
+      
+      // Pass the current frontend language to the backend
+      const lang = i18n.language || 'ar';
+      config.headers['Accept-Language'] = lang;
     }
     return config;
   },

@@ -89,8 +89,14 @@ export default function AdminCategoriesPage() {
             await fetchCategories();
             resetForm();
         } catch (err) {
-            const errorMsg = err.response?.data?.message || "فشل حفظ المجال";
-            toast.error(errorMsg);
+            if (err.response?.data?.errors) {
+                err.response.data.errors.forEach(error => {
+                    toast.error(error.message);
+                });
+            } else {
+                const errorMsg = err.response?.data?.message || "فشل حفظ المجال";
+                toast.error(errorMsg);
+            }
             console.error("Server Error:", err.response?.data);
         } finally {
             setSubmitting(false);
@@ -148,23 +154,35 @@ export default function AdminCategoriesPage() {
             <div className="bg-white rounded-[1.5rem] md:rounded-[2.5rem] shadow-xl p-4 md:p-10 border border-gray-100 dark:border-gray-700 dark:bg-gray-800">
                 <form onSubmit={submitForm} className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                     <div className="space-y-1.5 md:col-span-2">
-                        <label className="text-sm font-bold text-gray-700 dark:text-gray-300">اسم المجال</label>
+                        <div className="flex justify-between items-center">
+                            <label className="text-sm font-bold text-gray-700 dark:text-gray-300">اسم المجال</label>
+                            <span className={`text-[10px] font-bold ${form.name.length > 50 ? "text-red-500" : "text-gray-400"}`}>
+                                {form.name.length}/50
+                            </span>
+                        </div>
                         <input
                             className="w-full p-3 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl outline-none focus:ring-2 focus:ring-green-500 text-sm font-bold"
                             value={form.name}
                             onChange={(e) => setForm({ ...form, name: e.target.value })}
                             placeholder="مثال: علوم الحديث..."
                             required
+                            maxLength={50}
                         />
                     </div>
 
                     <div className="space-y-1.5 md:col-span-2">
-                        <label className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2"><AlignRight size={16} /> وصف تعريفي</label>
+                        <div className="flex justify-between items-center">
+                            <label className="text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2"><AlignRight size={16} /> وصف تعريفي</label>
+                            <span className={`text-[10px] font-bold ${form.description.length > 500 ? "text-red-500" : "text-gray-400"}`}>
+                                {form.description.length}/500
+                            </span>
+                        </div>
                         <textarea
                             className="w-full p-3 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl font-medium text-sm outline-none focus:ring-2 focus:ring-green-500 min-h-[80px] md:min-h-[100px]"
                             value={form.description}
                             onChange={(e) => setForm({ ...form, description: e.target.value })}
                             placeholder="نبذة عن هذا المجال..."
+                            maxLength={500}
                         />
                     </div>
 
