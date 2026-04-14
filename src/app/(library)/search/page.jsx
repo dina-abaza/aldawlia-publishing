@@ -17,7 +17,8 @@ export default function SearchPage() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const keyword = searchParams.get("keyword");
-  const sort = searchParams.get("sort"); // 🔹 جلب معطى الترتيب الجديد
+  const sort = searchParams.get("sort");
+  const [selectedLanguage, setSelectedLanguage] = useState(searchParams.get("language") || "ar");
   const { isAuthenticated } = useAuthStore();
   const { isFavorite, addToFavorites, removeFromFavorites } = useFavoritesStore();
   const isArabic = i18n.language?.startsWith("ar");
@@ -25,11 +26,11 @@ export default function SearchPage() {
 
   const [products, setProducts] = useState([]);
 
-  const { data, isLoading: queryLoading } = useQuery({
-    queryKey: ["search", keyword, sort],
+  const { data, isLoading: queryLoading, refetch } = useQuery({
+    queryKey: ["search", keyword, sort, selectedLanguage],
     queryFn: async () => {
       let endpoint = '/files';
-      let params = {};
+      let params = { language: selectedLanguage };
 
       if (sort === 'trending') {
         endpoint = '/files/trending';
@@ -49,6 +50,13 @@ export default function SearchPage() {
     enabled: Boolean(keyword || sort),
     staleTime: 5 * 60 * 1000,
   });
+
+  const languages = [
+    { id: "ar", label: "العربية", icon: "🇸🇦" },
+    { id: "en", label: "English", icon: "🇺🇸" },
+    { id: "fr", label: "Français", icon: "🇫🇷" },
+    { id: "es", label: "Español", icon: "🇪🇸" },
+  ];
 
   useEffect(() => {
     if (data) {
@@ -83,13 +91,33 @@ export default function SearchPage() {
 
   return (
     <div className={`max-w-7xl mx-auto px-4 mt-12 mb-20 ${isArabic ? "text-right" : "text-left"}`} dir={dir}>
-      <div className="flex items-center gap-4 mb-10 pb-4 border-b border-gray-100">
-        <div className="p-3 bg-gray-50 rounded-2xl">
-          {icon}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b border-gray-100">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-gray-50 rounded-2xl">
+            {icon}
+          </div>
+          <h1 className="text-2xl md:text-3xl font-black text-gray-900 leading-tight">
+            {title}
+          </h1>
         </div>
-        <h1 className="text-2xl md:text-3xl font-black text-gray-900 leading-tight">
-          {title}
-        </h1>
+
+        {/* Language Filter in Search Page */}
+        <div className="flex bg-gray-100 p-1.5 rounded-2xl shadow-inner self-start md:self-center">
+          {languages.map((lang) => (
+            <button
+              key={lang.id}
+              onClick={() => setSelectedLanguage(lang.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs md:text-sm transition-all duration-300 ${
+                selectedLanguage === lang.id
+                  ? "bg-white text-sky-900 shadow-md"
+                  : "text-gray-500 hover:text-sky-900 hover:bg-white/50"
+              }`}
+            >
+              <span>{lang.icon}</span>
+              <span>{lang.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {products.length === 0 ? (

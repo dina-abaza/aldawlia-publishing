@@ -150,52 +150,56 @@ const BookDetails = () => {
                 </div>
             </div>
 
-            <div className="max-w-6xl mx-auto px-6 mt-6 flex flex-col md:flex-row gap-8">
-                <div className="md:w-1/2 flex flex-col items-center">
-                    <div className="relative w-full aspect-[3/4] max-w-[280px] rounded-[2rem] overflow-hidden shadow-xl border-4 border-white ring-1 ring-gray-100">
-                        <Image src={book.coverUrl || book.cover || "/placeholder.jpg"} alt={book.title} fill priority sizes="280px" className="object-cover" />
+            <div className="max-w-6xl mx-auto px-6 mt-10 flex flex-col md:flex-row gap-12">
+                <div className="md:w-5/12 flex flex-col items-center">
+                    <div className="relative w-full aspect-[3/4] max-w-[320px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white ring-1 ring-gray-100 transition-transform hover:scale-[1.02] duration-500">
+                        <Image src={book.coverUrl || book.cover || "/placeholder.jpg"} alt={book.title} fill priority sizes="320px" className="object-cover" />
                         {book.isPurchased && (
-                            <div className="absolute top-4 right-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-[10px] font-black shadow-lg">
+                            <div className="absolute top-6 right-6 bg-emerald-500 text-white px-4 py-1.5 rounded-full text-xs font-black shadow-lg">
                                 {t("book_page.owned")}
                             </div>
                         )}
                     </div>
                 </div>
 
-                <div className="md:w-1/2 flex flex-col">
-                    <div className="flex items-center gap-2 mb-3 text-[9px] font-bold uppercase">
-                        <span className="px-2 py-0.5 bg-sky-50 text-sky-800 rounded-md">{book.category?.name || t("book_page.general")}</span>
-                        <span className="px-2 py-0.5 bg-amber-50 text-amber-600 rounded-md">{book.productType?.name || t("book_page.book")}</span>
+                <div className="md:w-7/12 flex flex-col">
+                    <div className="flex items-center gap-3 mb-5 text-[11px] font-bold uppercase tracking-wider">
+                        <span className="px-3 py-1 bg-sky-50 text-sky-800 rounded-lg border border-sky-100/50">{book.category?.name || t("book_page.general")}</span>
+                        <span className="px-3 py-1 bg-amber-50 text-amber-600 rounded-lg border border-amber-100/50">{book.productType?.name || t("book_page.book")}</span>
                     </div>
 
-                    <h2 className="text-2xl font-extrabold text-gray-950 mb-3 leading-tight">{book.title}</h2>
+                    <h2 className="text-3xl md:text-4xl font-black text-gray-950 mb-5 leading-[1.2] tracking-tight">{book.title}</h2>
 
-                    <div className="mb-6">
-                        <div className="flex items-baseline gap-1">
-                           <span className={`text-3xl font-black ${isPaidAndNotOwned ? 'text-sky-900' : 'text-emerald-600'}`}>
+                    <div className="mb-8">
+                        <div className="flex items-baseline gap-2">
+                           <span className={`text-4xl md:text-5xl font-black ${isPaidAndNotOwned ? 'text-sky-900' : 'text-emerald-600'}`}>
                                 {!isPaidAndNotOwned 
                                     ? (book.isPurchased ? t("book_page.you_own_it") : t("book_page.free")) 
                                     : (book.isOnSale ? book.discountPrice : book.price).toLocaleString()
                                 }
                             </span>
-                            {isPaidAndNotOwned && <span className="text-sky-900 font-bold text-xs">{t("book_page.currency_full")}</span>}
+                            {isPaidAndNotOwned && <span className="text-sky-900 font-black text-sm md:text-base">{t("book_page.currency_full")}</span>}
                         </div>
                     </div>
 
-                    <div className="p-4 bg-gray-50 rounded-2xl mb-6 border border-gray-100">
-                        <h3 className="font-bold text-sky-900 mb-2 flex items-center gap-2 text-[11px] uppercase"><Info size={12} /> {t("book_page.summary")}</h3>
-                        <p className="text-gray-600 leading-relaxed text-xs md:text-sm">{book.description}</p>
+                    <div className="p-6 md:p-8 bg-gray-50/50 rounded-[2rem] mb-8 border border-gray-100 shadow-sm">
+                        <h3 className="font-black text-sky-900 mb-4 flex items-center gap-2 text-sm md:text-base uppercase tracking-wide">
+                            <Info size={18} className="text-sky-600" /> {t("book_page.summary")}
+                        </h3>
+                        <p className="text-gray-700 leading-[1.8] text-base md:text-lg font-medium whitespace-pre-line">
+                            {book.description}
+                        </p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <button
                             onClick={handleAction}
                             disabled={processing}
-                            className={`flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all shadow-md active:scale-95 ${processing ? "bg-gray-300" : isPaidAndNotOwned ? "bg-sky-900 text-white" : "bg-emerald-600 text-white"}`}
+                            className={`flex items-center justify-center gap-3 py-4 md:py-5 rounded-2xl font-black text-base md:text-lg transition-all shadow-lg active:scale-95 ${processing ? "bg-gray-300" : isPaidAndNotOwned ? "bg-sky-900 text-white hover:bg-sky-950" : "bg-emerald-600 text-white hover:bg-emerald-700"}`}
                         >
-                            {processing ? <div className="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full"></div> :
+                            {processing ? <div className="animate-spin w-6 h-6 border-2 border-white/20 border-t-white rounded-full"></div> :
                                 <>
-                                    {isPaidAndNotOwned ? <ShoppingCart size={18} /> : <Download size={18} />} 
+                                    {isPaidAndNotOwned ? <ShoppingCart size={22} /> : <Download size={22} />} 
                                     {isPaidAndNotOwned ? t("book_page.buy_now") : t("book_page.download_book")}
                                 </>
                             }
@@ -204,7 +208,7 @@ const BookDetails = () => {
                         <button 
                             onClick={handleAddToCart} 
                             disabled={book.isPurchased}
-                            className={`font-bold py-3.5 rounded-xl border-2 text-sm transition-all ${book.isPurchased ? "border-gray-200 text-gray-400 cursor-not-allowed" : "border-sky-900 text-sky-900 hover:bg-sky-50"}`}
+                            className={`font-black py-4 md:py-5 rounded-2xl border-2 text-base md:text-lg transition-all ${book.isPurchased ? "border-gray-200 text-gray-400 cursor-not-allowed" : "border-sky-900 text-sky-900 hover:bg-sky-50 active:bg-sky-100"}`}
                         >
                             {book.isPurchased ? t("book_page.in_your_library") : t("book_page.add_to_cart")}
                         </button>

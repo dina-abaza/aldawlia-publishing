@@ -17,6 +17,7 @@ export default function AdminProductsPage() {
     const [coverFile, setCoverFile] = useState(null);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [filterLanguage, setFilterLanguage] = useState(""); // حالة جديدة للغة الفلترة
     const [form, setForm] = useState({
         title: "",
         price: "",
@@ -24,15 +25,16 @@ export default function AdminProductsPage() {
         isOnSale: false,
         category: "",
         productType: "",
+        language: "ar",
         description: "",
         release_date: "",
     });
 
-    const fetchCategoriesAndTypes = async () => {
+    const fetchCategoriesAndTypes = async (language = "") => {
         try {
             const [catRes, typesRes] = await Promise.all([
-                api.get('/categories'),
-                api.get('/product-types')
+                api.get(`/categories${language ? `?language=${language}` : ""}`),
+                api.get(`/product-types${language ? `?language=${language}` : ""}`)
             ]);
             setCategories(catRes.data.data || []);
             setProductTypes(typesRes.data.data || []);
@@ -41,10 +43,10 @@ export default function AdminProductsPage() {
         }
     };
 
-    const fetchProducts = async (pageNumber = 1) => {
+    const fetchProducts = async (pageNumber = 1, language = "") => {
         setLoading(true);
         try {
-            const res = await api.get(`/files?page=${pageNumber}&limit=10`);
+            const res = await api.get(`/files?page=${pageNumber}&limit=10${language ? `&language=${language}` : ""}`);
             setProducts(res.data.data || []);
             setTotalPages(res.data.pagination?.totalPages || 1);
             setPage(pageNumber);
@@ -56,9 +58,9 @@ export default function AdminProductsPage() {
     };
 
     useEffect(() => {
-        fetchCategoriesAndTypes();
-        fetchProducts(1);
-    }, []);
+        fetchCategoriesAndTypes(form.language);
+        fetchProducts(1, filterLanguage); 
+    }, [filterLanguage, form.language]); 
 
     const submitProduct = async (e) => {
         e.preventDefault();
@@ -88,6 +90,7 @@ export default function AdminProductsPage() {
         formData.append("isOnSale", form.isOnSale ? "true" : "false");
         formData.append("category", form.category);
         formData.append("productType", form.productType);
+        formData.append("language", form.language); // إضافة حقل اللغة هنا
         formData.append("description", form.description || "");
         if (form.release_date) formData.append("release_date", form.release_date);
         if (bookFile) formData.append("file", bookFile);
@@ -155,6 +158,7 @@ export default function AdminProductsPage() {
             isOnSale: product.isOnSale || false,
             category: product.category?._id || product.category || "",
             productType: product.productType?._id || product.productType || "",
+            language: product.language || "ar",
             description: product.description || "",
             release_date: product.release_date ? product.release_date.split('T')[0] : "",
         });
@@ -197,6 +201,17 @@ export default function AdminProductsPage() {
                         </div>
                         <input className="w-full p-3.5 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 text-sm font-bold" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="أدخل اسم الكتاب..." required maxLength={100} />
                     </div>
+                       {/* حقل اختيار اللغة */}
+                    <div className="space-y-1.5 relative">
+                        <label className="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 mr-1">لغة الكتاب</label>
+                        <select className="w-full p-3.5 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl outline-none appearance-none font-bold text-sm" value={form.language} onChange={(e) => setForm({ ...form, language: e.target.value })} required>
+                            <option value="ar">العربية</option>
+                            <option value="en">الإنجليزية</option>
+                            <option value="fr">الفرنسية</option>
+                            <option value="es">الإسبانية</option>
+                        </select>
+                        <Layers className="absolute left-4 top-[38px] md:top-11 text-gray-400 pointer-events-none" size={16} />
+                    </div>
 
                     <div className="space-y-1.5 relative">
                         <label className="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 mr-1">المجال الرئيسي</label>
@@ -215,6 +230,8 @@ export default function AdminProductsPage() {
                         </select>
                         <Layers className="absolute left-4 top-[38px] md:top-11 text-gray-400 pointer-events-none" size={16} />
                     </div>
+
+                 
 
                     <div className="space-y-1.5">
                         <label className="text-xs md:text-sm font-bold text-gray-700 dark:text-gray-300 mr-1">السعر (ج.م)</label>
@@ -292,7 +309,16 @@ export default function AdminProductsPage() {
                         <div className="p-2 bg-blue-100 rounded-lg text-blue-600"><PackageSearch size={18} /></div>
                         أحدث الإصدارات
                     </h3>
-                    <span className="text-[10px] md:text-xs font-bold text-gray-400">العدد: {products.length}</span>
+                    <div className="flex items-center gap-3">
+                        <select className="p-2 border rounded-md text-sm font-bold" value={filterLanguage} onChange={(e) => setFilterLanguage(e.target.value)}>
+                            <option value="">كل اللغات</option>
+                            <option value="ar">العربية</option>
+                            <option value="en">الإنجليزية</option>
+                            <option value="fr">الفرنسية</option>
+                            <option value="es">الإسبانية</option>
+                        </select>
+                        <span className="text-[10px] md:text-xs font-bold text-gray-400">العدد: {products.length}</span>
+                    </div>
                 </div>
 
                 {/* نسخة الجدول للشاشات الكبيرة */}
@@ -324,6 +350,7 @@ export default function AdminProductsPage() {
                                         <div className="flex flex-col gap-1">
                                             <span className="bg-gray-100 text-[10px] px-2 py-0.5 rounded w-max text-gray-600">{p.category?.name || "عام"}</span>
                                             <span className="bg-purple-50 text-purple-600 text-[10px] px-2 py-0.5 rounded w-max">{p.productType?.name || "رقمي"}</span>
+                                            <span className="bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded w-max">{p.language === 'es' ? 'Español' : p.language === 'en' ? 'EN' : p.language === 'fr' ? 'Français' : 'العربية'}</span>
                                         </div>
                                     </td>
                                     <td className="p-5 font-black text-blue-600">
@@ -363,6 +390,7 @@ export default function AdminProductsPage() {
                                     <div className="flex flex-wrap gap-1">
                                         <span className="bg-blue-50 text-blue-600 text-[9px] font-bold px-2 py-0.5 rounded">{p.category?.name || "عام"}</span>
                                         <span className="bg-purple-50 text-purple-600 text-[9px] font-bold px-2 py-0.5 rounded">{p.productType?.name || "رقمي"}</span>
+                                        <span className="bg-blue-50 text-blue-600 text-[9px] font-bold px-2 py-0.5 rounded">{p.language === 'ar' ? 'العربية' : p.language === 'en' ? 'الإنجليزية' : p.language === 'fr' ? 'الفرنسية' : 'الإسبانية'}</span>
                                     </div>
                                 </div>
                                 <div className="flex justify-between items-end mt-2">

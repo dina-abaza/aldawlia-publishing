@@ -42,7 +42,7 @@ const CategoryProducts = () => {
         params: {
           category: id,
           page: page,
-          limit: limit
+          limit: limit,
         }
       });
       return {
@@ -94,20 +94,19 @@ const CategoryProducts = () => {
     <div className={`bg-[#f8f8f8] min-h-screen pb-24 ${isArabic ? "text-right" : "text-left"}`} dir={dir}>
 
       {/* عنوان القسم */}
-      <div className="max-w-7xl mx-auto flex items-center justify-between p-4">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="bg-gray-50 text-sky-900 w-10 h-10 rounded-xl flex items-center justify-center hover:bg-sky-50 transition-all shadow-sm active:scale-95 cursor-pointer z-[9999]"
-        >
-          {isArabic ? <ArrowRight size={20} /> : <ArrowLeft size={20} />}
-        </button>
-
-        <h1 className="text-sky-900 font-extrabold text-xl md:text-2xl flex-1 text-center">
-          {categoryName || t("category_page.products")}
-        </h1>
-
-        <div className="w-10" />
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between p-4 gap-4">
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="bg-gray-50 text-sky-900 w-10 h-10 rounded-xl flex items-center justify-center hover:bg-sky-50 transition-all shadow-sm active:scale-95 cursor-pointer z-[9999]"
+          >
+            {isArabic ? <ArrowRight size={20} /> : <ArrowLeft size={20} />}
+          </button>
+          <h1 className="text-sky-900 font-extrabold text-xl md:text-2xl">
+            {categoryName || t("category_page.products")}
+          </h1>
+        </div>
       </div>
 
       <div className="p-4 flex flex-wrap justify-center gap-4 max-w-7xl mx-auto">

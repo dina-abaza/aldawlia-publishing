@@ -618,6 +618,7 @@
     "category_grid": {
       "title": "Book Sections",
       "browse": "Browse books in this section",
+      "empty": "Sorry, no categories are currently available for this language.",
       "error": "An error occurred while loading sections"
     },
     "showcase": {
@@ -627,6 +628,8 @@
       "offers_slider": "Exclusive Discounts",
       "view_all": "View All",
       "explore": "Explore Details",
+      "no_books_found": "Sorry, no books are currently available for this language.",
+      "no_description": "No description available for this book at the moment.",
       "currency": "EGP",
       "general_release": "General Release"
     }

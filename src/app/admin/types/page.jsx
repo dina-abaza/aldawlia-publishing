@@ -11,15 +11,16 @@ export default function AdminProductTypesPage() {
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [editId, setEditId] = useState(null);
-    const [form, setForm] = useState({ name: "", description: "" });
+    const [form, setForm] = useState({ name: "", description: "", language: "ar" }); // إضافة حقل اللغة هنا
+    const [filterLanguage, setFilterLanguage] = useState(""); // حالة جديدة للغة الفلترة
 
     // جلب التوكن من الـ localStorage (تأكدي من المسمى عندك)
     const getAuthToken = () => localStorage.getItem("jwtToken");
 
-    const fetchTypes = async () => {
+    const fetchTypes = async (language = "") => {
         setLoading(true);
         try {
-            const res = await api.get('/product-types');
+            const res = await api.get(`/product-types${language ? `?language=${language}` : ""}`);
             setItems(res.data.data || []);
         } catch (err) {
             toast.error("فشل جلب الأنواع");
@@ -29,8 +30,8 @@ export default function AdminProductTypesPage() {
     };
 
     useEffect(() => {
-        fetchTypes();
-    }, []);
+        fetchTypes(filterLanguage);
+    }, [filterLanguage]);
 
     const submitForm = async (e) => {
         e.preventDefault();
@@ -51,7 +52,8 @@ export default function AdminProductTypesPage() {
 
             const payload = {
                 name: form.name.trim(),
-                description: form.description.trim()
+                description: form.description.trim(),
+                language: form.language
             };
 
             if (editId) {
@@ -80,7 +82,7 @@ export default function AdminProductTypesPage() {
     };
 
     const resetForm = () => {
-        setForm({ name: "", description: "" });
+        setForm({ name: "", description: "", language: "ar" });
         setEditId(null);
     };
 
@@ -104,6 +106,7 @@ export default function AdminProductTypesPage() {
         setForm({
             name: item.name || "",
             description: item.description || "",
+            language: item.language || "ar" // إضافة حقل اللغة هنا
         });
         window.scrollTo({ top: 0, behavior: "smooth" });
     };
@@ -120,6 +123,15 @@ export default function AdminProductTypesPage() {
                 <div>
                     <h2 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white leading-tight">إدارة أنواع الإصدارات</h2>
                     <p className="text-gray-500 text-[10px] md:text-xs font-medium">حسب الوثيقة: إضافة وتعديل أنواع المنتجات (Admin Only)</p>
+                </div>
+                <div className="flex items-center gap-3 mr-auto">
+                    <select className="p-2 border rounded-md text-sm font-bold" value={filterLanguage} onChange={(e) => setFilterLanguage(e.target.value)}>
+                        <option value="">كل اللغات</option>
+                        <option value="ar">العربية</option>
+                        <option value="en">الإنجليزية</option>
+                        <option value="fr">الفرنسية</option>
+                        <option value="es">الإسبانية</option>
+                    </select>
                 </div>
             </div>
 
@@ -141,6 +153,17 @@ export default function AdminProductTypesPage() {
                             required
                             maxLength={50}
                         />
+                    </div>
+
+                    {/* حقل اختيار اللغة */}
+                    <div className="space-y-1.5 md:col-span-2">
+                        <label className="text-sm font-bold text-gray-700 dark:text-gray-300">لغة النوع</label>
+                        <select className="w-full p-3 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl outline-none appearance-none font-bold text-sm" value={form.language} onChange={(e) => setForm({ ...form, language: e.target.value })} required>
+                            <option value="ar">العربية</option>
+                            <option value="en">الإنجليزية</option>
+                            <option value="fr">الفرنسية</option>
+                            <option value="es">الإسبانية</option>
+                        </select>
                     </div>
 
                     <div className="space-y-1.5 md:col-span-2">
@@ -195,7 +218,11 @@ export default function AdminProductTypesPage() {
                                 <tr><td colSpan="3" className="p-10 text-center font-medium text-gray-500">لا توجد أنواع مضافة حالياً</td></tr>
                             ) : items.map((item) => (
                                 <tr key={item._id} className="hover:bg-purple-50/50 dark:hover:bg-purple-900/10 transition-colors">
-                                    <td className="p-5 font-bold text-gray-800 dark:text-gray-200 text-sm">{item.name}</td>
+                                    <td className="p-5 font-bold text-gray-800 dark:text-gray-200 text-sm">{item.name}
+                                        <span className="block text-[10px] font-medium text-gray-400 mt-1">
+                                            {item.language === 'ar' ? 'العربية' : item.language === 'en' ? 'الإنجليزية' : item.language === 'fr' ? 'الفرنسية' : 'الإسبانية'}
+                                        </span>
+                                    </td>
                                     <td className="p-5 text-sm text-gray-500">
                                         {item.description || <span className="text-gray-300 italic">بدون وصف</span>}
                                     </td>
@@ -226,6 +253,9 @@ export default function AdminProductTypesPage() {
                                         <p className="text-xs text-gray-500 mt-1">
                                             {item.description || <span className="italic opacity-50">بدون وصف</span>}
                                         </p>
+                                        <span className="block text-[10px] font-medium text-gray-400 mt-1">
+                                            {item.language === 'ar' ? 'العربية' : item.language === 'en' ? 'الإنجليزية' : item.language === 'fr' ? 'الفرنسية' : 'الإسبانية'}
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="flex gap-2 pt-2 border-t border-gray-200/50 dark:border-gray-600">

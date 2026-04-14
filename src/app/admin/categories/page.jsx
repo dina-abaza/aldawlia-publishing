@@ -11,16 +11,17 @@ export default function AdminCategoriesPage() {
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [editId, setEditId] = useState(null);
-    const [form, setForm] = useState({ name: "", description: "", cover: null });
+    const [form, setForm] = useState({ name: "", description: "", cover: null, language: "ar" });
     const [preview, setPreview] = useState(null);
+    const [filterLanguage, setFilterLanguage] = useState(""); // إضافة حالة اللغة للفلترة
 
     // جلب التوكن (استخدام المسمى الصحيح الموحد في المشروع jwtToken)
     const getAuthToken = () => localStorage.getItem("jwtToken");
 
-    const fetchCategories = async () => {
+    const fetchCategories = async (language = "") => {
         setLoading(true);
         try {
-            const res = await api.get('/categories');
+            const res = await api.get(`/categories${language ? `?language=${language}` : ""}`);
             console.log("DEBUG: Categories Data from API ->", res.data.data);
             setItems(res.data.data || []);
         } catch (err) {
@@ -51,8 +52,8 @@ export default function AdminCategoriesPage() {
     };
 
     useEffect(() => {
-        fetchCategories();
-    }, []);
+        fetchCategories(filterLanguage);
+    }, [filterLanguage]);
 
     const submitForm = async (e) => {
         e.preventDefault();
@@ -66,6 +67,7 @@ export default function AdminCategoriesPage() {
             const formData = new FormData();
             formData.append('name', form.name.trim());
             formData.append('description', form.description.trim());
+            formData.append('language', form.language); // إضافة اللغة هنا
 
             if (form.cover) {
                 formData.append('cover', form.cover);
@@ -104,7 +106,7 @@ export default function AdminCategoriesPage() {
     };
 
     const resetForm = () => {
-        setForm({ name: "", description: "", cover: null });
+        setForm({ name: "", description: "", cover: null, language: "ar" });
         setPreview(null);
         setEditId(null);
     };
@@ -128,7 +130,8 @@ export default function AdminCategoriesPage() {
         setForm({
             name: item.name || "",
             description: item.description || "",
-            cover: null
+            cover: null,
+            language: item.language || "ar" // إضافة حقل اللغة هنا
         });
         // التحقق من المسميات الأرجح بناءً على رد الباك إند
         setPreview(getImageUrl(item.coverUrl || item.coverImageKey));
@@ -147,6 +150,15 @@ export default function AdminCategoriesPage() {
                 <div>
                     <h2 className="text-xl md:text-2xl font-black text-gray-900 dark:text-white leading-tight">إدارة المجالات الرئيسية</h2>
                     <p className="text-gray-500 text-[10px] md:text-xs font-medium">إضافة وتعديل الأقسام مع رفع صور غلاف</p>
+                </div>
+                <div className="flex items-center gap-3 mr-auto">
+                    <select className="p-2 border rounded-md text-sm font-bold" value={filterLanguage} onChange={(e) => setFilterLanguage(e.target.value)}>
+                        <option value="">كل اللغات</option>
+                        <option value="ar">العربية</option>
+                        <option value="en">الإنجليزية</option>
+                        <option value="fr">الفرنسية</option>
+                        <option value="es">الإسبانية</option>
+                    </select>
                 </div>
             </div>
 
@@ -168,6 +180,17 @@ export default function AdminCategoriesPage() {
                             required
                             maxLength={50}
                         />
+                    </div>
+
+                    {/* حقل اختيار اللغة */}
+                    <div className="space-y-1.5 md:col-span-2">
+                        <label className="text-sm font-bold text-gray-700 dark:text-gray-300">لغة المجال</label>
+                        <select className="w-full p-3 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl outline-none appearance-none font-bold text-sm" value={form.language} onChange={(e) => setForm({ ...form, language: e.target.value })} required>
+                            <option value="ar">العربية</option>
+                            <option value="en">الإنجليزية</option>
+                            <option value="fr">الفرنسية</option>
+                            <option value="es">الإسبانية</option>
+                        </select>
                     </div>
 
                     <div className="space-y-1.5 md:col-span-2">
@@ -255,7 +278,11 @@ export default function AdminCategoriesPage() {
                                             )}
                                         </div>
                                     </td>
-                                    <td className="p-5 font-bold text-gray-800 dark:text-gray-200 text-sm">{item.name}</td>
+                                    <td className="p-5 font-bold text-gray-800 dark:text-gray-200 text-sm">{item.name}
+                                        <span className="block text-[10px] font-medium text-gray-400 mt-1">
+                                            {item.language === 'es' ? 'Español' : item.language === 'en' ? 'EN' : item.language === 'fr' ? 'Français' : 'العربية'}
+                                        </span>
+                                    </td>
                                     <td className="p-5 text-sm text-gray-500 max-w-xs truncate">
                                         {item.description || "لا يوجد وصف"}
                                     </td>
@@ -291,6 +318,9 @@ export default function AdminCategoriesPage() {
                                     <div className="flex-1">
                                         <h4 className="font-bold text-gray-900 dark:text-white text-base">{item.name}</h4>
                                         <p className="text-xs text-gray-500 line-clamp-1">{item.description || "لا يوجد وصف"}</p>
+                                        <span className="block text-[10px] font-medium text-gray-400 mt-1">
+                                            {item.language === 'ar' ? 'العربية' : item.language === 'en' ? 'الإنجليزية' : item.language === 'fr' ? 'الفرنسية' : 'الإسبانية'}
+                                        </span>
                                     </div>
                                 </div>
                                 <div className="flex gap-2 pt-2 border-t border-gray-200/50 dark:border-gray-600">

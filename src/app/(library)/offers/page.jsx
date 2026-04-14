@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import api from "@/app/api";
-import { ShoppingCart, Tag, ArrowRight, ArrowLeft, Heart } from "lucide-react"; // ضفنا Heart
-import { useRouter } from "next/navigation";
+ import { ShoppingCart, Tag, ArrowRight, ArrowLeft, Heart } from "lucide-react"; // ضفنا Heart
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCartStore } from "@/app/(library)/store/useCartStore";
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
 import { useFavoritesStore } from "@/app/(library)/store/useFavoritesStore"; // ضفنا الـ Store
@@ -13,6 +13,8 @@ import { useTranslation } from "react-i18next";
 
 const OffersPage = () => {
   const { t, i18n } = useTranslation();
+  const searchParams = useSearchParams();
+  const selectedLanguage = searchParams.get("language") || "ar";
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -26,11 +28,12 @@ const OffersPage = () => {
 
   useEffect(() => {
     const fetchOffers = async () => {
+      setLoading(true);
       try {
         const response = await api.get("/files/on-sale", {
           params: {
             limit: 20,
-            isOnSale: true 
+            language: selectedLanguage
           }
         });
         console.log("DEBUG: Offers Page Response Data:", response.data.data);
@@ -42,7 +45,7 @@ const OffersPage = () => {
       }
     };
     fetchOffers();
-  }, []);
+  }, [selectedLanguage]);
 
   const handleAdd = async (book) => {
     if (!isAuthenticated) {
