@@ -15,71 +15,104 @@ const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass, vi
   const { t, i18n } = useTranslation();
   const { isAuthenticated } = useAuthStore();
   const { isFavorite, addToFavorites, removeFromFavorites } = useFavoritesStore();
-  const isAr = i18n.language === 'ar';
-  
+  const isAr = i18n.language === "ar";
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [itemsPerView, setItemsPerView] = useState(2);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  const carouselRef = useRef(null);
   const autoPlayRef = useRef(null);
 
-  // تحديث عدد العناصر المعروضة بناءً على حجم الشاشة
+  /* =========================
+     Responsive Logic
+  ========================== */
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) {
-        setItemsPerView(1.2); // للموبايل عرض كتاب وجزء من التالي
-      } else if (window.innerWidth < 1024) {
+      const width = window.innerWidth;
+      const count = books.length;
+
+      if (width < 640) {
+        setItemsPerView(count === 1 ? 1 : 1.15);
+      } else if (width < 1024) {
         setItemsPerView(3);
-      } else if (window.innerWidth < 1280) {
+      } else if (width < 1280) {
         setItemsPerView(4);
       } else {
-        setItemsPerView(5); // للشاشات الكبيرة جداً
+        setItemsPerView(5);
+      }
+
+      if (carouselRef.current) {
+        setContainerWidth(carouselRef.current.offsetWidth);
       }
     };
-    
+
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [books.length]);
 
-  const getCleanUrl = (url) => {
-    if (!url || typeof url !== 'string') return "/placeholder.jpg";
-    return url.trim().replace(/[`]/g, "");
-  };
+  const itemWidth = containerWidth / itemsPerView;
 
+  const maxIndex = Math.max(
+    0,
+    books.length - Math.floor(itemsPerView)
+  );
+
+  /* =========================
+     Navigation
+  ========================== */
   const nextSlide = useCallback(() => {
     if (books.length <= itemsPerView) return;
+
     setCurrentIndex((prev) => {
       const next = prev + 1;
-      return next > books.length - Math.floor(itemsPerView) ? 0 : next;
+      return next > maxIndex ? 0 : next;
     });
-  }, [books.length, itemsPerView]);
+  }, [books.length, itemsPerView, maxIndex]);
 
   const prevSlide = useCallback(() => {
     if (books.length <= itemsPerView) return;
+
     setCurrentIndex((prev) => {
       const next = prev - 1;
-      return next < 0 ? Math.max(0, books.length - Math.floor(itemsPerView)) : next;
+      return next < 0 ? maxIndex : next;
     });
-  }, [books.length, itemsPerView]);
+  }, [books.length, itemsPerView, maxIndex]);
 
+  /* =========================
+     Autoplay
+  ========================== */
   useEffect(() => {
     if (!isPaused && books.length > itemsPerView) {
-      autoPlayRef.current = setInterval(nextSlide, 4000);
+      autoPlayRef.current = setInterval(nextSlide, 5000);
     } else {
       if (autoPlayRef.current) clearInterval(autoPlayRef.current);
     }
+
     return () => {
       if (autoPlayRef.current) clearInterval(autoPlayRef.current);
     };
   }, [nextSlide, isPaused, books.length, itemsPerView]);
 
+  /* =========================
+     Helpers
+  ========================== */
+  const getCleanUrl = (url) => {
+    if (!url || typeof url !== "string") return "/placeholder.jpg";
+    return url.trim().replace(/[`]/g, "");
+  };
+
   const toggleFavorite = async (e, bookId) => {
     e.preventDefault();
     e.stopPropagation();
+
     if (!isAuthenticated) {
       toast.info(t("search_page.login_for_favorites"));
       return router.push("/login");
     }
+
     if (isFavorite(bookId)) {
       await removeFromFavorites(bookId);
     } else {
@@ -91,7 +124,10 @@ const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass, vi
     return (
       <div className="flex gap-4 overflow-hidden">
         {[...Array(3)].map((_, idx) => (
-          <div key={idx} className="min-w-[200px] bg-white rounded-3xl p-3 border border-gray-100 animate-pulse">
+          <div
+            key={idx}
+            className="min-w-[200px] bg-white rounded-3xl p-3 border border-gray-100 animate-pulse"
+          >
             <div className="h-40 bg-gray-100 rounded-2xl mb-3"></div>
             <div className="h-4 bg-gray-100 rounded w-3/4 mx-auto"></div>
           </div>
@@ -100,104 +136,91 @@ const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass, vi
     );
   }
 
+  const isScrollable = books.length > itemsPerView;
+
   return (
-    <div className="space-y-4 relative group/carousel" 
-         onMouseEnter={() => setIsPaused(true)}
-         onMouseLeave={() => setIsPaused(false)}>
+    <div
+      className="space-y-4 relative group/carousel"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* Header */}
       <div className={`flex items-center justify-between ${isAr ? "flex-row" : "flex-row-reverse"}`}>
         <div className={`flex items-center gap-2 ${isAr ? "flex-row" : "flex-row-reverse"}`}>
-          <div className={`p-2 rounded-xl ${colorClass === "amber" ? "bg-amber-100 text-amber-600" : "bg-sky-100 text-sky-900"}`}>
+          <div
+            className={`p-2 rounded-xl ${
+              colorClass === "amber"
+                ? "bg-amber-100 text-amber-600"
+                : "bg-sky-100 text-sky-900"
+            }`}
+          >
             <Icon size={18} />
           </div>
           <h3 className="text-lg font-black text-gray-900">{title}</h3>
         </div>
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.push(viewAllPath)}
-            className={`text-xs font-bold ${colorClass === "amber" ? "text-amber-600" : "text-sky-900"} hover:underline`}
-          >
-            {t("home.showcase.view_all")}
-          </button>
-          
-          {books.length > itemsPerView && (
-            <div className="flex gap-1.5">
-              <button 
-                onClick={prevSlide}
-                className="p-2 rounded-full bg-white border border-gray-100 shadow-sm text-gray-600 hover:bg-sky-50 hover:text-sky-900 transition-all active:scale-90"
-              >
-                {isAr ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-              </button>
-              <button 
-                onClick={nextSlide}
-                className="p-2 rounded-full bg-white border border-gray-100 shadow-sm text-gray-600 hover:bg-sky-50 hover:text-sky-900 transition-all active:scale-90"
-              >
-                {isAr ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-              </button>
-            </div>
-          )}
-        </div>
+
+        {isScrollable && (
+          <div className="flex gap-1.5">
+            <button
+              onClick={prevSlide}
+              className="p-2 rounded-full bg-white border border-gray-100 shadow-sm text-gray-600 hover:bg-sky-50"
+            >
+              {isAr ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            </button>
+            <button
+              onClick={nextSlide}
+              className="p-2 rounded-full bg-white border border-gray-100 shadow-sm text-gray-600 hover:bg-sky-50"
+            >
+              {isAr ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+            </button>
+          </div>
+        )}
       </div>
 
-      <div className="overflow-hidden rounded-3xl -mx-2 px-2 py-1">
-        <motion.div 
+      {/* Carousel */}
+      <div
+        ref={carouselRef}
+        className="overflow-hidden rounded-3xl -mx-2 px-2 py-1"
+      >
+        <motion.div
           className="flex gap-4"
-          animate={{ x: isAr ? `${currentIndex * (100 / itemsPerView)}%` : `-${currentIndex * (100 / itemsPerView)}%` }}
-          transition={{ type: "spring", stiffness: 100, damping: 20 }}
-          style={{ 
-            width: books.length > itemsPerView ? `${(books.length * 100) / itemsPerView}%` : '100%',
-            display: 'flex'
+          animate={{
+            x: isAr
+              ? currentIndex * itemWidth
+              : -currentIndex * itemWidth,
+          }}
+          transition={{ type: "tween", ease: "easeInOut", duration: 0.5 }}
+          style={{
+            width: books.length * itemWidth,
           }}
         >
-          {books.length > 0 ? (
-            books.map((book, idx) => {
-              const bookId = book.id || book._id;
-              return (
-                <div
-                  key={`${bookId}-${idx}`}
-                  style={{ width: books.length > itemsPerView ? `calc(100% / ${books.length})` : `calc(100% / ${itemsPerView})` }}
-                  onClick={() => router.push(`/book/${bookId}`)}
-                  className="bg-white rounded-[2rem] shadow-sm flex flex-col items-center relative border border-gray-100 overflow-hidden group cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1"
-                >
-                  <button
-                    onClick={(e) => toggleFavorite(e, bookId)}
-                    className="absolute top-4 right-4 bg-white/95 p-2 rounded-full z-10 text-sky-900 hover:text-amber-600 hover:bg-sky-50 transition-all shadow-md active:scale-90"
-                  >
-                    <Heart size={16} fill={isFavorite(bookId) ? "currentColor" : "none"} className={isFavorite(bookId) ? "text-amber-600" : ""} />
-                  </button>
+          {books.map((book, idx) => {
+            const bookId = book.id || book._id;
 
-                  <div className="w-full h-48 relative overflow-hidden">
-                    <Image
-                      src={getCleanUrl(book.coverUrl || book.cover)}
-                      alt={book.title || "Book"}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-
-                  <div className="flex flex-col items-center pb-6 w-full px-4 pt-4">
-                    <h3 className="font-bold text-[14px] text-center line-clamp-1 h-6 leading-snug text-gray-800 group-hover:text-sky-900 transition-colors">
-                      {book.title || book.name}
-                    </h3>
-                    
-                    {/* نبذة عن الكتاب */}
-                    <p className="text-[11px] text-gray-500 text-center line-clamp-2 h-8 mt-2 opacity-80 group-hover:opacity-100 transition-opacity">
-                      {book.description || t("home.showcase.no_description")}
-                    </p>
-
-                    <div className="w-8 h-1 bg-amber-500/20 rounded-full mt-3 group-hover:w-16 group-hover:bg-amber-500 transition-all duration-500" />
-                    <span className="text-[11px] text-amber-600 font-black mt-3 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-                      {t("search_page.explore_more")}
-                    </span>
-                  </div>
+            return (
+              <div
+                key={`${bookId}-${idx}`}
+                style={{ width: itemWidth }}
+                onClick={() => router.push(`/book/${bookId}`)}
+                className="bg-white rounded-[2rem] shadow-sm flex flex-col items-center border border-gray-100 overflow-hidden cursor-pointer hover:shadow-xl transition-all"
+              >
+                <div className="w-full h-48 relative">
+                  <Image
+                    src={getCleanUrl(book.coverUrl || book.cover)}
+                    alt={book.title || "Book"}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
-              );
-            })
-          ) : (
-            <div className="w-full py-20 text-center text-gray-400 font-bold bg-white rounded-3xl border border-dashed border-gray-200">
-              {t("home.showcase.no_books_found")}
-            </div>
-          )}
+
+                <div className="flex flex-col items-center pb-6 w-full px-4 pt-4">
+                  <h3 className="font-bold text-[14px] text-center line-clamp-1 text-gray-800">
+                    {book.title || book.name}
+                  </h3>
+                </div>
+              </div>
+            );
+          })}
         </motion.div>
       </div>
     </div>
