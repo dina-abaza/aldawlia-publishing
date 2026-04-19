@@ -5,9 +5,6 @@ import CategoryGrid from "./components/categoriesgrid";
 import BannerCarousel from "./components/BannerCarousel";
 import HomeShowcase from "./components/HomeShowcase";
 import QuickAccessLinks from "./components/QuickAccessLinks";
-import HikmaResume from "./components/hikma resume";
-import IslamicResume from "./components/islamic resume";
-import { Languages } from "lucide-react";
 
 export default function Home() {
   const [selectedLanguage, setSelectedLanguage] = useState("ar");
@@ -69,14 +66,6 @@ export default function Home() {
           </motion.section>
         </motion.div>
       </AnimatePresence>
-
-      <motion.section {...fadeInVariant}>
-        <HikmaResume />
-      </motion.section>
-
-      <motion.section {...fadeInVariant}>
-        <IslamicResume />
-      </motion.section>
 
       <motion.section {...fadeInVariant}>
         <QuickAccessLinks />
