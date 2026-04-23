@@ -24,7 +24,7 @@ export default function Home() {
   ];
 
   return (
-    <main className="min-h-screen bg-gray-50 overflow-hidden flex flex-col gap-8 md:gap-10">
+    <div className="bg-gray-50 overflow-hidden flex flex-col gap-8 md:gap-10">
       <div className="w-full">
         <BannerCarousel />
       </div>
@@ -70,6 +70,6 @@ export default function Home() {
       <motion.section {...fadeInVariant}>
         <QuickAccessLinks />
       </motion.section>
-    </main>
+    </div>
   );
 }
