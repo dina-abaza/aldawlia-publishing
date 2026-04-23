@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import Providers from "./providers"; 
 import Navbar from "./components/navbar"; 
+import SubNavbar from "./components/SubNavbar";
 import NavBottom from "./components/navbottom"; 
 import Footer from "./components/footer";
 import TopBanner from "./components/TopBanner";
@@ -36,6 +37,7 @@ export default function ShopLayout({ children }) {
             <Providers>
               <TopBanner/>
               <Navbar />
+              <SubNavbar />
               <main className="min-h-screen">
                 <PageTransition>
                   {children}
