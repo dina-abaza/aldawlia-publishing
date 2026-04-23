@@ -47,7 +47,7 @@ const CategoryGrid = ({ language = "ar" }) => {
                 query: { name: category.name },
               }}
               key={category._id}
-              className="relative h-64 md:h-80 overflow-hidden rounded-2xl shadow-lg group transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
+              className="relative h-72 md:h-96 overflow-hidden rounded-2xl shadow-lg group transition-all duration-500 hover:shadow-2xl hover:-translate-y-2"
             >
               <Image
                 src={category.coverUrl || category.coverImageKey || category.image || "/placeholder.jpg"}

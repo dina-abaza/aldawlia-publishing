@@ -202,14 +202,14 @@ const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass, vi
                 key={`${bookId}-${idx}`}
                 style={{ width: itemWidth }}
                 onClick={() => router.push(`/book/${bookId}`)}
-                className="bg-white rounded-[2rem] shadow-sm flex flex-col items-center border border-gray-100 overflow-hidden cursor-pointer hover:shadow-xl transition-all"
+                className="group bg-white rounded-[2rem] shadow-sm flex flex-col items-center border border-gray-100 overflow-hidden cursor-pointer hover:shadow-xl transition-all"
               >
-                <div className="w-full h-48 relative">
+                <div className="w-full h-80 md:h-[450px] relative bg-gray-50/50 p-2">
                   <Image
                     src={getCleanUrl(book.coverUrl || book.cover)}
                     alt={book.title || "Book"}
                     fill
-                    className="object-cover"
+                    className="object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
                   />
                 </div>
 

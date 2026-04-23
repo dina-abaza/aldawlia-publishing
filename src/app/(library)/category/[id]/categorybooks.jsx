@@ -131,7 +131,7 @@ const CategoryProducts = () => {
               </button>
 
               <div
-                className="w-full h-44 flex items-center justify-center mb-3 cursor-pointer overflow-hidden rounded-2xl relative"
+                className="w-full h-80 md:h-[420px] flex items-center justify-center mb-3 cursor-pointer overflow-hidden rounded-2xl relative bg-gray-50/50 p-2"
                 onClick={() => router.push(`/book/${product.id}`)}
               >
                 <Image
@@ -139,7 +139,7 @@ const CategoryProducts = () => {
                   alt={product.title || product.name}
                   fill
                   sizes="(max-width: 768px) 45vw, 220px"
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
                   priority={index < 4}
                 />
               </div>

@@ -85,12 +85,12 @@ const TrendingPage = () => {
                                         <Heart size={16} fill={activeFav ? "currentColor" : "none"} />
                                     </button>
 
-                                    <div className="relative aspect-[4/5] rounded-[2rem] overflow-hidden mb-3">
+                                    <div className="relative h-80 md:h-[420px] rounded-[2rem] overflow-hidden mb-3 bg-slate-50/50 p-2">
                                         <Image
                                             src={book.coverUrl || book.cover}
                                             alt={book.title}
                                             fill
-                                            className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                            className="object-contain group-hover:scale-105 transition-transform duration-700 drop-shadow-lg"
                                         />
                                     </div>
                                     <div className="px-2 pb-4 text-center">

@@ -40,6 +40,31 @@ const Navbar = () => {
 
   const [keyword, setKeyword] = useState("");
   const [suggestions, setSuggestions] = useState([]);
+  const [whatsappLink, setWhatsappLink] = useState("");
+
+  const formatWhatsappUrl = (url) => {
+    if (!url || url === "") return "#";
+    // Lo el url doesn't start with http or wa.me, it might be a phone number
+    if (!url.startsWith("http") && !url.startsWith("wa.me")) {
+      const cleanNum = url.replace(/\D/g, ""); // remove non-digits
+      return `https://wa.me/${cleanNum}`;
+    }
+    return url.startsWith("http") ? url : `https://${url}`;
+  };
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await api.get("/settings");
+        if (res.data && res.data.status === "success") {
+          setWhatsappLink(res.data.data.whatsappLink);
+        }
+      } catch (e) {
+        console.error("Failed to fetch settings in navbar", e);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     if (!keyword.trim()) {
@@ -93,7 +118,7 @@ const Navbar = () => {
                   <span className="text-sm">{t('navbar.about')}</span>
                 </Link>
                 <a
-                  href="https://wa.me/12017059422?text=مرحبًا%20،%20أود%20التواصل%20معكم"
+                  href={formatWhatsappUrl(whatsappLink)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-700 font-bold hover:text-amber-600 flex items-center gap-1 transition-colors"
@@ -134,7 +159,7 @@ const Navbar = () => {
                 <span>{t('navbar.about')}</span>
               </Link>
               <a
-                href="https://wa.me/12017059422?text=مرحبًا%20،%20أود%20التواصل%20معكم"
+                href={formatWhatsappUrl(whatsappLink)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-700 font-bold hover:text-amber-600 flex items-center gap-1 transition-colors"

@@ -151,14 +151,14 @@ export default function SearchPage() {
 
               {/* رابط للصورة والاسم */}
               <Link href={`/book/${product._id}`} className="flex-grow">
-                <div className="relative w-full h-48 mb-4 bg-gray-50 rounded-2xl overflow-hidden group-hover:shadow-inner">
+                <div className="relative w-full h-80 md:h-[420px] mb-4 bg-gray-50/50 rounded-2xl overflow-hidden group-hover:shadow-inner p-2">
                   <Image
                     src={product.coverUrl || product.cover || "/placeholder.jpg"}
                     alt={product.title || product.name}
                     fill
                     loading="lazy"
                     quality={80}
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    className="object-contain transition-transform duration-700 group-hover:scale-105 drop-shadow-lg"
                   />
                 </div>
                 <h3 className="text-sm font-black text-gray-800 text-center line-clamp-2 px-2 group-hover:text-amber-600 transition-colors leading-snug tracking-tight">

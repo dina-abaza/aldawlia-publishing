@@ -70,10 +70,10 @@ const FavoritesPage = () => {
                 <div key={currentId || idx} className="bg-white rounded-[2rem] p-4 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-all">
 
                   {/* الصورة */}
-                  <div className="w-24 h-32 bg-gray-50 rounded-2xl p-1 flex shrink-0 items-center justify-center overflow-hidden border border-slate-50">
+                  <div className="w-24 h-32 bg-gray-50/50 rounded-2xl p-2 flex shrink-0 items-center justify-center overflow-hidden border border-slate-50">
                     <img
                       src={book?.cover || book?.coverUrl || book?.image || "/logo.png"}
-                      className="w-full h-full object-cover rounded-xl"
+                      className="w-full h-full object-contain rounded-xl drop-shadow-sm"
                       alt={book?.title || "book cover"}
                       onError={(e) => {
                         const img = e.target;
