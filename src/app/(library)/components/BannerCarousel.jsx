@@ -40,8 +40,7 @@ export default function BannerCarousel() {
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-gray-50 rounded-b-2xl md:rounded-b-[2.5rem] shadow-sm"
-      style={{ height: "clamp(250px, 45vw, 550px)" }}
+      className="relative w-full overflow-hidden bg-gray-50 rounded-b-2xl md:rounded-b-[2.5rem] shadow-sm h-[250px] md:h-[45vw] md:max-h-[550px]"
     >
       <AnimatePresence initial={false}>
         {slides.map((slide, i) => (

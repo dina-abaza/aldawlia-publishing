@@ -7,21 +7,23 @@ export default function PageTransition({ children }) {
 
   return (
     <LazyMotion features={domAnimation}>
-      {/* تأكدي من وجود onExitComplete لإعادة ضبط السكرول لأعلى الصفحة */}
-      <AnimatePresence onExitComplete={() => window.scrollTo(0, 0)}>
-        <m.div
-          key={pathname} // ده المحرك الأساسي للحركة عند التنقل
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -15 }} // الصفحة القديمة تطلع لفوق شوية وهي بتختفي
-          transition={{ 
-            duration: 0.4, 
-            ease: [0.22, 1, 0.36, 1] // توقيت احترافي (Cubic Bezier) لحركة أنعم
-          }}
-        >
-          {children}
-        </m.div>
-      </AnimatePresence>
+      <div className="relative w-full">
+        <AnimatePresence mode="popLayout" onExitComplete={() => window.scrollTo(0, 0)}>
+          <m.div
+            key={pathname}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ 
+              duration: 0.3, 
+              ease: "easeInOut"
+            }}
+            className="w-full"
+          >
+            {children}
+          </m.div>
+        </AnimatePresence>
+      </div>
     </LazyMotion>
   );
 }
