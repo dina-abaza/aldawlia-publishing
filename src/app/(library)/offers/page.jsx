@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import api from "@/app/api";
  import { ShoppingCart, Tag, ArrowRight, ArrowLeft, Heart } from "lucide-react"; // ضفنا Heart
 import { useRouter, useSearchParams } from "next/navigation";
@@ -10,13 +10,12 @@ import { toast } from "react-toastify";
 import Link from "next/link";
 import Image from "next/image";
 import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
 
 const OffersPage = () => {
   const { t, i18n } = useTranslation();
   const searchParams = useSearchParams();
   const selectedLanguage = searchParams.get("language") || "ar";
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { addToCart } = useCartStore();
   const { isAuthenticated } = useAuthStore();
@@ -26,26 +25,19 @@ const OffersPage = () => {
   // دوال المفضلة
   const { isFavorite, addToFavorites, removeFromFavorites } = useFavoritesStore();
 
-  useEffect(() => {
-    const fetchOffers = async () => {
-      setLoading(true);
-      try {
-        const response = await api.get("/files/on-sale", {
-          params: {
-            limit: 20,
-            language: selectedLanguage
-          }
-        });
-        console.log("DEBUG: Offers Page Response Data:", response.data.data);
-        setProducts(response.data.data || []);
-      } catch (error) {
-        console.error("خطأ في جلب العروض:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOffers();
-  }, [selectedLanguage]);
+  const { data: products = [], isLoading: loading } = useQuery({
+    queryKey: ["offers-page", selectedLanguage],
+    queryFn: async () => {
+      const response = await api.get("/files/on-sale", {
+        params: {
+          limit: 20,
+          language: selectedLanguage
+        }
+      });
+      return response.data.data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   const handleAdd = async (book) => {
     if (!isAuthenticated) {

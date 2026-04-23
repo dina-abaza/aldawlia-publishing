@@ -1,36 +1,27 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import PageLoader from '@/app/loading';
 import api from '@/app/api';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 
 const CategoryGrid = ({ language = "ar" }) => {
   const { t, i18n } = useTranslation();
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const isAr = i18n.language === 'ar';
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      setLoading(true);
-      try {
-        const response = await api.get('/categories', { params: { language } });
-        setCategories(response.data.data);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching categories:', err);
-        setError(t('home.category_grid.error'));
-        setLoading(false);
-      }
-    };
-    fetchCategories();
-  }, [t, language]); // إضافة language كمراقب لإعادة الجلب عند التغيير
+  const { data: categories = [], isLoading, error } = useQuery({
+    queryKey: ['categories', language],
+    queryFn: async () => {
+      const response = await api.get('/categories', { params: { language } });
+      return response.data.data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
-  if (loading) return <PageLoader />;
-  if (error) return <div className="text-center text-red-500 mt-6">{error}</div>;
+  if (isLoading) return <PageLoader />;
+  if (error) return <div className="text-center text-red-500 mt-6">{t('home.category_grid.error')}</div>;
 
   return (
     <div className={`max-w-7xl mx-auto px-4 py-4 mb-10 ${isAr ? 'text-right' : 'text-left'}`} dir={isAr ? 'rtl' : 'ltr'}>

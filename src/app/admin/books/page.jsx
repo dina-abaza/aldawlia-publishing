@@ -207,7 +207,6 @@ export default function AdminProductsPage() {
                         <select className="w-full p-3.5 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl outline-none appearance-none font-bold text-sm" value={form.language} onChange={(e) => setForm({ ...form, language: e.target.value })} required>
                             <option value="ar">العربية</option>
                             <option value="en">الإنجليزية</option>
-                            <option value="fr">الفرنسية</option>
                             <option value="es">الإسبانية</option>
                         </select>
                         <Layers className="absolute left-4 top-[38px] md:top-11 text-gray-400 pointer-events-none" size={16} />
@@ -314,7 +313,6 @@ export default function AdminProductsPage() {
                             <option value="">كل اللغات</option>
                             <option value="ar">العربية</option>
                             <option value="en">الإنجليزية</option>
-                            <option value="fr">الفرنسية</option>
                             <option value="es">الإسبانية</option>
                         </select>
                         <span className="text-[10px] md:text-xs font-bold text-gray-400">العدد: {products.length}</span>
@@ -350,7 +348,7 @@ export default function AdminProductsPage() {
                                         <div className="flex flex-col gap-1">
                                             <span className="bg-gray-100 text-[10px] px-2 py-0.5 rounded w-max text-gray-600">{p.category?.name || "عام"}</span>
                                             <span className="bg-purple-50 text-purple-600 text-[10px] px-2 py-0.5 rounded w-max">{p.productType?.name || "رقمي"}</span>
-                                            <span className="bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded w-max">{p.language === 'es' ? 'Español' : p.language === 'en' ? 'EN' : p.language === 'fr' ? 'Français' : 'العربية'}</span>
+                                            <span className="bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded w-max">{p.language === 'es' ? 'Español' : p.language === 'en' ? 'EN' : 'العربية'}</span>
                                         </div>
                                     </td>
                                     <td className="p-5 font-black text-blue-600">
@@ -390,7 +388,7 @@ export default function AdminProductsPage() {
                                     <div className="flex flex-wrap gap-1">
                                         <span className="bg-blue-50 text-blue-600 text-[9px] font-bold px-2 py-0.5 rounded">{p.category?.name || "عام"}</span>
                                         <span className="bg-purple-50 text-purple-600 text-[9px] font-bold px-2 py-0.5 rounded">{p.productType?.name || "رقمي"}</span>
-                                        <span className="bg-blue-50 text-blue-600 text-[9px] font-bold px-2 py-0.5 rounded">{p.language === 'ar' ? 'العربية' : p.language === 'en' ? 'الإنجليزية' : p.language === 'fr' ? 'الفرنسية' : 'الإسبانية'}</span>
+                                        <span className="bg-blue-50 text-blue-600 text-[9px] font-bold px-2 py-0.5 rounded">{p.language === 'ar' ? 'العربية' : p.language === 'en' ? 'الإنجليزية' : 'الإسبانية'}</span>
                                     </div>
                                 </div>
                                 <div className="flex justify-between items-end mt-2">

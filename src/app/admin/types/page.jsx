@@ -129,7 +129,6 @@ export default function AdminProductTypesPage() {
                         <option value="">كل اللغات</option>
                         <option value="ar">العربية</option>
                         <option value="en">الإنجليزية</option>
-                        <option value="fr">الفرنسية</option>
                         <option value="es">الإسبانية</option>
                     </select>
                 </div>
@@ -161,7 +160,6 @@ export default function AdminProductTypesPage() {
                         <select className="w-full p-3 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl outline-none appearance-none font-bold text-sm" value={form.language} onChange={(e) => setForm({ ...form, language: e.target.value })} required>
                             <option value="ar">العربية</option>
                             <option value="en">الإنجليزية</option>
-                            <option value="fr">الفرنسية</option>
                             <option value="es">الإسبانية</option>
                         </select>
                     </div>
@@ -220,7 +218,7 @@ export default function AdminProductTypesPage() {
                                 <tr key={item._id} className="hover:bg-purple-50/50 dark:hover:bg-purple-900/10 transition-colors">
                                     <td className="p-5 font-bold text-gray-800 dark:text-gray-200 text-sm">{item.name}
                                         <span className="block text-[10px] font-medium text-gray-400 mt-1">
-                                            {item.language === 'ar' ? 'العربية' : item.language === 'en' ? 'الإنجليزية' : item.language === 'fr' ? 'الفرنسية' : 'الإسبانية'}
+                                            {item.language === 'ar' ? 'العربية' : item.language === 'en' ? 'الإنجليزية' : 'الإسبانية'}
                                         </span>
                                     </td>
                                     <td className="p-5 text-sm text-gray-500">
@@ -254,7 +252,7 @@ export default function AdminProductTypesPage() {
                                             {item.description || <span className="italic opacity-50">بدون وصف</span>}
                                         </p>
                                         <span className="block text-[10px] font-medium text-gray-400 mt-1">
-                                            {item.language === 'ar' ? 'العربية' : item.language === 'en' ? 'الإنجليزية' : item.language === 'fr' ? 'الفرنسية' : 'الإسبانية'}
+                                            {item.language === 'ar' ? 'العربية' : item.language === 'en' ? 'الإنجليزية' : 'الإسبانية'}
                                         </span>
                                     </div>
                                 </div>

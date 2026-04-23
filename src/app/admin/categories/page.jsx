@@ -156,7 +156,6 @@ export default function AdminCategoriesPage() {
                         <option value="">كل اللغات</option>
                         <option value="ar">العربية</option>
                         <option value="en">الإنجليزية</option>
-                        <option value="fr">الفرنسية</option>
                         <option value="es">الإسبانية</option>
                     </select>
                 </div>
@@ -188,7 +187,6 @@ export default function AdminCategoriesPage() {
                         <select className="w-full p-3 md:p-4 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl md:rounded-2xl outline-none appearance-none font-bold text-sm" value={form.language} onChange={(e) => setForm({ ...form, language: e.target.value })} required>
                             <option value="ar">العربية</option>
                             <option value="en">الإنجليزية</option>
-                            <option value="fr">الفرنسية</option>
                             <option value="es">الإسبانية</option>
                         </select>
                     </div>
@@ -280,7 +278,7 @@ export default function AdminCategoriesPage() {
                                     </td>
                                     <td className="p-5 font-bold text-gray-800 dark:text-gray-200 text-sm">{item.name}
                                         <span className="block text-[10px] font-medium text-gray-400 mt-1">
-                                            {item.language === 'es' ? 'Español' : item.language === 'en' ? 'EN' : item.language === 'fr' ? 'Français' : 'العربية'}
+                                            {item.language === 'es' ? 'Español' : item.language === 'en' ? 'EN' : 'العربية'}
                                         </span>
                                     </td>
                                     <td className="p-5 text-sm text-gray-500 max-w-xs truncate">
@@ -319,7 +317,7 @@ export default function AdminCategoriesPage() {
                                         <h4 className="font-bold text-gray-900 dark:text-white text-base">{item.name}</h4>
                                         <p className="text-xs text-gray-500 line-clamp-1">{item.description || "لا يوجد وصف"}</p>
                                         <span className="block text-[10px] font-medium text-gray-400 mt-1">
-                                            {item.language === 'ar' ? 'العربية' : item.language === 'en' ? 'الإنجليزية' : item.language === 'fr' ? 'الفرنسية' : 'الإسبانية'}
+                                            {item.language === 'ar' ? 'العربية' : item.language === 'en' ? 'الإنجليزية' : 'الإسبانية'}
                                         </span>
                                     </div>
                                 </div>

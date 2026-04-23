@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Star, Heart } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -7,37 +7,29 @@ import api from "@/app/api";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 
 const PopularPage = () => {
     const { t, i18n } = useTranslation();
-    const [books, setBooks] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
     const [likedBooks, setLikedBooks] = useState({});
     const searchParams = useSearchParams();
     const selectedLanguage = searchParams.get("language") || "ar";
     const isArabic = i18n.language?.startsWith("ar");
     const dir = isArabic ? "rtl" : "ltr";
 
-    useEffect(() => {
-        const fetchPopular = async () => {
-            setIsLoading(true);
-            try {
-                const response = await api.get('/files/popular', {
-                    params: {
-                        limit: 30,
-                        language: selectedLanguage
-                    }
-                });
-                setBooks(response.data.data || []);
-            } catch (error) {
-                console.error("Error fetching popular books:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchPopular();
-    }, [selectedLanguage]);
+    const { data: books = [], isLoading } = useQuery({
+        queryKey: ["popular-books", selectedLanguage],
+        queryFn: async () => {
+            const response = await api.get('/files/popular', {
+                params: {
+                    limit: 30,
+                    language: selectedLanguage
+                }
+            });
+            return response.data.data || [];
+        },
+        staleTime: 5 * 60 * 1000,
+    });
 
     // دالة الإعجاب المنفصلة
     const handleLike = (e, id) => {

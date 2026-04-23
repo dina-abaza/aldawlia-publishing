@@ -17,7 +17,7 @@ const IslamicResume = () => {
 
           {/* Side: Image */}
           <div className="w-full md:w-1/2 flex justify-center">
-            <div className="relative w-full max-w-[500px] aspect-[16/11] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-gray-50 bg-gray-100">
+            <div className="relative w-full max-w-[500px] aspect-[16/16] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-gray-50 bg-gray-100">
               <Image
                 src="/imghome2.jpeg"
                 alt={t('home.islamic_resume.title')}

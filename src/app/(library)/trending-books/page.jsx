@@ -32,6 +32,7 @@ const TrendingPage = () => {
             });
             return response.data.data || [];
         },
+        staleTime: 5 * 60 * 1000,
     });
 
     // دالة القلب

@@ -9,6 +9,7 @@ import { useAuthStore } from '@/app/(library)/store/useAuthStore';
 import { useFavoritesStore } from '@/app/(library)/store/useFavoritesStore';
 import { toast } from 'react-toastify';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
 
 const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass, viewAllPath }) => {
   const router = useRouter();
@@ -230,39 +231,24 @@ const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass, vi
 const HomeShowcase = ({ language = "ar" }) => {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
-  const [latestBooks, setLatestBooks] = useState([]);
-  const [offerBooks, setOffersBooks] = useState([]);
-  const [loadingLatest, setLoadingLatest] = useState(true);
-  const [loadingOffers, setLoadingOffers] = useState(true);
 
-  useEffect(() => {
-    const fetchLatest = async () => {
-      setLoadingLatest(true);
-      try {
-        const response = await api.get('/files/latest', { params: { language } });
-        setLatestBooks(response?.data?.data || []);
-      } catch (err) {
-        console.error("Latest fetch error:", err);
-      } finally {
-        setLoadingLatest(false);
-      }
-    };
+  const { data: latestBooks = [], isLoading: loadingLatest } = useQuery({
+    queryKey: ['latestBooks', language],
+    queryFn: async () => {
+      const response = await api.get('/files/latest', { params: { language } });
+      return response?.data?.data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
-    const fetchOffers = async () => {
-      setLoadingOffers(true);
-      try {
-        const response = await api.get('/files/on-sale', { params: { limit: 20, language } });
-        setOffersBooks(response?.data?.data || []);
-      } catch (err) {
-        console.error("Offers fetch error:", err);
-      } finally {
-        setLoadingOffers(false);
-      }
-    };
-
-    fetchLatest();
-    fetchOffers();
-  }, [language]);
+  const { data: offerBooks = [], isLoading: loadingOffers } = useQuery({
+    queryKey: ['offerBooks', language],
+    queryFn: async () => {
+      const response = await api.get('/files/on-sale', { params: { limit: 20, language } });
+      return response?.data?.data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   return (
     <section className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-20" dir={isAr ? 'rtl' : 'ltr'}>

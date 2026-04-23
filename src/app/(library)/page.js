@@ -17,10 +17,9 @@ export default function Home() {
   };
 
   const languages = [
-    { id: "ar", label: "كتب عربية", icon: "🇸🇦" },
-    { id: "en", label: "English Books", icon: "🇺🇸" },
-    { id: "fr", label: "Livres Français", icon: "🇫🇷" },
-    { id: "es", label: "Libros Españoles", icon: "🇪🇸" },
+    { id: "ar", label: "العربية", icon: "🇸🇦" },
+    { id: "en", label: "English", icon: "🇺🇸" },
+    { id: "es", label: "Español", icon: "🇪🇸" },
   ];
 
   return (
@@ -30,20 +29,27 @@ export default function Home() {
       </div>
 
       {/* Language Filter Section */}
-      <section className="max-w-7xl mx-auto px-4 w-full -mt-6 md:-mt-10 relative z-20">
-        <div className="bg-white/80 backdrop-blur-md p-2 rounded-2xl md:rounded-3xl shadow-xl border border-white/20 flex flex-wrap justify-center gap-2 md:gap-4 max-w-2xl mx-auto">
+      <section className="max-w-7xl mx-auto px-4 w-full -mt-4 md:-mt-6 relative z-20">
+        <div className="flex items-center justify-center gap-6 md:gap-10 max-w-xl mx-auto">
           {languages.map((lang) => (
             <button
               key={lang.id}
               onClick={() => setSelectedLanguage(lang.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl md:rounded-2xl font-bold text-sm md:text-base transition-all duration-300 ${
+              className={`flex items-center gap-2 py-2 font-black transition-all duration-300 relative ${
                 selectedLanguage === lang.id
-                  ? "bg-sky-900 text-white shadow-lg shadow-sky-200 scale-105"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "text-sky-900 scale-110"
+                  : "text-gray-400 hover:text-gray-600"
               }`}
             >
-              <span className="text-xl">{lang.icon}</span>
-              <span>{lang.label}</span>
+              <span className="text-xl md:text-2xl">{lang.icon}</span>
+              <span className="text-sm md:text-lg whitespace-nowrap">{lang.label}</span>
+              {selectedLanguage === lang.id && (
+                <motion.div
+                  layoutId="activeTabUnderline"
+                  className="absolute -bottom-1 left-0 right-0 h-1 bg-sky-900 rounded-full"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
             </button>
           ))}
         </div>
