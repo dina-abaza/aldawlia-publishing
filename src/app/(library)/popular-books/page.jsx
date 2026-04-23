@@ -80,12 +80,12 @@ const PopularPage = () => {
                                     href={`/book/${book._id || book.id}`}
                                     className="bg-white rounded-[2rem] shadow-md border border-slate-50 overflow-hidden flex flex-col transition-transform hover:-translate-y-1 h-full"
                                 >
-                                    <div className="relative aspect-square m-2 rounded-[1.5rem] overflow-hidden">
+                                    <div className="relative h-80 md:h-[420px] m-2 rounded-[1.5rem] overflow-hidden bg-slate-50/50 p-2">
                                         <Image
                                             src={book.coverUrl || book.cover || "/placeholder.jpg"}
                                             alt={book.title}
                                             fill
-                                            className="object-cover"
+                                            className="object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
                                         />
                                     </div>
 

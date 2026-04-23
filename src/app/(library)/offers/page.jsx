@@ -127,7 +127,7 @@ const OffersPage = () => {
                 </button>
 
                 <Link href={`/book/${productId}`} className="flex flex-col items-center w-full">
-                  <div className="h-40 w-full flex items-center justify-center mb-3 overflow-hidden rounded-2xl bg-gray-50">
+                  <div className="h-80 md:h-[420px] w-full flex items-center justify-center mb-3 overflow-hidden rounded-2xl bg-gray-50/50 p-2">
                     <div className="relative w-full h-full">
                       <Image
                         src={product.cover || product.image || product.coverUrl}
@@ -136,7 +136,7 @@ const OffersPage = () => {
                         loading="lazy"
                         quality={70}
                         sizes="(max-width: 768px) 50vw, 25vw"
-                        className="object-cover hover:scale-110 transition-transform duration-500"
+                        className="object-contain hover:scale-110 transition-transform duration-500 drop-shadow-lg"
                       />
                     </div>
                   </div>

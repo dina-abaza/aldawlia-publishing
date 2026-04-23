@@ -36,7 +36,12 @@ const Footer = () => {
 
   const formatWhatsappUrl = (url) => {
     if (!url || url === "") return "#";
-    return formatExternalUrl(url);
+    // If it doesn't look like a URL and doesn't start with wa.me, treat as phone number
+    if (!url.startsWith("http") && !url.startsWith("wa.me")) {
+      const cleanNum = url.replace(/\D/g, "");
+      return `https://wa.me/${cleanNum}`;
+    }
+    return url.startsWith("http") ? url : `https://${url}`;
   };
 
   useEffect(() => {

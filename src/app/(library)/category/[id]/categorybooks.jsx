@@ -131,15 +131,15 @@ const CategoryProducts = () => {
 
               {/* حاوية الصورة عريضة وفخمة */}
               <div
-                className="w-full aspect-[4/5] relative cursor-pointer overflow-hidden bg-gray-50"
+                className="w-full h-80 md:h-[420px] flex items-center justify-center mb-3 cursor-pointer overflow-hidden rounded-2xl relative bg-gray-50/50 p-2"
                 onClick={() => router.push(`/book/${product.id}`)}
               >
                 <Image
                   src={product.coverUrl || "/placeholder.jpg"}
                   alt={product.title || product.name}
                   fill
-                  sizes="(max-width: 768px) 45vw, 260px"
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  sizes="(max-width: 768px) 45vw, 220px"
+                  className="object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
                   priority={index < 4}
                 />
               </div>
