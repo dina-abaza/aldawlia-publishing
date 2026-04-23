@@ -28,26 +28,21 @@ export const metadata = {
 
 export default function ShopLayout({ children }) {
   return (
-    <html suppressHydrationWarning> 
-      <body 
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
-        suppressHydrationWarning
-      >
-          <LanguageProvider>
-            <Providers>
-              <TopBanner/>
-              <Navbar />
-              <SubNavbar />
-              <main className="min-h-screen">
-                <PageTransition>
-                  {children}
-                </PageTransition>
-              </main>
-              <NavBottom />
-              <Footer />
-            </Providers>
-          </LanguageProvider>
-      </body>
-    </html>
+    <div className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 flex flex-col min-h-screen`}>
+      <LanguageProvider>
+        <Providers>
+          <TopBanner/>
+          <Navbar />
+          <SubNavbar />
+          <main className="flex-grow">
+            <PageTransition>
+              {children}
+            </PageTransition>
+          </main>
+          <NavBottom />
+          <Footer />
+        </Providers>
+      </LanguageProvider>
+    </div>
   );
 }

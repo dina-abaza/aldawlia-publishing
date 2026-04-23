@@ -8,7 +8,7 @@ export default function PageTransition({ children }) {
   return (
     <LazyMotion features={domAnimation}>
       {/* تأكدي من وجود onExitComplete لإعادة ضبط السكرول لأعلى الصفحة */}
-      <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
+      <AnimatePresence onExitComplete={() => window.scrollTo(0, 0)}>
         <m.div
           key={pathname} // ده المحرك الأساسي للحركة عند التنقل
           initial={{ opacity: 0, y: 15 }}
