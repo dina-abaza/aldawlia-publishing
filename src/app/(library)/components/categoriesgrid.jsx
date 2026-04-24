@@ -50,7 +50,7 @@ const CategoryGrid = ({ language = "ar" }) => {
                   src={category.coverUrl || category.coverImageKey || category.image || "/placeholder.jpg"}
                   alt={category.name}
                   fill
-                  sizes="(max-width: 768px) 50vw, 250px"
+                  sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 250px"
                   /* استخدمنا cover مع center عشان تملأ الكارت بشكل شيك، 
                      ولو الصور عندك أيقونات، غيرها لـ object-contain */
                   className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
