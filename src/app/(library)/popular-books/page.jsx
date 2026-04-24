@@ -31,10 +31,9 @@ const PopularPage = () => {
         staleTime: 5 * 60 * 1000,
     });
 
-    // دالة الإعجاب المنفصلة
     const handleLike = (e, id) => {
-        e.preventDefault(); // دي أهم حتة: بتمنع الرابط إنه يفتح
-        e.stopPropagation(); // بتمنع الحدث إنه يوصل للكارت
+        e.preventDefault();
+        e.stopPropagation();
 
         setLikedBooks(prev => ({
             ...prev,
@@ -51,7 +50,7 @@ const PopularPage = () => {
     return (
         <main className={`min-h-screen bg-slate-50/50 py-16 px-4 ${isArabic ? "text-right" : "text-left"}`} dir={dir}>
             <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col items-center mb-16 text-center">
+                <div className="flex flex-col items-center mb-12 text-center">
                     <div className="p-3 bg-white rounded-2xl text-amber-600 mb-4 shadow-sm border border-slate-100">
                         <Star size={32} fill="currentColor" />
                     </div>
@@ -60,48 +59,55 @@ const PopularPage = () => {
                 </div>
 
                 {books.length > 0 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                        {books.map((book) => (
-                            <div key={book._id || book.id} className="relative group">
-                                {/* زرار القلب منفصل تماماً ومحطوط فوق الكارت */}
-                                <button
-                                    onClick={(e) => handleLike(e, book._id || book.id)}
-                                    className="absolute top-6 right-6 z-20 bg-white p-2 rounded-full shadow-md hover:scale-110 transition-transform active:scale-90"
-                                >
-                                    <Heart
-                                        size={20}
-                                        className={likedBooks[book._id || book.id] ? "text-amber-600" : "text-slate-400"}
-                                        fill={likedBooks[book._id || book.id] ? "currentColor" : "none"}
-                                    />
-                                </button>
-
-                                {/* الكارت اللي بيودي للتفاصيل */}
-                                <Link
-                                    href={`/book/${book._id || book.id}`}
-                                    className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden flex flex-col transition-transform hover:-translate-y-1 h-full"
-                                >
-                                    {/* ✅ التعديل: توحيد مقاس الصورة واستخدام object-cover */}
-                                    <div className="relative w-full h-48 md:h-64 bg-slate-100">
-                                        <Image
-                                            src={book.coverUrl || book.cover || "/placeholder.jpg"}
-                                            alt={book.title}
-                                            fill
-                                            className="object-cover object-top transition-transform duration-500 group-hover:scale-110"
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8">
+                        {books.map((book, index) => {
+                            const bookId = book._id || book.id;
+                            return (
+                                <div key={bookId} className="relative group">
+                                    {/* زرار القلب - فوق الكارت */}
+                                    <button
+                                        onClick={(e) => handleLike(e, bookId)}
+                                        className="absolute top-2 right-2 z-20 bg-white/90 p-1.5 md:p-2 rounded-full shadow-md hover:scale-110 transition-transform active:scale-90"
+                                    >
+                                        <Heart
+                                            size={18}
+                                            className={likedBooks[bookId] ? "text-amber-600" : "text-slate-400"}
+                                            fill={likedBooks[bookId] ? "currentColor" : "none"}
                                         />
-                                    </div>
+                                    </button>
 
-                                    {/* ✅ التعديل: توحيد ارتفاع منطقة النص وتوزيع العناصر */}
-                                    <div className="p-4 text-center flex flex-col justify-between flex-1 h-32">
-                                        <h3 className="font-bold text-[14px] md:text-[16px] text-slate-900 mb-2 line-clamp-2 leading-tight flex items-center justify-center">
-                                            {book.title}
-                                        </h3>
-                                        <p className="text-amber-600 font-bold text-[12px] mt-auto">
-                                            {t("popular_page.explore_more")}
-                                        </p>
-                                    </div>
-                                </Link>
-                            </div>
-                        ))}
+                                    {/* الكارت */}
+                                    <Link
+                                        href={`/book/${bookId}`}
+                                        className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden flex flex-col transition-all hover:shadow-md h-full"
+                                    >
+                                        {/* ✅ الصورة: تملأ المساحة بالكامل (Edge-to-Edge) بدون فراغات */}
+                                        <div className="relative w-full h-52 md:h-72 bg-slate-100 overflow-hidden">
+                                            <Image
+                                                src={book.coverUrl || book.cover || "/placeholder.jpg"}
+                                                alt={book.title}
+                                                fill
+                                                sizes="(max-width: 768px) 50vw, 250px"
+                                                className="object-cover object-top transition-transform duration-500 group-hover:scale-110"
+                                                priority={index < 6}
+                                            />
+                                            {/* ظل خفيف في الأسفل لعمق الغلاف */}
+                                            <div className="absolute inset-0 shadow-[inset_0_-15px_15px_rgba(0,0,0,0.03)] pointer-events-none" />
+                                        </div>
+
+                                        {/* ✅ منطقة النص: ملمومة ومحاذية (المسطرة) */}
+                                        <div className="p-3 md:p-4 text-center flex flex-col justify-center items-center flex-1 min-h-[85px] md:min-h-[100px] gap-1">
+                                            <h3 className="font-bold text-[12px] md:text-[14px] text-slate-900 line-clamp-2 leading-tight">
+                                                {book.title}
+                                            </h3>
+                                            <p className="text-amber-600 font-extrabold text-[10px] md:text-[11px] mt-1 uppercase tracking-wider">
+                                                {t("popular_page.explore_more")}
+                                            </p>
+                                        </div>
+                                    </Link>
+                                </div>
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">

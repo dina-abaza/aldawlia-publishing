@@ -1,4 +1,3 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import Providers from "./providers"; 
 import Navbar from "./components/navbar"; 
@@ -9,18 +8,6 @@ import TopBanner from "./components/TopBanner";
 import PageTransition from "./components/pageTransition"
 import LanguageProvider from "./components/LanguageProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: 'swap', // إضافة لضمان ثبات الخط أثناء التحميل
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-  display: 'swap',
-});
-
 export const metadata = {
   title: "مكتبة إلكترونية",
   description: "استكشف آلاف الكتب الرقمية",
@@ -28,7 +15,7 @@ export const metadata = {
 
 export default function ShopLayout({ children }) {
   return (
-    <div className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50 flex flex-col min-h-screen`}>
+    <div className="antialiased bg-gray-50 flex flex-col min-h-screen">
       <LanguageProvider>
         <Providers>
           <TopBanner/>

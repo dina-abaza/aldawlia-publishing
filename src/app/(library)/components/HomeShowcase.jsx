@@ -2,16 +2,16 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Sparkles, Zap, Heart, Tag, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Sparkles, Heart, Tag, ChevronLeft, ChevronRight, Zap } from 'lucide-react';
 import api from '@/app/api';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/app/(library)/store/useAuthStore';
 import { useFavoritesStore } from '@/app/(library)/store/useFavoritesStore';
 import { toast } from "react-toastify";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 
-const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass, viewAllPath }) => {
+const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass }) => {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const { isAuthenticated } = useAuthStore();
@@ -19,206 +19,143 @@ const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass, vi
   const isAr = i18n.language === "ar";
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [itemsPerView, setItemsPerView] = useState(2);
+  const [itemsPerView, setItemsPerView] = useState(2.2);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   const carouselRef = useRef(null);
-  const autoPlayRef = useRef(null);
+  const GAP = 12;
 
-  /* =========================
-     Responsive Logic
-  ========================== */
+  const maxIndex = Math.max(0, books.length - Math.floor(itemsPerView));
+
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+  }, [maxIndex]);
+
+  const prevSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+  }, [maxIndex]);
+
+  // التحريك التلقائي
+  useEffect(() => {
+    if (isPaused || loading || books.length === 0) return;
+
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 3000); // يتحرك كل 3 ثواني
+
+    return () => clearInterval(interval);
+  }, [nextSlide, isPaused, loading, books.length]);
+
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      const count = books.length;
-
       if (width < 640) {
-        setItemsPerView(count === 1 ? 1 : 1.15);
+        setItemsPerView(2.2); 
       } else if (width < 1024) {
-        setItemsPerView(3);
-      } else if (width < 1280) {
-        setItemsPerView(4);
+        setItemsPerView(3.5);
       } else {
         setItemsPerView(5);
       }
-
-      if (carouselRef.current) {
-        setContainerWidth(carouselRef.current.offsetWidth);
-      }
+      
+      // نستخدم requestAnimationFrame للتأكد من أن الـ DOM استقر
+      requestAnimationFrame(() => {
+        if (carouselRef.current) {
+          setContainerWidth(carouselRef.current.offsetWidth);
+        }
+      });
     };
-
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [books.length]);
+  }, []);
 
-  const itemWidth = containerWidth / itemsPerView;
+  // حساب العرض بشكل آمن لتجنب القيم السالبة في أول رندر
+  const itemWidth = containerWidth > 0 
+    ? (containerWidth - (Math.ceil(itemsPerView) - 1) * GAP) / itemsPerView
+    : 150; // عرض افتراضي بسيط حتى يتم الحساب
 
-  const maxIndex = Math.max(
-    0,
-    books.length - Math.floor(itemsPerView)
-  );
-
-  /* =========================
-     Navigation
-  ========================== */
-  const nextSlide = useCallback(() => {
-    if (books.length <= itemsPerView) return;
-
-    setCurrentIndex((prev) => {
-      const next = prev + 1;
-      return next > maxIndex ? 0 : next;
-    });
-  }, [books.length, itemsPerView, maxIndex]);
-
-  const prevSlide = useCallback(() => {
-    if (books.length <= itemsPerView) return;
-
-    setCurrentIndex((prev) => {
-      const next = prev - 1;
-      return next < 0 ? maxIndex : next;
-    });
-  }, [books.length, itemsPerView, maxIndex]);
-
-  /* =========================
-     Autoplay
-  ========================== */
-  useEffect(() => {
-    if (!isPaused && books.length > itemsPerView) {
-      autoPlayRef.current = setInterval(nextSlide, 5000);
-    } else {
-      if (autoPlayRef.current) clearInterval(autoPlayRef.current);
-    }
-
-    return () => {
-      if (autoPlayRef.current) clearInterval(autoPlayRef.current);
-    };
-  }, [nextSlide, isPaused, books.length, itemsPerView]);
-
-  /* =========================
-     Helpers
-  ========================== */
   const getCleanUrl = (url) => {
-    if (!url || typeof url !== "string") return "/placeholder.jpg";
+    if (!url) return "/placeholder.jpg";
     return url.trim().replace(/[`]/g, "");
   };
 
   const toggleFavorite = async (e, bookId) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!isAuthenticated) {
-      toast.info(t("search_page.login_for_favorites"));
-      return router.push("/login");
-    }
-
-    if (isFavorite(bookId)) {
-      await removeFromFavorites(bookId);
-    } else {
-      await addToFavorites(bookId);
-    }
+    e.preventDefault(); e.stopPropagation();
+    if (!isAuthenticated) return router.push("/login");
+    isFavorite(bookId) ? await removeFromFavorites(bookId) : await addToFavorites(bookId);
   };
 
-  if (loading) {
-    return (
-      <div className="flex gap-4 overflow-hidden">
-        {[...Array(3)].map((_, idx) => (
-          <div
-            key={idx}
-            className="min-w-[200px] bg-white rounded-3xl p-3 border border-gray-100 animate-pulse"
-          >
-            <div className="h-40 bg-gray-100 rounded-2xl mb-3"></div>
-            <div className="h-4 bg-gray-100 rounded w-3/4 mx-auto"></div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  const isScrollable = books.length > itemsPerView;
+  if (loading) return <div className="h-64 bg-gray-100 animate-pulse rounded-3xl" />;
 
   return (
-    <div
-      className="space-y-4 relative group/carousel"
+    <div 
+      className="space-y-4 relative" 
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
       {/* Header */}
       <div className={`flex items-center justify-between ${isAr ? "flex-row" : "flex-row-reverse"}`}>
         <div className={`flex items-center gap-2 ${isAr ? "flex-row" : "flex-row-reverse"}`}>
-          <div
-            className={`p-2 rounded-xl ${
-              colorClass === "amber"
-                ? "bg-amber-100 text-amber-600"
-                : "bg-sky-100 text-sky-900"
-            }`}
-          >
-            <Icon size={18} />
+          <div className={`p-2 rounded-xl ${colorClass === "amber" ? "bg-amber-100 text-amber-600" : "bg-sky-100 text-sky-900"}`}>
+            <Icon size={20} />
           </div>
-          <h3 className="text-lg font-black text-gray-900">{title}</h3>
+          <h2 className="text-lg font-black text-gray-900">{title}</h2>
         </div>
-
-        {isScrollable && (
-          <div className="flex gap-1.5">
-            <button
-              onClick={prevSlide}
-              className="p-2 rounded-full bg-white border border-gray-100 shadow-sm text-gray-600 hover:bg-sky-50"
-            >
-              {isAr ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-            </button>
-            <button
-              onClick={nextSlide}
-              className="p-2 rounded-full bg-white border border-gray-100 shadow-sm text-gray-600 hover:bg-sky-50"
-            >
-              {isAr ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-            </button>
-          </div>
-        )}
+        <div className="flex gap-2" dir="ltr">
+          <button onClick={prevSlide} className="p-2 rounded-full bg-white border shadow-sm active:scale-90"><ChevronLeft size={18} /></button>
+          <button onClick={nextSlide} className="p-2 rounded-full bg-white border shadow-sm active:scale-90"><ChevronRight size={18} /></button>
+        </div>
       </div>
 
-      {/* Carousel */}
-      <div
-        ref={carouselRef}
-        className="overflow-hidden rounded-3xl -mx-2 px-2 py-1"
-      >
+      {/* Carousel Container */}
+      <div ref={carouselRef} className="overflow-hidden">
         <motion.div
-          className="flex gap-4"
-          animate={{
-            x: isAr
-              ? currentIndex * itemWidth
-              : -currentIndex * itemWidth,
-          }}
-          transition={{ type: "tween", ease: "easeInOut", duration: 0.5 }}
-          style={{
-            width: books.length * itemWidth,
-          }}
+          className="flex"
+          style={{ gap: `${GAP}px`, width: "max-content" }}
+          animate={{ x: isAr ? (currentIndex * (itemWidth + GAP)) : -(currentIndex * (itemWidth + GAP)) }}
+          transition={{ type: "spring", stiffness: 150, damping: 20 }}
         >
           {books.map((book, idx) => {
             const bookId = book.id || book._id;
+            const coverSrc = getCleanUrl(book.coverUrl || book.cover);
 
             return (
               <div
                 key={`${bookId}-${idx}`}
                 style={{ width: itemWidth }}
-                onClick={() => router.push(`/book/${bookId}`)}
-                className="group bg-white rounded-3xl shadow-sm flex flex-col items-center border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all h-full"
+                className="group bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm relative flex flex-col flex-shrink-0"
               >
-                {/* ✅ التعديل: توحيد مقاس الصورة واستخدام object-cover لملء الكارت */}
-                <div className="w-full h-44 md:h-56 relative bg-gray-100">
+                {/* Favorite Button */}
+                <button
+                  onClick={(e) => toggleFavorite(e, bookId)}
+                  className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm p-1.5 rounded-full z-20 text-sky-900 shadow-sm"
+                >
+                  <Heart size={16} fill={isFavorite(bookId) ? "currentColor" : "none"} className={isFavorite(bookId) ? "text-amber-600" : ""} />
+                </button>
+
+                {/* ✅ صورة الكتاب: مالي الكارت بالكامل Edge-to-Edge */}
+                <div 
+                  className="relative w-full aspect-[3/4] cursor-pointer overflow-hidden bg-gray-100"
+                  onClick={() => router.push(`/book/${bookId}`)}
+                >
                   <Image
-                    src={getCleanUrl(book.coverUrl || book.cover)}
-                    alt={book.title || "Book"}
+                    src={coverSrc}
+                    alt={book.title || "book"}
                     fill
-                    className="object-cover object-top transition-transform duration-500 group-hover:scale-110"
+                    sizes="(max-width: 640px) 50vw, 250px"
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    unoptimized={coverSrc.includes('http')} // عشان لو السيرفر بيمنع الـ optimization
                   />
                 </div>
 
-                {/* ✅ التعديل: توحيد ارتفاع منطقة النص لضمان محاذاة العناوين */}
-                <div className="flex flex-col items-center p-3 w-full flex-1 h-20 justify-center">
-                  <h3 className="font-bold text-[13px] md:text-[14px] text-center line-clamp-2 text-gray-800 leading-tight group-hover:text-sky-900 transition-colors">
-                    {book.title || book.name}
+                {/* العنوان */}
+                <div 
+                  className="p-3 bg-white flex-1 flex items-center justify-center"
+                  onClick={() => router.push(`/book/${bookId}`)}
+                >
+                  <h3 className="font-bold text-[13px] md:text-[15px] text-sky-950 text-center line-clamp-1">
+                    {book.title}
                   </h3>
                 </div>
               </div>
@@ -240,7 +177,6 @@ const HomeShowcase = ({ language = "ar" }) => {
       const response = await api.get('/files/latest', { params: { language } });
       return response?.data?.data || [];
     },
-    staleTime: 5 * 60 * 1000,
   });
 
   const { data: offerBooks = [], isLoading: loadingOffers } = useQuery({
@@ -249,47 +185,13 @@ const HomeShowcase = ({ language = "ar" }) => {
       const response = await api.get('/files/on-sale', { params: { limit: 20, language } });
       return response?.data?.data || [];
     },
-    staleTime: 5 * 60 * 1000,
   });
 
   return (
-    <section className="max-w-7xl mx-auto px-4 md:px-6 pt-6 pb-12 md:pt-4 md:pb-20" dir={isAr ? 'rtl' : 'ltr'}>
-      <div className="flex flex-col gap-12 md:gap-20">
-        {/* Latest Releases */}
-        <div className="flex flex-col gap-8">
-          <div className={`flex items-center gap-3 ${isAr ? 'flex-row' : 'flex-row-reverse'}`}>
-            <div className="w-2 h-8 bg-sky-900 rounded-full"></div>
-            <h2 className={`text-2xl md:text-3xl font-black text-sky-950 tracking-tight ${isAr ? 'font-noto' : ''}`}>
-              {t('home.showcase.latest_title')}
-            </h2>
-          </div>
-          <BookCarouselSection
-            title={t('home.showcase.latest_slider')}
-            icon={Sparkles} 
-            books={latestBooks} 
-            loading={loadingLatest} 
-            colorClass="sky"
-            viewAllPath={`/search?sort=latest&language=${language}`}
-          />
-        </div>
-
-        {/* Offers / On Sale */}
-        <div className="flex flex-col gap-8">
-          <div className={`flex items-center gap-3 ${isAr ? 'flex-row' : 'flex-row-reverse'}`}>
-            <div className="w-2 h-8 bg-amber-600 rounded-full"></div>
-            <h2 className={`text-2xl md:text-3xl font-black text-sky-950 tracking-tight ${isAr ? 'font-noto' : ''}`}>
-              {t('home.showcase.offers_title')}
-            </h2>
-          </div>
-          <BookCarouselSection
-            title={t('home.showcase.offers_slider')}
-            icon={Tag} 
-            books={offerBooks} 
-            loading={loadingOffers} 
-            colorClass="amber"
-            viewAllPath={`/offers?language=${language}`}
-          />
-        </div>
+    <section className="max-w-7xl mx-auto px-4 py-8" dir={isAr ? 'rtl' : 'ltr'}>
+      <div className="flex flex-col gap-12">
+        <BookCarouselSection title={t('home.showcase.latest_slider')} icon={Sparkles} books={latestBooks} loading={loadingLatest} colorClass="sky" />
+        <BookCarouselSection title={t('home.showcase.offers_slider')} icon={Tag} books={offerBooks} loading={loadingOffers} colorClass="amber" />
       </div>
     </section>
   );

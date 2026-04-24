@@ -191,28 +191,38 @@ const BookDetails = () => {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <button
-                            onClick={handleAction}
-                            disabled={processing}
-                            className={`flex items-center justify-center gap-3 py-4 md:py-5 rounded-2xl font-black text-base md:text-lg transition-all shadow-lg active:scale-95 ${processing ? "bg-gray-300" : isPaidAndNotOwned ? "bg-sky-900 text-white hover:bg-sky-950" : "bg-emerald-600 text-white hover:bg-emerald-700"}`}
-                        >
-                            {processing ? <div className="animate-spin w-6 h-6 border-2 border-white/20 border-t-white rounded-full"></div> :
-                                <>
-                                    {isPaidAndNotOwned ? <ShoppingCart size={22} /> : <Download size={22} />} 
-                                    {isPaidAndNotOwned ? t("book_page.buy_now") : t("book_page.download_book")}
-                                </>
-                            }
-                        </button>
+                  {/* منطقة الأزرار: ألوان ثابتة مع حركة خفيفة فقط */}
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    {/* زرار الشراء / التحميل - كحلي ثابت مع حركة scale */}
+    <button
+        onClick={handleAction}
+        disabled={processing}
+        className={`flex items-center justify-center gap-3 py-4 md:py-5 rounded-2xl font-black text-base md:text-lg transition-all duration-300 shadow-lg active:scale-95 hover:scale-[1.02]
+            ${processing ? "bg-gray-300" : isPaidAndNotOwned ? "bg-sky-950 text-white" : "bg-emerald-600 text-white"}`}
+    >
+        {processing ? (
+            <div className="animate-spin w-6 h-6 border-2 border-white/20 border-t-white rounded-full"></div>
+        ) : (
+            <>
+                {isPaidAndNotOwned ? <CreditCard size={22} /> : <Download size={22} />}
+                {isPaidAndNotOwned ? t("book_page.buy_now") : t("book_page.download_book")}
+            </>
+        )}
+    </button>
 
-                        <button 
-                            onClick={handleAddToCart} 
-                            disabled={book.isPurchased}
-                            className={`font-black py-4 md:py-5 rounded-2xl border-2 text-base md:text-lg transition-all ${book.isPurchased ? "border-gray-200 text-gray-400 cursor-not-allowed" : "border-sky-900 text-sky-900 hover:bg-sky-50 active:bg-sky-100"}`}
-                        >
-                            {book.isPurchased ? t("book_page.in_your_library") : t("book_page.add_to_cart")}
-                        </button>
-                    </div>
+    {/* زرار أضف إلى السلة - أبيض بحدود كحلي مع حركة scale */}
+    <button
+        onClick={handleAddToCart}
+        disabled={book.isPurchased}
+        className={`flex items-center justify-center gap-3 font-black py-4 md:py-5 rounded-2xl border-2 text-base md:text-lg transition-all duration-300 active:scale-95 hover:scale-[1.02]
+            ${book.isPurchased 
+                ? "border-gray-200 text-gray-400 cursor-not-allowed" 
+                : "border-sky-950 text-sky-950 bg-white"}`}
+    >
+        <ShoppingCart size={22} />
+        {book.isPurchased ? t("book_page.in_your_library") : t("book_page.add_to_cart")}
+    </button>
+</div>
                 </div>
             </div>
 
