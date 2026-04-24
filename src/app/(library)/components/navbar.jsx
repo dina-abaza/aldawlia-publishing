@@ -229,11 +229,11 @@ const Navbar = () => {
 
             {suggestions.length > 0 && (
               <div className="absolute top-full mt-1 w-full bg-white rounded-xl shadow z-[1000]">
-                {suggestions.map((item) => (
+                {suggestions.map((item, index) => (
                   <div
-                    key={item._id}
+                    key={item.id || item._id || index}
                     onClick={() => {
-                      router.push(`/book/${item._id}`);
+                      router.push(`/book/${item.id || item._id}`);
                       setKeyword("");
                       setSuggestions([]);
                     }}

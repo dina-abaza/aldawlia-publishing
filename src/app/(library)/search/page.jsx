@@ -139,34 +139,39 @@ export default function SearchPage() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
           {products.map((product) => (
-            <div key={product._id} className="group border-0 rounded-3xl p-3 hover:shadow-2xl transition-all duration-500 bg-white flex flex-col relative border border-gray-50">
+            <div key={product._id} className="group rounded-3xl hover:shadow-md transition-all duration-500 bg-white flex flex-col relative border border-gray-100 overflow-hidden">
               {/* المفضلة */}
               <button
                 onClick={(e) => toggleFavorite(e, product._id)}
-                className="absolute top-5 left-5 bg-white/90 shadow-lg p-2 rounded-2xl z-10 text-sky-900 hover:text-amber-600 hover:bg-red-50 transition-all"
+                className="absolute top-3 left-3 bg-white/90 shadow-sm p-1.5 rounded-full z-10 text-sky-900 hover:text-amber-600 transition-all"
                 title={t("search_page.favorites")}
               >
-                <Heart size={18} fill={isFavorite(product._id) ? "currentColor" : "none"} className={isFavorite(product._id) ? "text-amber-600" : ""} />
+                <Heart size={16} fill={isFavorite(product._id) ? "currentColor" : "none"} className={isFavorite(product._id) ? "text-amber-600" : ""} />
               </button>
 
               {/* رابط للصورة والاسم */}
-              <Link href={`/book/${product._id}`} className="flex-grow">
-                <div className="relative w-full h-80 md:h-[420px] mb-4 bg-gray-50/50 rounded-2xl overflow-hidden group-hover:shadow-inner p-2">
+              <Link href={`/book/${product._id}`} className="flex flex-col h-full">
+                {/* ✅ التعديل: توحيد مقاس حاوية الصورة واستخدام object-cover */}
+                <div className="relative w-full h-44 md:h-56 bg-gray-100">
                   <Image
                     src={product.coverUrl || product.cover || "/placeholder.jpg"}
                     alt={product.title || product.name}
                     fill
                     loading="lazy"
                     quality={80}
-                    className="object-contain transition-transform duration-700 group-hover:scale-105 drop-shadow-lg"
+                    className="object-cover object-top transition-transform duration-700 group-hover:scale-110"
                   />
                 </div>
-                <h3 className="text-sm font-black text-gray-800 text-center line-clamp-2 px-2 group-hover:text-amber-600 transition-colors leading-snug tracking-tight">
-                  {product.title || product.name}
-                </h3>
-                <p className="text-[10px] text-amber-600 font-bold text-center mt-2 opacity-100 md:opacity-50 group-hover:opacity-100 transition-all">
-                   {t("search_page.explore_more")}
-                </p>
+
+                {/* ✅ التعديل: توحيد ارتفاع منطقة النصوص (h-28) وتوزيع العناصر */}
+                <div className="p-3 text-center flex flex-col justify-between flex-1 h-28">
+                  <h3 className="text-[13px] md:text-[14px] font-bold text-gray-800 line-clamp-2 leading-tight flex items-center justify-center h-10 group-hover:text-amber-600 transition-colors">
+                    {product.title || product.name}
+                  </h3>
+                  <p className="text-[11px] text-amber-600 font-bold mt-auto pt-2">
+                     {t("search_page.explore_more")}
+                  </p>
+                </div>
               </Link>
             </div>
           ))}

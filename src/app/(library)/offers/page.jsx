@@ -107,11 +107,11 @@ const OffersPage = () => {
             return (
               <div
                 key={productId}
-                className="bg-white rounded-[30px] p-3 shadow-sm border border-red-100 flex flex-col relative overflow-hidden group"
+                className="bg-white rounded-3xl p-0 shadow-sm border border-red-100 flex flex-col relative overflow-hidden group hover:shadow-md transition-all duration-300"
               >
                 {/* نسبة الخصم */}
                 {product.discountPercent > 0 && (
-                  <div className="absolute top-0 right-0 bg-amber-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-2xl z-10 shadow-sm">
+                  <div className="absolute top-0 right-0 bg-amber-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl-xl z-10 shadow-sm">
                     {t("offers_page.discount")} {Math.round(product.discountPercent)}%
                   </div>
                 )}
@@ -119,53 +119,54 @@ const OffersPage = () => {
                 {/* زر القلب */}
                 <button
                   onClick={(e) => toggleFavorite(e, productId)}
-                  className={`absolute top-2 right-2 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm active:scale-90 ${
+                  className={`absolute top-2 left-2 z-20 w-7 h-7 rounded-full flex items-center justify-center transition-all shadow-sm active:scale-90 ${
                     activeFav ? "bg-amber-50 text-amber-600" : "bg-white/80 text-gray-400 backdrop-blur-sm"
                   }`}
                 >
-                  <Heart size={16} fill={activeFav ? "currentColor" : "none"} />
+                  <Heart size={14} fill={activeFav ? "currentColor" : "none"} />
                 </button>
 
-                <Link href={`/book/${productId}`} className="flex flex-col items-center w-full">
-                  <div className="h-80 md:h-[420px] w-full flex items-center justify-center mb-3 overflow-hidden rounded-2xl bg-gray-50/50 p-2">
-                    <div className="relative w-full h-full">
-                      <Image
-                        src={product.cover || product.image || product.coverUrl}
-                        alt={product.title || product.name}
-                        fill
-                        loading="lazy"
-                        quality={70}
-                        sizes="(max-width: 768px) 50vw, 25vw"
-                        className="object-contain hover:scale-110 transition-transform duration-500 drop-shadow-lg"
-                      />
+                <Link href={`/book/${productId}`} className="flex flex-col items-center w-full flex-1">
+                  {/* ✅ التعديل: توحيد مقاس حاوية الصورة واستخدام object-cover */}
+                  <div className="w-full h-44 md:h-56 bg-gray-100 relative">
+                    <Image
+                      src={product.cover || product.image || product.coverUrl}
+                      alt={product.title || product.name}
+                      fill
+                      loading="lazy"
+                      quality={70}
+                      sizes="(max-width: 768px) 50vw, 25vw"
+                      className="object-cover object-top hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
+                  
+                  {/* ✅ التعديل: توحيد ارتفاع منطقة العنوان والسعر */}
+                  <div className="p-3 text-center w-full flex flex-col justify-between h-32">
+                    <h3 className="font-bold text-[13px] md:text-[14px] line-clamp-2 text-gray-800 group-hover:text-amber-600 transition-colors flex items-center justify-center leading-tight h-10">
+                      {product.title || product.name}
+                    </h3>
+                    
+                    <div className="flex flex-col items-center mt-auto">
+                      {product.discountPrice && product.discountPrice < product.price && (
+                        <span className="text-gray-400 line-through text-[9px]">
+                          {product.price?.toLocaleString()} {t("offers_page.currency")}
+                        </span>
+                      )}
+                      <span className="text-amber-600 font-black text-[12px] md:text-[13px]">
+                        {product.discountPrice?.toLocaleString() || product.price?.toLocaleString()} {t("offers_page.currency")}
+                      </span>
                     </div>
                   </div>
-                  <h3 className="font-black text-sm h-10 line-clamp-2 text-gray-800 text-center px-2 group-hover:text-amber-600 transition-colors">
-                    {product.title || product.name}
-                  </h3>
-                  <span className="text-[10px] text-amber-600 font-bold mt-2 hover:underline">
-                    {t("offers_page.explore_more")}
-                  </span>
                 </Link>
 
-
-                <div className="flex flex-col items-center my-2">
-                  {product.discountPrice && product.discountPrice < product.price && (
-                    <span className="text-gray-400 line-through text-[10px]">
-                      {product.price?.toLocaleString()} {t("offers_page.currency")}
-                    </span>
-                  )}
-                  <span className="text-amber-600 font-black text-sm">
-                    {product.discountPrice?.toLocaleString() || product.price?.toLocaleString()} {t("offers_page.currency")}
-                  </span>
+                <div className="px-3 pb-3">
+                  <button
+                    onClick={() => handleAdd(product)}
+                    className="w-full bg-sky-900 text-white py-2 rounded-xl flex items-center justify-center gap-2 text-[11px] font-bold hover:bg-amber-600 transition-all shadow-sm"
+                  >
+                    <ShoppingCart size={12} /> {t("offers_page.add")}
+                  </button>
                 </div>
-
-                <button
-                  onClick={() => handleAdd(product)}
-                  className="w-full bg-sky-900 text-white py-2 rounded-2xl flex items-center justify-center gap-2 text-xs font-bold hover:bg-amber-600 transition-all shadow-sm"
-                >
-                  <ShoppingCart size={14} /> {t("offers_page.add")}
-                </button>
               </div>
             );
           })

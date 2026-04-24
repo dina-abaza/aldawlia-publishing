@@ -60,7 +60,7 @@ const PopularPage = () => {
                 </div>
 
                 {books.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                         {books.map((book) => (
                             <div key={book._id || book.id} className="relative group">
                                 {/* زرار القلب منفصل تماماً ومحطوط فوق الكارت */}
@@ -78,22 +78,24 @@ const PopularPage = () => {
                                 {/* الكارت اللي بيودي للتفاصيل */}
                                 <Link
                                     href={`/book/${book._id || book.id}`}
-                                    className="bg-white rounded-[2rem] shadow-md border border-slate-50 overflow-hidden flex flex-col transition-transform hover:-translate-y-1 h-full"
+                                    className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden flex flex-col transition-transform hover:-translate-y-1 h-full"
                                 >
-                                    <div className="relative h-80 md:h-[420px] m-2 rounded-[1.5rem] overflow-hidden bg-slate-50/50 p-2">
+                                    {/* ✅ التعديل: توحيد مقاس الصورة واستخدام object-cover */}
+                                    <div className="relative w-full h-48 md:h-64 bg-slate-100">
                                         <Image
                                             src={book.coverUrl || book.cover || "/placeholder.jpg"}
                                             alt={book.title}
                                             fill
-                                            className="object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
+                                            className="object-cover object-top transition-transform duration-500 group-hover:scale-110"
                                         />
                                     </div>
 
-                                    <div className="p-6 text-center flex flex-col flex-1">
-                                        <h3 className="font-bold text-lg text-slate-900 mb-4 line-clamp-2">
+                                    {/* ✅ التعديل: توحيد ارتفاع منطقة النص وتوزيع العناصر */}
+                                    <div className="p-4 text-center flex flex-col justify-between flex-1 h-32">
+                                        <h3 className="font-bold text-[14px] md:text-[16px] text-slate-900 mb-2 line-clamp-2 leading-tight flex items-center justify-center">
                                             {book.title}
                                         </h3>
-                                        <p className="text-amber-600 font-bold text-xs mt-auto">
+                                        <p className="text-amber-600 font-bold text-[12px] mt-auto">
                                             {t("popular_page.explore_more")}
                                         </p>
                                     </div>

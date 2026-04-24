@@ -114,44 +114,46 @@ const CategoryProducts = () => {
           products.map((product, index) => (
             <div
               key={product.id}
-              className="bg-white rounded-[2.5rem] shadow-sm flex flex-col items-center relative border border-gray-100 w-[calc(50%-16px)] md:w-[260px] overflow-hidden group hover:shadow-md transition-all duration-300"
+              className="bg-white rounded-3xl shadow-sm flex flex-col items-center relative border border-gray-100 w-[calc(50%-12px)] md:w-[240px] overflow-hidden group hover:shadow-md transition-all duration-300"
             >
               {product.discountPercent > 0 && (
-                <div className="absolute top-4 left-4 bg-red-500 text-white text-[11px] px-3 py-1 rounded-full z-10 font-bold">
+                <div className="absolute top-3 left-3 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full z-10 font-bold">
                   {product.discountPercent} %
                 </div>
               )}
 
               <button
                 onClick={(e) => toggleFavorite(e, product.id)}
-                className="absolute top-4 right-4 bg-white/90 p-2.5 rounded-full z-10 text-sky-900 hover:text-amber-600 transition-all shadow-sm"
+                className="absolute top-3 right-3 bg-white/90 p-2 rounded-full z-10 text-sky-900 hover:text-amber-600 transition-all shadow-sm"
               >
-                <Heart size={24} fill={isFavorite(product.id) ? "currentColor" : "none"} className={isFavorite(product.id) ? "text-amber-600" : ""} />
+                <Heart size={20} fill={isFavorite(product.id) ? "currentColor" : "none"} className={isFavorite(product.id) ? "text-amber-600" : ""} />
               </button>
 
-              {/* حاوية الصورة عريضة وفخمة */}
+              {/* ✅ تعديل: حاوية صورة موحدة الطول وبدون حواف داخلية لتظهر بشكل كامل */}
               <div
-                className="w-full h-80 md:h-[420px] flex items-center justify-center mb-3 cursor-pointer overflow-hidden rounded-2xl relative bg-gray-50/50 p-2"
+                className="w-full h-48 md:h-64 cursor-pointer overflow-hidden relative bg-gray-100"
                 onClick={() => router.push(`/book/${product.id}`)}
               >
                 <Image
                   src={product.coverUrl || "/placeholder.jpg"}
                   alt={product.title || product.name}
                   fill
-                  sizes="(max-width: 768px) 45vw, 220px"
-                  className="object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
+                  sizes="(max-width: 768px) 45vw, 240px"
+                  // ✅ السر هنا: object-cover تجعل الصورة تملأ المربع، و object-top تضمن بقاء العنوان بالأعلى
+                  className="object-cover object-top transition-transform duration-500 group-hover:scale-110"
                   priority={index < 4}
                 />
               </div>
 
+              {/* ✅ تعديل: توحيد ارتفاع منطقة النص لضمان محاذاة أفقية لكل الكروت */}
               <div
-                className="flex flex-col items-center cursor-pointer py-6 w-full px-4"
+                className="flex flex-col items-center cursor-pointer p-4 w-full h-32 justify-between"
                 onClick={() => router.push(`/book/${product.id}`)}
               >
-                <h3 className="font-bold text-[17px] text-sky-900 text-center line-clamp-2 h-12 leading-snug hover:text-amber-600 transition-colors">
+                <h3 className="font-bold text-[14px] md:text-[16px] text-sky-900 text-center line-clamp-2 leading-tight hover:text-amber-600 transition-colors">
                   {product.title || product.name}
                 </h3>
-                <span className="text-[14px] text-amber-600 font-extrabold mt-3 flex items-center gap-1 hover:underline">
+                <span className="text-[12px] md:text-[13px] text-amber-600 font-extrabold flex items-center gap-1 hover:underline">
                   {t("category_page.explore_more")}
                 </span>
               </div>

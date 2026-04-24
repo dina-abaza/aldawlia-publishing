@@ -23,13 +23,13 @@ export default function Home() {
   ];
 
   return (
-    <div className="bg-gray-50 overflow-hidden flex flex-col gap-8 md:gap-10">
+    <div className="bg-gray-50 overflow-hidden flex flex-col gap-6 md:gap-8">
       <div className="w-full">
         <BannerCarousel />
       </div>
 
       {/* Language Filter Section */}
-      <section className="max-w-7xl mx-auto px-4 w-full -mt-4 md:-mt-6 relative z-20">
+      <section className="max-w-7xl mx-auto px-4 w-full -mt-3 md:-mt-8 relative z-20">
         <div className="flex items-center justify-center gap-6 md:gap-10 max-w-xl mx-auto">
           {languages.map((lang) => (
             <button

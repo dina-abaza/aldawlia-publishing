@@ -7,7 +7,7 @@ import api from '@/app/api';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/app/(library)/store/useAuthStore';
 import { useFavoritesStore } from '@/app/(library)/store/useFavoritesStore';
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 
@@ -203,19 +203,21 @@ const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass, vi
                 key={`${bookId}-${idx}`}
                 style={{ width: itemWidth }}
                 onClick={() => router.push(`/book/${bookId}`)}
-                className="group bg-white rounded-[2rem] shadow-sm flex flex-col items-center border border-gray-100 overflow-hidden cursor-pointer hover:shadow-xl transition-all"
+                className="group bg-white rounded-3xl shadow-sm flex flex-col items-center border border-gray-100 overflow-hidden cursor-pointer hover:shadow-md transition-all h-full"
               >
-                <div className="w-full h-80 md:h-[450px] relative bg-gray-50/50 p-2">
+                {/* ✅ التعديل: توحيد مقاس الصورة واستخدام object-cover لملء الكارت */}
+                <div className="w-full h-44 md:h-56 relative bg-gray-100">
                   <Image
                     src={getCleanUrl(book.coverUrl || book.cover)}
                     alt={book.title || "Book"}
                     fill
-                    className="object-contain transition-transform duration-500 group-hover:scale-105 drop-shadow-lg"
+                    className="object-cover object-top transition-transform duration-500 group-hover:scale-110"
                   />
                 </div>
 
-                <div className="flex flex-col items-center pb-6 w-full px-4 pt-4">
-                  <h3 className="font-bold text-[14px] text-center line-clamp-1 text-gray-800">
+                {/* ✅ التعديل: توحيد ارتفاع منطقة النص لضمان محاذاة العناوين */}
+                <div className="flex flex-col items-center p-3 w-full flex-1 h-20 justify-center">
+                  <h3 className="font-bold text-[13px] md:text-[14px] text-center line-clamp-2 text-gray-800 leading-tight group-hover:text-sky-900 transition-colors">
                     {book.title || book.name}
                   </h3>
                 </div>
@@ -251,8 +253,8 @@ const HomeShowcase = ({ language = "ar" }) => {
   });
 
   return (
-    <section className="max-w-7xl mx-auto px-4 md:px-6 py-12 md:py-20" dir={isAr ? 'rtl' : 'ltr'}>
-      <div className="flex flex-col gap-16 md:gap-24">
+    <section className="max-w-7xl mx-auto px-4 md:px-6 pt-6 pb-12 md:pt-4 md:pb-20" dir={isAr ? 'rtl' : 'ltr'}>
+      <div className="flex flex-col gap-12 md:gap-20">
         {/* Latest Releases */}
         <div className="flex flex-col gap-8">
           <div className={`flex items-center gap-3 ${isAr ? 'flex-row' : 'flex-row-reverse'}`}>

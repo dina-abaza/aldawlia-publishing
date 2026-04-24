@@ -74,32 +74,35 @@ const TrendingPage = () => {
                                 <Link
                                     key={productId}
                                     href={`/book/${productId}`}
-                                    className="group bg-white p-2 rounded-[2.5rem] shadow-sm border border-slate-100 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 relative"
+                                    className="group bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-all duration-500 hover:-translate-y-1 relative flex flex-col h-full overflow-hidden"
                                 >
                                     {/* زر القلب - بنفس التصميم بالظبط */}
                                     <button
                                         onClick={(e) => toggleFavorite(e, productId)}
-                                        className={`absolute top-4 left-4 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm active:scale-90 ${
+                                        className={`absolute top-3 left-3 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all shadow-sm active:scale-90 ${
                                             activeFav ? "bg-amber-50 text-amber-600" : "bg-white/80 text-gray-400 backdrop-blur-sm"
                                         }`}
                                     >
                                         <Heart size={16} fill={activeFav ? "currentColor" : "none"} />
                                     </button>
 
-                                    <div className="relative h-80 md:h-[420px] rounded-[2rem] overflow-hidden mb-3 bg-slate-50/50 p-2">
+                                    {/* ✅ التعديل: توحيد مقاس الصورة واستخدام object-cover */}
+                                    <div className="relative w-full h-44 md:h-56 bg-slate-100">
                                         <Image
                                             src={book.coverUrl || book.cover}
                                             alt={book.title}
                                             fill
-                                            className="object-contain group-hover:scale-105 transition-transform duration-700 drop-shadow-lg"
+                                            className="object-cover object-top group-hover:scale-110 transition-transform duration-700"
                                         />
                                     </div>
-                                    <div className="px-2 pb-4 text-center">
-                                        <h3 className="font-black text-[11px] md:text-xs text-sky-950 line-clamp-2 h-8 leading-snug uppercase tracking-tighter">
+
+                                    {/* ✅ التعديل: توحيد الارتفاع الكلي لمنطقة النص (h-28) */}
+                                    <div className="p-3 text-center flex flex-col justify-between flex-1 h-28">
+                                        <h3 className="font-bold text-[12px] md:text-[13px] text-sky-950 line-clamp-2 leading-tight flex items-center justify-center h-10">
                                             {book.title}
                                         </h3>
-                                        <div className="mt-3 inline-block">
-                                            <span className="text-[9px] font-black text-amber-600 bg-amber-50 px-3 py-1 rounded-full uppercase border border-amber-100">{t("trending_page.hot_now")}</span>
+                                        <div className="mt-auto pt-2">
+                                            <span className="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full uppercase border border-amber-100">{t("trending_page.hot_now")}</span>
                                         </div>
                                     </div>
                                 </Link>

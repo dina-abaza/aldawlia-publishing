@@ -33,7 +33,7 @@ const SubNavbar = () => {
   ];
 
   return (
-    <div className="w-full sticky top-[72px] md:top-[88px] z-40 py-0 md:py-4 pointer-events-none">
+    <div className="w-full sticky top-[72px] md:top-[88px] z-40 py-1 md:py-2 pointer-events-none">
       <div className="max-w-7xl mx-auto px-0 md:px-4 flex justify-center">
         {/* Floating Pill Container with Glassmorphism */}
         <nav className="pointer-events-auto bg-white/75 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_0_rgba(15,23,42,0.12)] rounded-[2rem] p-1 flex md:p-1.5 items-center justify-between md:justify-center gap-0.5 md:gap-2 relative w-full max-w-[95%] md:max-w-fit">
