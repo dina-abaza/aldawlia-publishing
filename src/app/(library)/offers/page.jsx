@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
 import api from "@/app/api";
- import { ShoppingCart, Tag, ArrowRight, ArrowLeft, Heart } from "lucide-react"; // ضفنا Heart
+import { ShoppingCart, Tag, ArrowRight, ArrowLeft, Heart } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCartStore } from "@/app/(library)/store/useCartStore";
 import { useAuthStore } from "@/app/(library)/store/useAuthStore";
-import { useFavoritesStore } from "@/app/(library)/store/useFavoritesStore"; // ضفنا الـ Store
+import { useFavoritesStore } from "@/app/(library)/store/useFavoritesStore";
 import { toast } from "react-toastify";
 import Link from "next/link";
 import Image from "next/image";
@@ -22,7 +22,6 @@ const OffersPage = () => {
   const isArabic = i18n.language?.startsWith("ar");
   const dir = isArabic ? "rtl" : "ltr";
   
-  // دوال المفضلة
   const { isFavorite, addToFavorites, removeFromFavorites } = useFavoritesStore();
 
   const { data: products = [], isLoading: loading } = useQuery({
@@ -46,14 +45,12 @@ const OffersPage = () => {
     }
     try {
       await addToCart(book.id || book._id);
-      
     } catch (error) {
       console.error("Add to cart failed:", error);
       toast.error(t("offers_page.add_cart_failed"));
     }
   };
 
-  // دالة الضغط على القلب
   const toggleFavorite = async (e, bookId) => {
     e.preventDefault();
     e.stopPropagation();
@@ -107,7 +104,7 @@ const OffersPage = () => {
             return (
               <div
                 key={productId}
-                className="bg-white rounded-3xl p-0 shadow-sm border border-red-100 flex flex-col relative overflow-hidden group hover:shadow-md transition-all duration-300"
+                className="bg-white rounded-3xl p-0 shadow-sm border border-red-100 flex flex-col relative overflow-hidden group hover:shadow-md transition-all duration-300 h-full"
               >
                 {/* نسبة الخصم */}
                 {product.discountPercent > 0 && (
@@ -126,40 +123,40 @@ const OffersPage = () => {
                   <Heart size={14} fill={activeFav ? "currentColor" : "none"} />
                 </button>
 
-                <Link href={`/book/${productId}`} className="flex flex-col items-center w-full flex-1">
-                  {/* ✅ التعديل: توحيد مقاس حاوية الصورة واستخدام object-cover */}
-                  <div className="w-full h-44 md:h-56 bg-gray-100 relative">
+                <Link href={`/book/${productId}`} className="flex flex-col flex-1">
+                  {/* 🖼️ تعديل الصورة: وضع containment لضمان عدم القص ونسبة عرض لارتفاع ثابتة */}
+                  <div className="w-full aspect-[3/4] bg-[#fdfdfd] relative p-3">
                     <Image
                       src={product.cover || product.image || product.coverUrl}
                       alt={product.title || product.name}
                       fill
                       loading="lazy"
-                      quality={70}
+                      quality={80}
                       sizes="(max-width: 768px) 50vw, 25vw"
-                      className="object-cover object-top hover:scale-110 transition-transform duration-500"
+                      className="object-contain transition-transform duration-500 group-hover:scale-105 p-2"
                     />
                   </div>
                   
-                  {/* ✅ التعديل: توحيد ارتفاع منطقة العنوان والسعر */}
-                  <div className="p-3 text-center w-full flex flex-col justify-between h-32">
-                    <h3 className="font-bold text-[13px] md:text-[14px] line-clamp-2 text-gray-800 group-hover:text-amber-600 transition-colors flex items-center justify-center leading-tight h-10">
+                  {/* 📝 توحيد منطقة النصوص والسعر لضمان استقامة الكروت */}
+                  <div className="p-3 text-center flex flex-col flex-grow">
+                    <h3 className="font-bold text-[13px] md:text-[14px] line-clamp-2 text-gray-800 group-hover:text-amber-600 transition-colors leading-tight min-h-[40px] flex items-center justify-center">
                       {product.title || product.name}
                     </h3>
                     
-                    <div className="flex flex-col items-center mt-auto">
+                    <div className="flex flex-col items-center mt-auto pt-2">
                       {product.discountPrice && product.discountPrice < product.price && (
-                        <span className="text-gray-400 line-through text-[9px]">
+                        <span className="text-gray-400 line-through text-[10px]">
                           {product.price?.toLocaleString()} {t("offers_page.currency")}
                         </span>
                       )}
-                      <span className="text-amber-600 font-black text-[12px] md:text-[13px]">
+                      <span className="text-amber-600 font-black text-[13px] md:text-[15px]">
                         {product.discountPrice?.toLocaleString() || product.price?.toLocaleString()} {t("offers_page.currency")}
                       </span>
                     </div>
                   </div>
                 </Link>
 
-                <div className="px-3 pb-3">
+                <div className="px-3 pb-3 mt-auto">
                   <button
                     onClick={() => handleAdd(product)}
                     className="w-full bg-sky-900 text-white py-2 rounded-xl flex items-center justify-center gap-2 text-[11px] font-bold hover:bg-amber-600 transition-all shadow-sm"

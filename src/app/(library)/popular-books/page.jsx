@@ -6,12 +6,16 @@ import Image from "next/image";
 import api from "@/app/api";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { useAuthStore } from "@/app/(library)/store/useAuthStore";
+import { useFavoritesStore } from "@/app/(library)/store/useFavoritesStore";
 
 const PopularPage = () => {
+    const router = useRouter();
     const { t, i18n } = useTranslation();
-    const [likedBooks, setLikedBooks] = useState({});
+    const { isAuthenticated } = useAuthStore();
+    const { isFavorite, addToFavorites, removeFromFavorites } = useFavoritesStore();
     const searchParams = useSearchParams();
     const selectedLanguage = searchParams.get("language") || "ar";
     const isArabic = i18n.language?.startsWith("ar");
@@ -31,17 +35,19 @@ const PopularPage = () => {
         staleTime: 5 * 60 * 1000,
     });
 
-    const handleLike = (e, id) => {
+    const toggleFavorite = async (e, bookId) => {
         e.preventDefault();
         e.stopPropagation();
+        
+        if (!isAuthenticated) {
+            toast.info(t("popular_page.login_for_favorites") || t("search_page.login_for_favorites"));
+            return router.push("/login");
+        }
 
-        setLikedBooks(prev => ({
-            ...prev,
-            [id]: !prev[id]
-        }));
-
-        if (!likedBooks[id]) {
-            toast.success(t("popular_page.added_to_favorites"));
+        if (isFavorite(bookId)) {
+            await removeFromFavorites(bookId);
+        } else {
+            await addToFavorites(bookId);
         }
     };
 
@@ -62,17 +68,19 @@ const PopularPage = () => {
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8">
                         {books.map((book, index) => {
                             const bookId = book._id || book.id;
+                            const activeFav = isFavorite(bookId);
                             return (
                                 <div key={bookId} className="relative group">
                                     {/* زرار القلب - فوق الكارت */}
                                     <button
-                                        onClick={(e) => handleLike(e, bookId)}
-                                        className="absolute top-2 right-2 z-20 bg-white/90 p-1.5 md:p-2 rounded-full shadow-md hover:scale-110 transition-transform active:scale-90"
+                                        onClick={(e) => toggleFavorite(e, bookId)}
+                                        className={`absolute top-2 right-2 z-20 bg-white/90 p-1.5 md:p-2 rounded-full shadow-md hover:scale-110 transition-transform active:scale-90 ${
+                                            activeFav ? "text-amber-600" : "text-slate-400"
+                                        }`}
                                     >
                                         <Heart
                                             size={18}
-                                            className={likedBooks[bookId] ? "text-amber-600" : "text-slate-400"}
-                                            fill={likedBooks[bookId] ? "currentColor" : "none"}
+                                            fill={activeFav ? "currentColor" : "none"}
                                         />
                                     </button>
 
