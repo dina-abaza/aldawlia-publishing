@@ -22,9 +22,7 @@ export default function ShopLayout({ children }) {
           <Navbar />
           <SubNavbar />
           <main className="flex-grow">
-            <PageTransition>
-              {children}
-            </PageTransition>
+            {children}
           </main>
           <NavBottom />
           <Footer />

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false, // تعطيل الـ StrictMode مؤقتاً لتقليل الـ re-renders عند الرجوع
   images: {
     unoptimized: true,
     formats: ["image/avif", "image/webp"],
