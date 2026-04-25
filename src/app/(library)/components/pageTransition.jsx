@@ -8,15 +8,15 @@ export default function PageTransition({ children }) {
   return (
     <LazyMotion features={domAnimation}>
       <div className="relative w-full">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           <m.div
             key={pathname}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ 
-              duration: 0.2, 
-              ease: "easeOut"
+              duration: 0.15, 
+              ease: "linear"
             }}
             className="w-full"
           >
