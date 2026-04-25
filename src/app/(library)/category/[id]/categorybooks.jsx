@@ -143,6 +143,7 @@ const CategoryProducts = () => {
                   priority={index < 4}
                 />
               </div>
+              
 
               <div
                 className="flex flex-col items-center cursor-pointer py-6 w-full px-4"
