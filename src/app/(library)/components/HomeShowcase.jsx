@@ -50,12 +50,15 @@ const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass }) 
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
+      // تعديل إجباري لزيادة حجم الكروت في اللاب توب
       if (width < 640) {
         setItemsPerView(2.2); 
       } else if (width < 1024) {
-        setItemsPerView(3.5);
+        setItemsPerView(2.8); // كان 3.2
+      } else if (width < 1440) {
+        setItemsPerView(3.8); // كان 4.2 - قللنا العدد عشان الكارت يكبر أكتر
       } else {
-        setItemsPerView(5);
+        setItemsPerView(4.8); // كان 5.2
       }
       
       // نستخدم requestAnimationFrame للتأكد من أن الـ DOM استقر
@@ -73,7 +76,7 @@ const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass }) 
   // حساب العرض بشكل آمن لتجنب القيم السالبة في أول رندر
   const itemWidth = containerWidth > 0 
     ? (containerWidth - (Math.ceil(itemsPerView) - 1) * GAP) / itemsPerView
-    : 150; // عرض افتراضي بسيط حتى يتم الحساب
+    : 280; // رفعنا القيمة الافتراضية عشان لو الحساب اتأخر تظهر كبيرة من الأول
 
   const getCleanUrl = (url) => {
     if (!url) return "/placeholder.jpg";
@@ -143,9 +146,9 @@ const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass }) 
                     src={coverSrc}
                     alt={book.title || "book"}
                     fill
-                    sizes="(max-width: 640px) 50vw, 250px"
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    unoptimized={coverSrc.includes('http')} // عشان لو السيرفر بيمنع الـ optimization
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 300px"
+                    className="object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                    unoptimized={true} 
                   />
                 </div>
 
