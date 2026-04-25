@@ -10,7 +10,10 @@
     "my_purchases": "Purchases",
     "home": "Home",
     "register": "Register",
-    "welcome": "Hello,"
+    "welcome": "Hello,",
+    "aldawlia_publishing": "Aldawlia Publishing",
+    "hikma_institute": "Hikma Institute",
+    "islamic_directory": "Islamic Directory"
   },
   "footer_main": {
     "quick_links": "Quick Links",

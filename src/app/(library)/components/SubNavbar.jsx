@@ -3,29 +3,31 @@ import React from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { BookOpen, GraduationCap, Building2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 const SubNavbar = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   const mainSections = [
     {
       id: "library",
-      label: "دار الدولية للنشر",
+      label: t("navbar.aldawlia_publishing"),
       path: "/",
       icon: <BookOpen className="w-5 h-5" />,
       active: pathname === "/" || pathname === ""
     },
     {
       id: "hikma",
-      label: "معهد الحكمة الدولي",
+      label: t("navbar.hikma_institute"),
       path: "/hikma-institute",
       icon: <GraduationCap className="w-5 h-5" />,
       active: pathname.startsWith("/hikma-institute")
     },
     {
       id: "islamic",
-      label: "الدليل التجاري الإسلامي",
+      label: t("navbar.islamic_directory"),
       path: "/islamic-business-directory",
       icon: <Building2 className="w-5 h-5" />,
       active: pathname.startsWith("/islamic-business-directory")
