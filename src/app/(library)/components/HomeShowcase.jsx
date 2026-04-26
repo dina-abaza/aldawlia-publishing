@@ -137,6 +137,13 @@ const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass }) 
                   <Heart size={16} fill={isFavorite(bookId) ? "currentColor" : "none"} className={isFavorite(bookId) ? "text-amber-600" : ""} />
                 </button>
 
+                {/* Discount Tag */}
+                {book.discountPrice && book.discountPrice < book.price && (
+                  <div className="absolute top-2 left-2 bg-red-500 text-white text-[9px] md:text-[10px] px-2 py-0.5 rounded-full z-20 font-bold shadow-sm">
+                    {Math.round(((book.price - book.discountPrice) / book.price) * 100)}%
+                  </div>
+                )}
+
                 {/* ✅ صورة الكتاب: مالي الكارت بالكامل Edge-to-Edge */}
                 <div 
                   className="relative w-full aspect-[3/4] cursor-pointer overflow-hidden bg-gray-100"
@@ -152,14 +159,25 @@ const BookCarouselSection = ({ title, icon: Icon, books, loading, colorClass }) 
                   />
                 </div>
 
-                {/* العنوان */}
+                {/* العنوان والسعر */}
                 <div 
-                  className="p-3 bg-white flex-1 flex items-center justify-center"
+                  className="p-3 bg-white flex-1 flex flex-col items-center justify-center gap-1"
                   onClick={() => router.push(`/book/${bookId}`)}
                 >
-                  <h3 className="font-bold text-[13px] md:text-[15px] text-sky-950 text-center line-clamp-1">
+                  <h3 className="font-bold text-[13px] md:text-[14px] text-sky-950 text-center line-clamp-1 leading-tight">
                     {book.title}
                   </h3>
+                  
+                  <div className="flex flex-col items-center">
+                    {book.discountPrice && book.discountPrice < book.price && (
+                      <span className="text-gray-400 line-through text-[9px] md:text-[10px]">
+                        {book.price?.toLocaleString()} {t("offers_page.currency")}
+                      </span>
+                    )}
+                    <span className="text-amber-600 font-black text-[12px] md:text-[13px]">
+                      {book.discountPrice?.toLocaleString() || book.price?.toLocaleString()} {t("offers_page.currency")}
+                    </span>
+                  </div>
                 </div>
               </div>
             );
@@ -178,7 +196,9 @@ const HomeShowcase = ({ language = "ar" }) => {
     queryKey: ['latestBooks', language],
     queryFn: async () => {
       const response = await api.get('/files/latest', { params: { language } });
-      return response?.data?.data || [];
+      const data = response?.data?.data || [];
+      console.log('Latest Books Response:', data[0]); // طباعة أول كتاب للتأكد من المسميات
+      return data;
     },
   });
 
@@ -186,7 +206,9 @@ const HomeShowcase = ({ language = "ar" }) => {
     queryKey: ['offerBooks', language],
     queryFn: async () => {
       const response = await api.get('/files/on-sale', { params: { limit: 20, language } });
-      return response?.data?.data || [];
+      const data = response?.data?.data || [];
+      console.log('Offer Books Response:', data[0]); // طباعة أول كتاب للتأكد من المسميات
+      return data;
     },
   });
 
