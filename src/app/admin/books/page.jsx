@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import api from "@/app/api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { PackageSearch, Edit, Trash2, PlusCircle, ImageIcon, ChevronRight, ChevronLeft, Layers, AlignRight, FileText, Calendar } from "lucide-react";
+import { PackageSearch, Edit, Trash2, PlusCircle, ImageIcon, ChevronRight, ChevronLeft, Layers, AlignRight, FileText, Calendar, Eye, EyeOff } from "lucide-react";
 
 export default function AdminProductsPage() {
     const [products, setProducts] = useState([]);
@@ -145,6 +145,21 @@ export default function AdminProductsPage() {
             toast.success("تم الحذف بنجاح");
         } catch (err) {
             toast.error(err.response?.data?.message || "فشل الحذف");
+        }
+    };
+
+    const toggleVisibility = async (product) => {
+        const id = product.id || product._id;
+        const nextIsHidden = !product.isHidden;
+        try {
+            const res = await api.patch(`/files/${id}/visibility`, { isHidden: nextIsHidden });
+            const updatedProduct = res.data.data;
+            setProducts(prev => prev.map(p =>
+                (p.id || p._id) === id ? (updatedProduct || { ...p, isHidden: nextIsHidden }) : p
+            ));
+            toast.success(nextIsHidden ? "تم إخفاء الكتاب بنجاح" : "تم إظهار الكتاب بنجاح");
+        } catch (err) {
+            toast.error(err.response?.data?.message || "فشل في تعديل حالة ظهور الكتاب");
         }
     };
 
@@ -363,6 +378,7 @@ export default function AdminProductsPage() {
                                     </td>
                                     <td className="p-5">
                                         <div className="flex justify-center gap-2">
+                                            <button onClick={() => toggleVisibility(p)} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg border border-gray-100" title={p.isHidden ? "إظهار الكتاب" : "إخفاء الكتاب"}>{p.isHidden ? <Eye size={16} /> : <EyeOff size={16} />}</button>
                                             <button onClick={() => editProduct(p)} className="p-2 text-yellow-500 hover:bg-yellow-50 rounded-lg border border-gray-100"><Edit size={16} /></button>
                                             <button onClick={() => deleteProduct(p.id || p._id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg border border-gray-100"><Trash2 size={16} /></button>
                                         </div>
@@ -403,6 +419,7 @@ export default function AdminProductsPage() {
                                         )}
                                     </div>
                                     <div className="flex gap-1">
+                                        <button onClick={() => toggleVisibility(p)} className="p-2.5 bg-gray-100 text-gray-600 rounded-xl active:scale-90 transition-transform">{p.isHidden ? <Eye size={16} /> : <EyeOff size={16} />}</button>
                                         <button onClick={() => editProduct(p)} className="p-2.5 bg-yellow-50 text-yellow-600 rounded-xl active:scale-90 transition-transform"><Edit size={16} /></button>
                                         <button onClick={() => deleteProduct(p.id || p._id)} className="p-2.5 bg-red-50 text-red-600 rounded-xl active:scale-90 transition-transform"><Trash2 size={16} /></button>
                                     </div>
