@@ -9,26 +9,27 @@ const TopBanner = () => {
   return (
     <div className="bg-sky-900 text-white py-2 overflow-hidden border-b-4 border-amber-600  select-none">
       <div className="marquee">
-        <div className="marquee-content">
+        <div className="marquee-content" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}>
           <span>{text}</span>
         </div>
       </div>
 
       <style jsx>{`
         .marquee {
+          position: relative;
           overflow: hidden;
           width: 100%;
-          direction: ${i18n.language === 'ar' ? 'rtl' : 'ltr'};
-          display: flex;
-       
+          height: 1.75em;
         }
 
         .marquee-content {
-          display: inline-block;
+          position: absolute;
+          top: 0;
+          left: 0;
           white-space: nowrap;
           width: max-content;
           /* الأنيميشن بياخد وقت أطول شوية عشان الجملة تلحق تتقرأ */
-          animation: scroll-single 25s linear infinite;
+          animation: ${i18n.language === 'ar' ? 'scroll-rtl' : 'scroll-single'} 25s linear infinite;
         }
 
         .marquee-content span {
@@ -48,6 +49,17 @@ const TopBanner = () => {
           100% {
             /* بتنتهي لما تختفي تماماً جهة اليسار */
             transform: translateX(-100%);
+          }
+        }
+
+        @keyframes scroll-rtl {
+          0% {
+            /* بتبدأ من خارج الشاشة تماماً جهة الشمال */
+            transform: translateX(-100%);
+          }
+          100% {
+            /* بتنتهي لما تختفي تماماً جهة اليمين، فأول كلمة في الجملة (يمين النص) هي أول حاجة تظهر */
+            transform: translateX(100vw);
           }
         }
 
